@@ -1,0 +1,32 @@
+﻿@page "/"
+
+<div class="d-flex justify-content-center flex-column" style="padding-top: 20px; padding-bottom: 20px;">
+    <div class="form-container">
+        <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <InputText id="email" class="form-control" @bind-Value="loginModel.Email" />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <InputText id="password" type="password" class="form-control" @bind-Value="loginModel.Password" />
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Login</button>          
+            </div>
+        </EditForm>
+        <button class="btn btn-secondary" @onclick="DeleteJwtFromLocalStorage">Logout</button>
+    </div>
+
+    @if (loginResult != null)
+    {
+        <div class="@alertClass status-message" role="status">
+            @loginResult
+        </div>
+    }
+</div>
+

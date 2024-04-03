@@ -1,0 +1,6 @@
+@HybridMessenger.API_HostAddress = http://localhost:5062
+
+GET https://localhost:7281/weatherforecast/
+Accept: application/json
+
+###
