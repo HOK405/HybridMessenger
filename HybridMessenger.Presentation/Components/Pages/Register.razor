@@ -1,0 +1,38 @@
+@page "/register"
+
+<div class="d-flex justify-content-center flex-column" style="padding-top: 20px; padding-bottom: 20px;">
+    <div class="form-container">
+        <EditForm Model="@registerModel" OnValidSubmit="HandleRegister">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <InputText id="username" class="form-control" @bind-Value="registerModel.UserName" />
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <InputText id="email" class="form-control" @bind-Value="registerModel.Email" />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <InputText id="password" type="password" class="form-control" @bind-Value="registerModel.Password" />
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <InputText id="phoneNumber" class="form-control" @bind-Value="registerModel.PhoneNumber" />
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Register</button>
+            </div>
+        </EditForm>
+    </div>
+
+    @if (registerResult != null)
+    {
+        <div class="@alertClass status-message" role="status">
+            @registerResult
+        </div>
+    }
+</div>

@@ -1,30 +1,20 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Identity;
+﻿using HybridMessenger.Domain.Services;
+using MediatR;
 
 namespace HybridMessenger.Application.User.Queries
 {
     public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Domain.Entities.User>
     {
-        private readonly UserManager<Domain.Entities.User> _userManager;
+        private readonly IUserIdentityService _userService;
 
-        public GetUserByIdQueryHandler(UserManager<Domain.Entities.User> userManager)
+        public GetUserByIdQueryHandler(IUserIdentityService userService)
         {
-            _userManager = userManager;
+            _userService = userService;
         }
 
         public async Task<Domain.Entities.User> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
-            // Convert Guid ID to string
-            var userIdAsString = request.Id.ToString();
-
-            var user = await _userManager.FindByIdAsync(userIdAsString);
-
-            if (user == null)
-            {
-                throw new KeyNotFoundException($"User with ID {request.Id} was not found.");
-            }
-
-            return user;
+            return await _userService.GetUserByIdAsync(request.Id);
         }
     }
 }

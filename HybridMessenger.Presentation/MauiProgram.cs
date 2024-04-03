@@ -18,8 +18,6 @@ namespace HybridMessenger.Presentation
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
-            // Access configuration
-            //var apiBaseAddress = "https://localhost:44314/";
             var apiBaseAddress = builder.Configuration["ApiBaseAddress"];
             if (string.IsNullOrEmpty(apiBaseAddress))
             {

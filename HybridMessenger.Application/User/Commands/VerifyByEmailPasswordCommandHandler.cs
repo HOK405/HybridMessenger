@@ -1,33 +1,31 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Identity;
+﻿using HybridMessenger.Domain.Services;
+using MediatR;
 
 namespace HybridMessenger.Application.User.Commands
 {
-    public class VerifyByEmailPasswordCommandHandler : IRequestHandler<VerifyByEmailPasswordCommand, Domain.Entities.User>
+    public class VerifyByEmailPasswordCommandHandler : IRequestHandler<VerifyByEmailPasswordCommand, string>
     {
-        private readonly UserManager<Domain.Entities.User> _userManager;
+        private readonly IUserIdentityService _userService;
+        private readonly IJwtTokenService _jwtTokenService;
 
-        public VerifyByEmailPasswordCommandHandler(UserManager<Domain.Entities.User> userManager)
+        public VerifyByEmailPasswordCommandHandler(IUserIdentityService userService, IJwtTokenService jwtTokenService)
         {
-            _userManager = userManager;
+            _userService = userService;
+            _jwtTokenService = jwtTokenService;
         }
 
-        public async Task<Domain.Entities.User> Handle(VerifyByEmailPasswordCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(VerifyByEmailPasswordCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            var user =  await _userService.VerifyUserByEmailAndPasswordAsync(request.Email, request.Password);
 
-            if (user == null)
+            if (user is not null)
             {
-                throw new ArgumentNullException(nameof(user), "User not found.");
+                return _jwtTokenService.GenerateToken(user);
             }
-
-            var result = await _userManager.CheckPasswordAsync(user, request.Password);
-            if (!result)
+            else
             {
-                throw new ArgumentException("Invalid password.");
+                return null;
             }
-
-            return user; 
         }
     }
 }

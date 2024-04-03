@@ -1,13 +1,7 @@
 ﻿using HybridMessenger.Application.User.Commands;
 using HybridMessenger.Application.User.Queries;
-using HybridMessenger.Domain.Entities;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace HybridMessenger.API.Controllers
 {
@@ -16,12 +10,10 @@ namespace HybridMessenger.API.Controllers
     public class UserController : Controller
     {
         private readonly IMediator _mediator;
-        private readonly IConfiguration _configuration;
 
-        public UserController(IMediator mediator, IConfiguration configuration)
+        public UserController(IMediator mediator)
         {
             _mediator = mediator;
-            _configuration = configuration;
         }
 
         [HttpGet("get-user")]
@@ -29,18 +21,16 @@ namespace HybridMessenger.API.Controllers
         {
             var result = await _mediator.Send(command);
 
-            /*...*/
-
             return Ok(result);
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser(CreateUserCommand command)
+        public async Task<IActionResult> Register(RegisterUserCommand command)
         {
             try
             {
-                var user = await _mediator.Send(command);
-                return Ok(user);
+                var result = await _mediator.Send(command);
+                return Ok(new { Token = result }); 
             }
             catch (ArgumentException ex)
             {
@@ -55,39 +45,16 @@ namespace HybridMessenger.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] VerifyByEmailPasswordCommand command)
         {
-            var user = await _mediator.Send(command); 
+            var token = await _mediator.Send(command);
 
-            if (user != null)
+            if (!string.IsNullOrEmpty(token))
             {
-                var token = GenerateJwtToken(user); 
-                return Ok(new { Token = token }); 
+                return Ok(new { Token = token });
             }
             else
             {
                 return Unauthorized();
             }
-        }
-
-        private string GenerateJwtToken(User user)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var keyString = _configuration["JwtKey"]; // Get the secret key
-            var key = Encoding.ASCII.GetBytes(keyString);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(
-                    [
-                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                        new Claim(ClaimTypes.Email, user.Email)
-                    ]),
-                Expires = DateTime.UtcNow.AddDays(7), // Token expiration
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
         }
     }
 }

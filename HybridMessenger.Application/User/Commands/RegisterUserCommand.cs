@@ -2,10 +2,11 @@
 
 namespace HybridMessenger.Application.User.Commands
 {
-    public class CreateUserCommand : IRequest<Domain.Entities.User>
+    public class RegisterUserCommand : IRequest<string>
     {
-        public string Email { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
+        public string Email { get; set; }
+        public string? PhoneNumber { get; set; }
     }
 }
