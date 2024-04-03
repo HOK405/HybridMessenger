@@ -37,14 +37,14 @@
     width: 80%;
     max-width: 500px;
     margin: 0 auto;
-    padding: 1rem; /* Added padding for aesthetic spacing */
-    color: #fff; /* White text color for better contrast */
+    padding: 1rem; 
+    color: #fff; 
 }
 
 .status-success {
-    background-color: #28a745; /* Green background */
+    background-color: #28a745;
 }
 
 .status-danger {
-    background-color: #dc3545; /* Red background */
+    background-color: #dc3545;
 }

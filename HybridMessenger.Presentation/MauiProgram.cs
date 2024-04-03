@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace HybridMessenger.Presentation
 {
@@ -7,6 +8,9 @@ namespace HybridMessenger.Presentation
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
+
+            builder.Configuration.AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
+
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
@@ -14,14 +18,21 @@ namespace HybridMessenger.Presentation
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:44314/") });
+            // Access configuration
+            //var apiBaseAddress = "https://localhost:44314/";
+            var apiBaseAddress = builder.Configuration["ApiBaseAddress"];
+            if (string.IsNullOrEmpty(apiBaseAddress))
+            {
+                throw new InvalidOperationException("API base address is not configured properly.");
+            }
 
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBaseAddress) });
 
             builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
-    		builder.Logging.AddDebug();
+            builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();

@@ -32,5 +32,4 @@ namespace HybridMessenger.Application.User.Commands
             throw new ArgumentException($"User creation failed: {errors}");
         }
     }
-
 }

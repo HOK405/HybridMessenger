@@ -32,5 +32,4 @@ namespace HybridMessenger.Infrastructure.UnitOfWork
             _context.Set<T>().Remove(entity);
         }
     }
-
 }

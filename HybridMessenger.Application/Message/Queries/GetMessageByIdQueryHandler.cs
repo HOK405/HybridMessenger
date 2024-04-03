@@ -26,6 +26,5 @@ namespace HybridMessenger.Application.Message.Queries
 
             return message;
         }
-
     }
 }

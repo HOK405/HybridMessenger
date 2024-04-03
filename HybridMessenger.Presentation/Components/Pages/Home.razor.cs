@@ -19,7 +19,7 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private async Task HandleLogin()
         {
-            var response = await Http.PostAsJsonAsync("https://localhost:44314/api/User/login", loginModel);
+            var response = await Http.PostAsJsonAsync("api/User/login", loginModel);
 
             if (response.IsSuccessStatusCode)
             {

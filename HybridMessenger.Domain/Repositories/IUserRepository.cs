@@ -6,6 +6,5 @@ namespace HybridMessenger.Domain.Repositories
     {
         Task<User> GetByIdAsync(Guid id);
         Task<User> GetUserByEmailAsync(string email);
-        Task<User> VerifyUserByEmailAndPasswordAsync(string email, string password);
     }
 }

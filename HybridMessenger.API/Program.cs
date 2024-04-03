@@ -26,10 +26,12 @@ namespace HybridMessenger.API
             builder.Services.AddApplication();
 
             builder.Services.AddDbContext<ApiDbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); // Should be from configuration
 
             // Configure JWT Authentication
-            var key = Encoding.ASCII.GetBytes("MyVeryVeryVeryLongSecretAndItShouldBePlacedSomewhereInSafePlace"); 
+            var keyString = builder.Configuration["JwtKey"]; // Should be from configuration
+            var key = Encoding.ASCII.GetBytes(keyString);
+
             builder.Services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

@@ -16,12 +16,13 @@ namespace HybridMessenger.API.Controllers
     public class UserController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly IConfiguration _configuration;
 
-        public UserController(IMediator mediator)
+        public UserController(IMediator mediator, IConfiguration configuration)
         {
             _mediator = mediator;
+            _configuration = configuration;
         }
-
 
         [HttpGet("get-user")]
         public async Task<ActionResult> GetUser([FromQuery] GetUserByIdQuery command)
@@ -67,11 +68,13 @@ namespace HybridMessenger.API.Controllers
             }
         }
 
-
         private string GenerateJwtToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("MyVeryVeryVeryLongSecretAndItShouldBePlacedSomewhereInSafePlace"); // store somewhere in secure place
+
+            var keyString = _configuration["JwtKey"]; // Get the secret key
+            var key = Encoding.ASCII.GetBytes(keyString);
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(
