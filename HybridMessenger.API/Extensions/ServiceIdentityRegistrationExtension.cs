@@ -22,6 +22,7 @@ namespace HybridMessenger.API.Extensions
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = true;
                 options.Password.RequiredLength = 6;
+
             })
              .AddEntityFrameworkStores<ApiDbContext>()
              .AddDefaultTokenProviders();

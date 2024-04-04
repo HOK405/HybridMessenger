@@ -1,7 +1,8 @@
 ﻿using HybridMessenger.Presentation.Models;
+using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace HybridMessenger.Presentation.Components.Pages
 {
@@ -10,7 +11,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         [Inject]
         private IJSRuntime JSRuntime { get; set; }
         [Inject]
-        private HttpClient Http { get; set; }
+        private IHttpService HttpService { get; set; }
 
         private RegisterModel registerModel = new RegisterModel();
         private string registerResult;
@@ -18,22 +19,30 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private async Task HandleRegister()
         {
-            var response = await Http.PostAsJsonAsync("api/User/register", registerModel);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>();
-                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", tokenResponse.Token);
-                registerResult = "Registered successfully!";
+                var tokenResponse = await HttpService.PostAsync<TokenResponse>("api/User/register", registerModel);
+                if (tokenResponse != null && !string.IsNullOrWhiteSpace(tokenResponse.Token))
+                {
+                    await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", tokenResponse.Token);
+                    registerResult = "Registered successfully!";
+                }
+                else
+                {
+                    registerResult = "Registration failed: The server responded with an unexpected status.";
+                }
             }
-            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            catch (HttpRequestException ex)
             {
-                var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
-                registerResult = $"Registration failed: {errorResponse.Error}";
+                registerResult = $"Registration failed: {ex.Message}";
             }
-            else
+            catch (NotSupportedException)
             {
-                registerResult = "An unexpected error occurred during registration.";
+                registerResult = "Registration failed: Unsupported content type.";
+            }
+            catch (JsonException)
+            {
+                registerResult = "Registration failed: Invalid JSON data.";
             }
         }
 

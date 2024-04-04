@@ -1,14 +1,15 @@
 ﻿using HybridMessenger.Presentation.Models;
+using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace HybridMessenger.Presentation.Components.Pages
 {
     public partial class Home
     {
         [Inject]
-        private HttpClient Http { get; set; }
+        private IHttpService HttpService { get; set; }
 
         [Inject]
         private IJSRuntime JSRuntime { get; set; }
@@ -19,18 +20,30 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private async Task HandleLogin()
         {
-            var response = await Http.PostAsJsonAsync("api/User/login", loginModel);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>();
-                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", tokenResponse.Token);
-                loginResult = "Logged in successfully!";
-                // Redirect???????????????????
+                var tokenResponse = await HttpService.PostAsync<TokenResponse>("api/User/login", loginModel);
+                if (tokenResponse != null && !string.IsNullOrWhiteSpace(tokenResponse.Token))
+                {
+                    await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", tokenResponse.Token);
+                    loginResult = "Logged in successfully!";
+                }
+                else
+                {
+                    loginResult = "You aren't logged in. Incorrect email or password.";
+                }
             }
-            else
+            catch (HttpRequestException ex)
             {
-                loginResult = "You aren't logged in. Incorrect email or password.";
+                loginResult = $"Login failed: {ex.Message}";
+            }
+            catch (NotSupportedException)
+            {
+                loginResult = "Error: The content type is not supported.";
+            }
+            catch (JsonException)
+            {
+                loginResult = "Error: Problem with JSON data.";
             }
         }
 

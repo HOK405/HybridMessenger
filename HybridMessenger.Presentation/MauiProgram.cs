@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using HybridMessenger.Presentation.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace HybridMessenger.Presentation
@@ -25,6 +26,8 @@ namespace HybridMessenger.Presentation
             }
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBaseAddress) });
+
+            builder.Services.AddScoped<IHttpService, HttpService>();
 
             builder.Services.AddMauiBlazorWebView();
 
