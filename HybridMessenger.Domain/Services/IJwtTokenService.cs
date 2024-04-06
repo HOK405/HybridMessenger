@@ -4,6 +4,7 @@ namespace HybridMessenger.Domain.Services
 {
     public interface IJwtTokenService
     {
-        string GenerateToken(User user);
+        Task<string> GenerateAccessToken(User user);
+        Task<string> GenerateRefreshToken(User user);
     }
 }

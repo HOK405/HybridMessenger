@@ -1,9 +1,14 @@
-﻿namespace HybridMessenger.Domain.Services
+﻿using HybridMessenger.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+
+namespace HybridMessenger.Domain.Services
 {
     public interface IUserIdentityService
     {
-        Task CreateUserAsync(Entities.User user, string password);
-        Task<Entities.User> VerifyUserByEmailAndPasswordAsync(string email, string password);
-        Task<Entities.User> GetUserByIdAsync(Guid id);
+        Task<IdentityResult> CreateUserAsync(User user, string password);
+        Task<User> VerifyUserByEmailAndPasswordAsync(string email, string password);
+        Task<User> GetUserByIdAsync(Guid id);
+        Task<IdentityResult> AddRoleAsync(User user, string role);
+        Task<IList<string>> GetRolesAsync(User user);
     }
 }

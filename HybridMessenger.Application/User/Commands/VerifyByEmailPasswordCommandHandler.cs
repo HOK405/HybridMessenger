@@ -3,7 +3,7 @@ using MediatR;
 
 namespace HybridMessenger.Application.User.Commands
 {
-    public class VerifyByEmailPasswordCommandHandler : IRequestHandler<VerifyByEmailPasswordCommand, string>
+    public class VerifyByEmailPasswordCommandHandler : IRequestHandler<VerifyByEmailPasswordCommand, (string, string)>
     {
         private readonly IUserIdentityService _userService;
         private readonly IJwtTokenService _jwtTokenService;
@@ -14,18 +14,16 @@ namespace HybridMessenger.Application.User.Commands
             _jwtTokenService = jwtTokenService;
         }
 
-        public async Task<string> Handle(VerifyByEmailPasswordCommand request, CancellationToken cancellationToken)
+        public async Task<(string, string)> Handle(VerifyByEmailPasswordCommand request, CancellationToken cancellationToken)
         {
             var user =  await _userService.VerifyUserByEmailAndPasswordAsync(request.Email, request.Password);
 
-            if (user is not null)
+            if (user == null)
             {
-                return _jwtTokenService.GenerateToken(user);
+                throw new ArgumentNullException(nameof(user));
             }
-            else
-            {
-                return null;
-            }
+
+            return (await _jwtTokenService.GenerateAccessToken(user), await _jwtTokenService.GenerateRefreshToken(user));
         }
     }
 }

@@ -13,7 +13,7 @@ namespace HybridMessenger.Infrastructure.Services
             _userManager = userManager;
         }
 
-        public async Task CreateUserAsync(User user, string password)
+        public async Task<IdentityResult> CreateUserAsync(User user, string password)
         {
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
@@ -21,6 +21,8 @@ namespace HybridMessenger.Infrastructure.Services
                 var errors = string.Join("; ", result.Errors.Select(e => e.Description));
                 throw new ArgumentException($"User creation failed: {errors}");
             }
+
+            return result;
         }
 
         public async Task<User> VerifyUserByEmailAndPasswordAsync(string email, string password)
@@ -51,6 +53,23 @@ namespace HybridMessenger.Infrastructure.Services
             }
 
             return user;
+        }
+
+        public async Task<IdentityResult> AddRoleAsync(User user, string role)
+        {
+            try
+            {
+                return await _userManager.AddToRoleAsync(user, role);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<IList<string>> GetRolesAsync(User user)
+        {
+            return await _userManager.GetRolesAsync(user);
         }
     }
 }

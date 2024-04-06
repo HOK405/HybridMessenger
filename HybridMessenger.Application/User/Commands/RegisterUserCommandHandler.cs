@@ -3,10 +3,11 @@ using MediatR;
 
 namespace HybridMessenger.Application.User.Commands
 {
-    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, string> 
+    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, (string,string)> 
     {
         private readonly IUserIdentityService _userService;
-        private readonly IJwtTokenService _jwtTokenService; 
+        private readonly IJwtTokenService _jwtTokenService;
+        const string _defaultUserRole = "Default";
 
         public RegisterUserCommandHandler(IUserIdentityService userService, IJwtTokenService jwtTokenService)
         {
@@ -14,7 +15,7 @@ namespace HybridMessenger.Application.User.Commands
             _jwtTokenService = jwtTokenService;
         }
 
-        public async Task<string> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+        public async Task<(string, string)> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             var user = new Domain.Entities.User
             {
@@ -26,9 +27,12 @@ namespace HybridMessenger.Application.User.Commands
 
             await _userService.CreateUserAsync(user, request.Password);
 
-            var token = _jwtTokenService.GenerateToken(user);
+            await _userService.AddRoleAsync(user, _defaultUserRole);
 
-            return token;
+            var accessToken = await _jwtTokenService.GenerateAccessToken(user);
+            var refreshToken = await _jwtTokenService.GenerateRefreshToken(user);
+
+            return (accessToken, refreshToken);
         }
     }
 }

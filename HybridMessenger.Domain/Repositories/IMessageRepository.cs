@@ -2,7 +2,7 @@
 
 namespace HybridMessenger.Domain.Repositories
 {
-    public interface IMessageRepository : IRepository<Message>
+    public interface IMessageRepository : IGenericRepository<Message>
     {
         Task<Message> GetByIdAsync(int id);
     }

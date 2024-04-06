@@ -22,9 +22,11 @@ namespace HybridMessenger.Presentation.Components.Pages
             try
             {
                 var tokenResponse = await HttpService.PostAsync<TokenResponse>("api/User/register", registerModel);
-                if (tokenResponse != null && !string.IsNullOrWhiteSpace(tokenResponse.Token))
+                if (tokenResponse != null && !string.IsNullOrWhiteSpace(tokenResponse.AccessToken) && !string.IsNullOrWhiteSpace(tokenResponse.RefreshToken))
                 {
-                    await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", tokenResponse.Token);
+                    await JSRuntime.InvokeVoidAsync("localStorage.setItem", "accessToken", tokenResponse.AccessToken);
+                    await JSRuntime.InvokeVoidAsync("localStorage.setItem", "refreshToken", tokenResponse.RefreshToken);
+
                     registerResult = "Registered successfully!";
                 }
                 else
@@ -45,10 +47,18 @@ namespace HybridMessenger.Presentation.Components.Pages
                 registerResult = "Registration failed: Invalid JSON data.";
             }
         }
+        private async Task DeleteJwtFromLocalStorage()
+        {
+            await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "accessToken");
+            await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "refreshToken");
+
+            registerResult = "Logged out successfully.";
+        }
 
         private class TokenResponse
         {
-            public string Token { get; set; }
+            public string AccessToken { get; set; }
+            public string RefreshToken { get; set; }
         }
 
         private class ErrorResponse

@@ -15,30 +15,50 @@ namespace HybridMessenger.API.Extensions
         public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             // Configure JWT Authentication
-            var key = Encoding.ASCII.GetBytes(configuration["JwtKey"]);
+            var key = Encoding.ASCII.GetBytes(configuration["JwtSettings:Key"]);
+            var audience = configuration["JwtSettings:Audience"];
+            var issuer = configuration["JwtSettings:Issuer"];
 
+            // Validate key
             if (key is null || key.Length == 0)
             {
-                throw new ArgumentNullException("JwtKey", "JWT Key must not be null or empty.");
+                throw new ArgumentNullException("JwtSettings:Key", "JWT Key must not be null or empty.");
             }
+
+            // Validate audience
+            if (string.IsNullOrWhiteSpace(audience))
+            {
+                throw new ArgumentNullException("JwtSettings:Audience", "Audience must not be null or empty.");
+            }
+
+            // Validate issuer
+            if (string.IsNullOrWhiteSpace(issuer))
+            {
+                throw new ArgumentNullException("JwtSettings:Issuer", "Issuer must not be null or empty.");
+            }
+
 
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(x =>
             {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
                 };
             });
+
+            services.AddAuthorization();
 
             return services;
         }

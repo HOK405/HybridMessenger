@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HybridMessenger.Infrastructure.UnitOfWork
 {
-    public class GenericRepository<T> : IRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         protected readonly ApiDbContext _context;
 
@@ -11,6 +11,11 @@ namespace HybridMessenger.Infrastructure.UnitOfWork
         {
             _context = context;
         }
+
+/*        public async Task<T> GetByIdAsync(int ind)
+        {
+            return await _context.Set<T>().FirstOrDefault(x => x.Id);
+        }*/
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
@@ -30,6 +35,11 @@ namespace HybridMessenger.Infrastructure.UnitOfWork
         public void Remove(T entity)
         {
             _context.Set<T>().Remove(entity);
+        }
+
+        public Task<T> GetByIdAsync(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

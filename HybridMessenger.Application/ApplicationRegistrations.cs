@@ -8,6 +8,8 @@ namespace HybridMessenger.Application
         {
             var assembly = typeof(ApplicationRegistrations).Assembly;
 
+            services.AddAutoMapper(assembly);
+
             services.AddMediatR(configuration =>
                 configuration.RegisterServicesFromAssembly(assembly));
 

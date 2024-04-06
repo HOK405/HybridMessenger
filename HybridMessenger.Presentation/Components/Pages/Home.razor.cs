@@ -23,9 +23,11 @@ namespace HybridMessenger.Presentation.Components.Pages
             try
             {
                 var tokenResponse = await HttpService.PostAsync<TokenResponse>("api/User/login", loginModel);
-                if (tokenResponse != null && !string.IsNullOrWhiteSpace(tokenResponse.Token))
+                if (tokenResponse != null && !string.IsNullOrWhiteSpace(tokenResponse.AccessToken) && !string.IsNullOrWhiteSpace(tokenResponse.RefreshToken))
                 {
-                    await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", tokenResponse.Token);
+                    await JSRuntime.InvokeVoidAsync("localStorage.setItem", "accessToken", tokenResponse.AccessToken);
+                    await JSRuntime.InvokeVoidAsync("localStorage.setItem", "refreshToken", tokenResponse.RefreshToken);
+
                     loginResult = "Logged in successfully!";
                 }
                 else
@@ -49,13 +51,16 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private async Task DeleteJwtFromLocalStorage()
         {
-            await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "authToken");
+            await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "accessToken");
+            await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "refreshToken");
+
             loginResult = "Logged out successfully.";
         }
 
         private class TokenResponse
         {
-            public string Token { get; set; }
+            public string AccessToken { get; set; }
+            public string RefreshToken { get; set; }
         }
     }
 }
