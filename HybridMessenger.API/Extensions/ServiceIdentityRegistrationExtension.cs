@@ -7,7 +7,7 @@ namespace HybridMessenger.API.Extensions
     public static class ServiceIdentityRegistrationExtension
     {
         /// <summary>
-        /// This extension is for registration identity and 
+        /// This extension is for registration identity and user properties (Unique email, password and so on).
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>

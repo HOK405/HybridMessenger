@@ -23,26 +23,11 @@ namespace HybridMessenger.API
             builder.Services.AddDbContext<ApiDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddSwaggerGen(options =>
-            {
-                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-                {
-                    Description = "Please provide a valid token",
-                    In = ParameterLocation.Header,
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    BearerFormat = "JWT",
-                    Scheme = "Bearer"
-                });
-
-                options.OperationFilter<SecurityRequirementsOperationFilter>();
-            });
-
             // Custom extensions
+            builder.Services.AddSwaggerSecuritySetup();
             builder.Services.AddServices();
             builder.Services.AddIdentity();
             builder.Services.AddJwtAuthentication(builder.Configuration);
-
 
             var app = builder.Build();
 
