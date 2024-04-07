@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HybridMessenger.Infrastruct
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "HybricMessenger.Database", "HybricMessenger.Database\HybricMessenger.Database.sqlproj", "{A1BBD371-3AFC-4128-A1CB-C1DB60AF5AE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HybridMessenger.Presentation", "HybridMessenger.Presentation\HybridMessenger.Presentation.csproj", "{86E45A4E-A265-49FA-8F31-BD608C8574DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HybridMessenger.Presentation", "HybridMessenger.Presentation\HybridMessenger.Presentation.csproj", "{86E45A4E-A265-49FA-8F31-BD608C8574DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,39 @@
+﻿@page "/users"
+@using YourProjectNamespace.DataModels // Adjust to your actual namespace
+@inject HttpClient Http
+
+<h3>All Users</h3>
+
+<Blazorise.DataGrid
+    ReadData="LoadUsers"
+    TotalItems="totalUsers"
+    Sortable="true"
+    Editable="false"
+    Filterable="false"
+    >
+    <DataGridColumns>
+        <DataGridColumn Field="@nameof(UserDto.UserName)" Caption="Username" Sortable="true" />
+        <DataGridColumn Field="@nameof(UserDto.Email)" Caption="Email" Sortable="true" />
+        <DataGridColumn Field="@nameof(UserDto.CreatedAt)" Caption="Created At" Sortable="true" />
+        <DataGridColumn Field="@nameof(UserDto.PhoneNumber)" Caption="Phone Number" Sortable="true" />
+    </DataGridColumns>
+</Blazorise.DataGrid>
+
+@code {
+    private List<UserDto> users = new List<UserDto>();
+    private int totalUsers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers(new DataGridReadDataEventArgs<UserDto>(1, 25, null, null, null));
+    }
+
+    private async Task LoadUsers(DataGridReadDataEventArgs<UserDto> e)
+    {
+        // Construct your API request here based on sorting parameters e.SortBy, e.SortDirection, etc.
+        // For simplicity, I'm directly calling the HttpClient without parameters
+        var response = await Http.GetFromJsonAsync<IEnumerable<UserDto>>("api/get-paged-users");
+        users = response?.ToList() ?? new List<UserDto>();
+        totalUsers = users.Count; // Consider updating this to reflect the total available users, not just the loaded subset
+    }
+}

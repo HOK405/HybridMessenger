@@ -2,9 +2,8 @@
 
 namespace HybridMessenger.Domain.Repositories
 {
-    public interface IUserRepository : IGenericRepository<User>
+    public interface IUserRepository : IRepository<User, Guid>
     {
-        Task<User> GetByIdAsync(Guid id);
-        Task<User> GetUserByEmailAsync(string email);
+        Task<string> FindEmailByUsernameAsync(string username);
     }
 }

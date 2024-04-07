@@ -2,10 +2,12 @@
 
 namespace HybridMessenger.Domain.UnitOfWork
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork
     {
-        IGenericRepository<T> Repository<T>() where T : class;
+        TRepository GetRepository<TRepository>() where TRepository : class;
 
-        Task<int> CommitAsync();
+        IRepository<T, TKey> GetRepositoryForEntity<T, TKey>() where T : class;
+
+        Task<int> SaveChangesAsync();
     }
 }

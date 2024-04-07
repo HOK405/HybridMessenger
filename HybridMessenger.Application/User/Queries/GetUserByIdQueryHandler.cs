@@ -6,7 +6,7 @@ using MediatR;
 
 namespace HybridMessenger.Application.User.Queries
 {
-    public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDto>
+    public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, DTOs.UserDto>
     {
         private readonly IUserIdentityService _userService;
         private readonly IMapper _mapper;
@@ -17,7 +17,7 @@ namespace HybridMessenger.Application.User.Queries
             _mapper = mapper;
         }
 
-        public async Task<UserDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+        public async Task<DTOs.UserDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
             var user = await _userService.GetUserByIdAsync(request.Id);
 

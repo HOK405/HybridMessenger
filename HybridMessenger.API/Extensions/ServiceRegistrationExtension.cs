@@ -1,5 +1,7 @@
-﻿using HybridMessenger.Domain.Services;
+﻿using HybridMessenger.Domain.Repositories;
+using HybridMessenger.Domain.Services;
 using HybridMessenger.Domain.UnitOfWork;
+using HybridMessenger.Infrastructure.Repositories;
 using HybridMessenger.Infrastructure.Services;
 using HybridMessenger.Infrastructure.UnitOfWork;
 
@@ -15,6 +17,8 @@ namespace HybridMessenger.API.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
 
             services.AddScoped<IUserIdentityService, UserIdentityService>();
 

@@ -3,56 +3,42 @@ using HybridMessenger.Domain.Repositories;
 using HybridMessenger.Domain.UnitOfWork;
 using HybridMessenger.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HybridMessenger.Infrastructure.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly ApiDbContext _context;
-        private readonly Dictionary<Type, object> _repositories = new();
+        private readonly IServiceProvider _serviceProvider;
 
-        public UnitOfWork(ApiDbContext context)
+        public UnitOfWork(IServiceProvider serviceProvider)
         {
-            _context = context;
+            _serviceProvider = serviceProvider;
         }
 
-        public IGenericRepository<T> GetRepository<T>() where T : class
+        public TRepository GetRepository<TRepository>() where TRepository : class
         {
-            var type = typeof(T);
-            if (!_repositories.ContainsKey(type))
+            var repositoryInstance = _serviceProvider.GetService<TRepository>();
+            if (repositoryInstance == null)
             {
-                var repositoryType = typeof(IGenericRepository<>).MakeGenericType(typeof(T));
-                var repositoryInstance = Activator.CreateInstance(typeof(UserRepository), _context);
-                _repositories[type] = repositoryInstance;
+                throw new InvalidOperationException($"Repository not registered for type {typeof(TRepository).Name}");
             }
-            return (IGenericRepository<T>)_repositories[type];
+            return repositoryInstance;
         }
 
-        private object CreateSpecificRepository<T>() where T : class
+        public IRepository<T, TKey> GetRepositoryForEntity<T, TKey>() where T : class
         {
-            // Attempt to find a custom repository type.
-            var customRepoType = typeof(IGenericRepository<>).Assembly.GetTypes()
-                .FirstOrDefault(t => typeof(IGenericRepository<T>).IsAssignableFrom(t) && !t.IsInterface);
-
-            if (customRepoType != null)
+            var entityType = typeof(T);
+            var repositoryType = typeof(IRepository<,>).MakeGenericType(entityType, typeof(TKey));
+            var repositoryInstance = _serviceProvider.GetService(repositoryType);
+            if (repositoryInstance == null)
             {
-                return Activator.CreateInstance(customRepoType, _context);
+                throw new InvalidOperationException($"Repository not registered for entity type {entityType.Name}");
             }
-
-            return null;
+            return (IRepository<T, TKey>)repositoryInstance;
         }
 
-        public async Task<int> CommitAsync()
-        {
-            return await _context.SaveChangesAsync();
-        }
-
-        public void Dispose()
-        {
-            _context.Dispose();
-        }
-
-        public IGenericRepository<T> Repository<T>() where T : class
+        public Task<int> SaveChangesAsync()
         {
             throw new NotImplementedException();
         }

@@ -21,10 +21,27 @@ namespace HybridMessenger.API.Controllers
         [HttpGet("get-user")]
         public async Task<ActionResult> GetUser([FromQuery] GetUserByIdQuery command)
         {
-            var result = await _mediator.Send(command);
+            var userResult = await _mediator.Send(command);
+
+            return Ok(userResult);
+        }
+
+        [HttpGet("get-email")]
+        public async Task<ActionResult> GetEmailByUsername([FromQuery] GetEmailByUsernameQuery query)
+        {
+            var result = await _mediator.Send(query);
 
             return Ok(result);
         }
+
+        [HttpPost("get-paged-users")]
+        public async Task<ActionResult> GetPagedUsers([FromBody] GetPagedUsersQuery query)
+        {
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
+        }
+
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterUserCommand command)
@@ -59,6 +76,13 @@ namespace HybridMessenger.API.Controllers
             }
         }
 
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            return Ok(result);
+        }
 
         /*[HttpPost("create-role")]
         public async Task<IActionResult> CreateRole(string roleName)

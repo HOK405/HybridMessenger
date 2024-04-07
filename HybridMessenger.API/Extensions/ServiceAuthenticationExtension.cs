@@ -55,6 +55,7 @@ namespace HybridMessenger.API.Extensions
                     ValidateIssuer = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero
                 };
             });
 

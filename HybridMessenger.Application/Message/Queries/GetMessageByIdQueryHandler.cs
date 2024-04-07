@@ -15,7 +15,9 @@ namespace HybridMessenger.Application.Message.Queries
 
         public async Task<Domain.Entities.Message> Handle(GetMessageByIdQuery request, CancellationToken cancellationToken)
         {
-            var messageRepository = _unitOfWork.Repository<Domain.Entities.Message>() as IMessageRepository;
+            var messageRepository = _unitOfWork.GetRepository<IMessageRepository>();
+
+            var repo = _unitOfWork.GetRepositoryForEntity<Domain.Entities.Message, int>();
 
             if (messageRepository == null)
             {

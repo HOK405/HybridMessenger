@@ -1,24 +1,21 @@
-﻿using HybridMessenger.Domain.Entities;
-using HybridMessenger.Domain.Repositories;
+﻿using HybridMessenger.Domain.Repositories;
 using HybridMessenger.Infrastructure.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 namespace HybridMessenger.Infrastructure.Repositories
 {
-    public class UserRepository : GenericRepository<User>, IUserRepository
+    public class UserRepository : Repository<Domain.Entities.User, Guid>, IUserRepository
     {
-        public UserRepository(ApiDbContext context) : base(context)
-        {
-        }
+        public UserRepository(ApiDbContext context) : base(context) { }
 
-        public async Task<User> GetByIdAsync(Guid id)
+        public async Task<string> FindEmailByUsernameAsync(string username)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
-        }
+            var userEmail = await _context.Users
+                .Where(u => u.UserName == username) 
+                .Select(u => u.Email)
+                .FirstOrDefaultAsync();
 
-        public async Task<User> GetUserByEmailAsync(string email)
-        {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return userEmail; 
         }
     }
 }
