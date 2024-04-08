@@ -10,7 +10,7 @@ namespace HybridMessenger.API.Extensions
     public static class ServiceRegistrationExtension
     {
         /// <summary>
-        /// This extension is for registration different services like UnitOfWok, UserManager and so on
+        /// This extension is for registration different services like UnitOfWok, UserManager and so on.
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
@@ -19,6 +19,10 @@ namespace HybridMessenger.API.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IContactRepository, ContactRepository>();
+            services.AddScoped<IChatMemberRepository, ChatMemberRepository>();
+            services.AddScoped<IChatRepository, ChatRepository>();
+
 
             services.AddScoped<IUserIdentityService, UserIdentityService>();
 

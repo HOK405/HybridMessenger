@@ -2,8 +2,6 @@ using HybridMessenger.API.Extensions;
 using HybridMessenger.Application;
 using HybridMessenger.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
 
 namespace HybridMessenger.API
 {

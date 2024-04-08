@@ -1,8 +1,4 @@
-﻿using HybridMessenger.Domain.Entities;
-using HybridMessenger.Domain.Repositories;
-using HybridMessenger.Domain.UnitOfWork;
-using HybridMessenger.Infrastructure.Repositories;
-using Microsoft.AspNetCore.Identity;
+﻿using HybridMessenger.Domain.UnitOfWork;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HybridMessenger.Infrastructure.UnitOfWork
@@ -10,6 +6,7 @@ namespace HybridMessenger.Infrastructure.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly IServiceProvider _serviceProvider;
+        private bool _disposed = false; 
 
         public UnitOfWork(IServiceProvider serviceProvider)
         {
@@ -26,21 +23,35 @@ namespace HybridMessenger.Infrastructure.UnitOfWork
             return repositoryInstance;
         }
 
-        public IRepository<T, TKey> GetRepositoryForEntity<T, TKey>() where T : class
+        public async Task<int> SaveChangesAsync()
         {
-            var entityType = typeof(T);
-            var repositoryType = typeof(IRepository<,>).MakeGenericType(entityType, typeof(TKey));
-            var repositoryInstance = _serviceProvider.GetService(repositoryType);
-            if (repositoryInstance == null)
+            var dbContext = _serviceProvider.GetService<ApiDbContext>();
+            if (dbContext == null)
             {
-                throw new InvalidOperationException($"Repository not registered for entity type {entityType.Name}");
+                throw new InvalidOperationException("DbContext not registered in the service provider");
             }
-            return (IRepository<T, TKey>)repositoryInstance;
+
+            return await dbContext.SaveChangesAsync();
         }
 
-        public Task<int> SaveChangesAsync()
+        protected virtual void Dispose(bool disposing)
         {
-            throw new NotImplementedException();
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    var dbContext = _serviceProvider.GetService<ApiDbContext>();
+                    dbContext?.Dispose();
+                }
+
+                _disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

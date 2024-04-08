@@ -1,5 +1,8 @@
-.white-text-data-grid .b-datagrid-cell,
-.white-text-data-grid .b-datagrid-header {
-    color: white !important;
-    background-color: white !important;
+body{
+    color:blue;
+    
+}
+
+th{
+    color:white;
 }

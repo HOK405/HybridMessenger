@@ -1,7 +1,7 @@
 ﻿using HybridMessenger.Application.User.DTOs;
 using AutoMapper;
 
-namespace HybridMessenger.Application.Common.Profiles
+namespace HybridMessenger.Application.Shared.Profiles
 {
     public class UserProfile : Profile
     {

@@ -16,4 +16,11 @@
     <ProjectReference Include="..\HybridMessenger.Domain\HybridMessenger.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Message\" />
+    <Folder Include="Contact\" />
+    <Folder Include="ChatMember\" />
+    <Folder Include="Chat\" />
+  </ItemGroup>
+
 </Project>

@@ -30,28 +30,11 @@ namespace HybridMessenger.Application.User.Queries
 
             var userRepository = _unitOfWork.GetRepository<IUserRepository>();
 
-            var query = await userRepository.GetPagedAsync(request.PageNumber, request.PageSize, request.SortBy, request.Ascending);
+            var query = await userRepository.GetPagedAsync(request.PageNumber, request.PageSize, request.SortBy, request.SearchValue, request.Ascending);
 
             var queryDto = query.ProjectTo<UserDto>(_mapper.ConfigurationProvider);
 
             return queryDto;
         }
-
-
-        /*public async Task<IQueryable<Domain.Entities.User>> Handle(GetPagedUsersQuery request, CancellationToken cancellationToken)
-        {
-            var validSortProperty = typeof(Domain.Entities.User).GetProperty(request.SortBy, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-
-            if (validSortProperty == null)
-            {
-                throw new ArgumentException($"Invalid sort property: {request.SortBy}");
-            }
-
-            var userRepostitory = _unitOfWork.GetRepository<IUserRepository>();
-
-            var query = await userRepostitory.GetPagedAsync(request.PageNumber, request.PageSize, request.SortBy, request.Ascending);
-
-            return query;
-        }*/
     }
 }
