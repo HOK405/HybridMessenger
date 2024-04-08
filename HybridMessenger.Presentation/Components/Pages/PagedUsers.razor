@@ -1,19 +1,23 @@
 ﻿@page "/users"
+@using Blazorise
+@using Blazorise.DataGrid
 
 <h3>All Users</h3>
 
 <button class="btn btn-secondary" @onclick="LoadUsers">GetUsers</button>
 
-<Blazorise.DataGrid TItem="UserDto"
-                    ReadData="LoadUsers"
-                    TotalItems="totalUsers"
-                    Sortable="true"
-                    Editable="false"
-                    Filterable="false">
+<DataGrid TItem="UserResponse"
+          ReadData="LoadUsers"
+          Data="@users"
+          TotalItems="totalUsers"
+          Sortable="true"
+          Editable="false"
+          Filterable="false"
+          Class="white-text-data-grid">
     <DataGridColumns>
         <DataGridColumn TItem="UserResponse" Field="@nameof(UserResponse.UserName)" Caption="Username" Sortable="true" />
         <DataGridColumn TItem="UserResponse" Field="@nameof(UserResponse.Email)" Caption="Email" Sortable="true" />
         <DataGridColumn TItem="UserResponse" Field="@nameof(UserResponse.CreatedAt)" Caption="Created At" Sortable="true" />
         <DataGridColumn TItem="UserResponse" Field="@nameof(UserResponse.PhoneNumber)" Caption="Phone Number" Sortable="true" />
     </DataGridColumns>
-</Blazorise.DataGrid>
+</DataGrid>
