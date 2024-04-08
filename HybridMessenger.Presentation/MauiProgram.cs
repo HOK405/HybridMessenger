@@ -1,4 +1,7 @@
-﻿using HybridMessenger.Presentation.Services;
+﻿using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
+using HybridMessenger.Presentation.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -30,6 +33,14 @@ namespace HybridMessenger.Presentation
             builder.Services.AddScoped<IHttpService, HttpService>();
 
             builder.Services.AddMauiBlazorWebView();
+
+            builder.Services
+                    .AddBlazorise(options =>
+                    {
+                        options.Immediate = true;
+                    })
+                    .AddBootstrapProviders()
+                    .AddFontAwesomeIcons();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();

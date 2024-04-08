@@ -1,0 +1,66 @@
+﻿@page "/users2"
+
+@if (users == null || !users.Any())
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th @onclick="@(() => SortUsers(nameof(UserResponse.UserName)))">Username</th>
+                <th @onclick="@(() => SortUsers(nameof(UserResponse.Email)))">Email</th>
+                <th @onclick="@(() => SortUsers(nameof(UserResponse.CreatedAt)))">Created At</th>
+                <th @onclick="@(() => SortUsers(nameof(UserResponse.PhoneNumber)))">Phone Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.UserName</td>
+                    <td>@user.Email</td>
+                    <td>@user.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    <td>@user.PhoneNumber</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button class="btn btn-primary" @onclick="PreviousPage" disabled="@IsFirstPage">Previous</button>
+    <button class="btn btn-primary" @onclick="NextPage" disabled="@IsLastPage">Next</button>
+}
+
+@code {
+    private bool IsFirstPage => sortModel.PageNumber == 1;
+    private bool IsLastPage => users.Count < sortModel.PageSize;
+
+    private void SortUsers(string sortBy)
+    {
+        if (sortModel.SortBy == sortBy)
+        {
+            sortModel.Ascending = !sortModel.Ascending;
+        }
+        else
+        {
+            sortModel.SortBy = sortBy;
+            sortModel.Ascending = true;
+        }
+
+        LoadUsers();
+    }
+
+    private void NextPage()
+    {
+        sortModel.PageNumber++;
+        LoadUsers();
+    }
+
+    private void PreviousPage()
+    {
+        if (IsFirstPage) return;
+        sortModel.PageNumber--;
+        LoadUsers();
+    }
+}
