@@ -6,3 +6,22 @@ body{
 th{
     color:white;
 }
+
+.input-area{
+    width: 50%;
+    margin: auto;
+}
+
+.user-full-width-button {
+    width: 100%;
+    background-color: #6c757d;
+}
+
+.form-group
+{
+    padding-bottom: 10px;
+}
+
+    .form-group label {
+        font-size: 1.2rem; 
+    }

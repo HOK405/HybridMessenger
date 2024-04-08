@@ -1,5 +1,4 @@
-﻿using Blazorise.DataGrid;
-using HybridMessenger.Presentation.Models;
+﻿using HybridMessenger.Presentation.Models;
 using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components;
 
@@ -12,13 +11,7 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private List<UserResponse> users = new List<UserResponse>();
         private int totalUsers;
-        private UserSortParametersModel sortModel;
-
-        protected override async Task OnInitializedAsync()
-        {
-            sortModel = new UserSortParametersModel() { PageNumber = 1, PageSize = 5, SortBy = "Id", Ascending = true};
-            await LoadUsers();
-        }
+        private UserSortParametersModel sortModel = new() { PageNumber = 1, PageSize =  5, SortBy = "CreatedAt", SearchValue = ""};
 
         private async Task LoadUsers()
         {
