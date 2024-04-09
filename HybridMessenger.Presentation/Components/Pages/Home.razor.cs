@@ -1,6 +1,8 @@
-﻿using HybridMessenger.Presentation.Models;
+﻿using HybridMessenger.Presentation.Auth;
+using HybridMessenger.Presentation.Models;
 using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using System.Text.Json;
 
@@ -8,6 +10,10 @@ namespace HybridMessenger.Presentation.Components.Pages
 {
     public partial class Home
     {
+        [Inject]
+        NavigationManager NavigationManager { get; set; }
+        [Inject]
+        AuthenticationStateProvider AuthenticationStateProvider { get; set; }
         [Inject]
         private IHttpService HttpService { get; set; }
 
@@ -29,6 +35,8 @@ namespace HybridMessenger.Presentation.Components.Pages
                     await JSRuntime.InvokeVoidAsync("localStorage.setItem", "refreshToken", tokenResponse.RefreshToken);
 
                     loginResult = "Logged in successfully!";
+                    ((CustomAuthStateProvider)AuthenticationStateProvider).NotifyUserAuthentication(tokenResponse.AccessToken);
+                    NavigationManager.NavigateTo("/users", true);
                 }
                 else
                 {
@@ -46,15 +54,7 @@ namespace HybridMessenger.Presentation.Components.Pages
             catch (JsonException)
             {
                 loginResult = "Error: Problem with JSON data.";
-            }
-        }
-
-        private async Task DeleteJwtFromLocalStorage()
-        {
-            await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "accessToken");
-            await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "refreshToken");
-
-            loginResult = "Logged out successfully.";
+            }       
         }
 
         private class TokenResponse

@@ -7,5 +7,6 @@
         public string SortBy { get; set; }
         public string SearchValue { get; set; }
         public bool Ascending { get; set; }
+        public string[] Fields { get; set; }
     }
 }

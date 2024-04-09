@@ -34,7 +34,7 @@ namespace HybridMessenger.Infrastructure.UnitOfWork
             return await dbContext.SaveChangesAsync();
         }
 
-        protected virtual void Dispose(bool disposing)
+/*        protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
             {
@@ -52,6 +52,6 @@ namespace HybridMessenger.Infrastructure.UnitOfWork
         {
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
-        }
+        }*/
     }
 }
