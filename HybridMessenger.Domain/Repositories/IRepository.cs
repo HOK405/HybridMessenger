@@ -12,6 +12,12 @@
         void Update(T entity);
         void Remove(T entity);
 
-        Task<IQueryable<T>> GetPagedAsync(int pageNumber, int pageSize, string sortBy, string searchValue, bool ascending);
+        Task<IQueryable<T>> GetPagedAsync(
+            int pageNumber, 
+            int pageSize, 
+            string sortBy,
+            Dictionary<string, object> filters,
+            string searchValue,          
+            bool ascending);
     }
 }

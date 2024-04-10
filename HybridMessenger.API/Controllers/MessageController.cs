@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using HybridMessenger.Application.Message.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HybridMessenger.API.Controllers
@@ -15,9 +16,9 @@ namespace HybridMessenger.API.Controllers
         }
 
         [HttpGet("get-messages")]
-        public async Task<ActionResult> GetUserMessages(GetUserMessagesQuery query)
+        public async Task<ActionResult> GetUserMessages(GetPagedUserMessagesQuery query)
         {
-
+            return Ok();
         }
     }
 }

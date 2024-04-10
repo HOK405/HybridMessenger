@@ -3,16 +3,16 @@ using MediatR;
 
 namespace HybridMessenger.Application.Message.Queries
 {
-    public class GetUserMessagesQueryHandler : IRequestHandler<GetUserMessagesQuery, IEnumerable<object>>
+    public class GetPagedUserMessagesQueryHandler : IRequestHandler<GetPagedUserMessagesQuery, IEnumerable<object>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public GetUserMessagesQueryHandler(IUnitOfWork unitOfWork)
+        public GetPagedUserMessagesQueryHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public Task<IEnumerable<object>> Handle(GetUserMessagesQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<object>> Handle(GetPagedUserMessagesQuery request, CancellationToken cancellationToken)
         {
 
             throw new NotImplementedException();

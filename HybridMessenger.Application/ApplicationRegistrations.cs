@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HybridMessenger.Application
 {
@@ -12,6 +13,8 @@ namespace HybridMessenger.Application
 
             services.AddMediatR(configuration =>
                 configuration.RegisterServicesFromAssembly(assembly));
+
+            services.AddValidatorsFromAssembly(assembly);
 
             return services;
         }

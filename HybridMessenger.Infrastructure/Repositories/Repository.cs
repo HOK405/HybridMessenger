@@ -32,35 +32,88 @@ namespace HybridMessenger.Infrastructure.Repositories
             _context.Set<T>().Remove(entity);
         }
 
-        public async Task<IQueryable<T>> GetPagedAsync(
-            int pageNumber,
-            int pageSize,
-            string sortBy,
-            string searchValue = "",
-            bool ascending = true)
+        public async Task<IQueryable<T>> GetPagedAsync(int pageNumber,
+                                                       int pageSize,
+                                                       string sortBy,
+                                                       Dictionary<string, object> filters = null,
+                                                       string searchValue = "",
+                                                       bool ascending = true)
         {
             var query = _context.Set<T>().AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(searchValue))
+            // Dynamic filtering based on specific fields
+            if (filters != null && filters.Any())
             {
                 var parameter = Expression.Parameter(typeof(T), "x");
                 Expression filterExpression = null;
-                var containsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
 
-                foreach (var property in typeof(T).GetProperties().Where(p => p.PropertyType == typeof(string)))
+                foreach (var filter in filters)
                 {
-                    var propertyAccess = Expression.Property(parameter, property);
-                    var filterConstant = Expression.Constant(searchValue);
-                    var containsExpression = Expression.Call(propertyAccess, containsMethod, filterConstant);
+                    var property = typeof(T).GetProperty(filter.Key);
+                    if (property != null)
+                    {
+                        var propertyAccess = Expression.Property(parameter, property);
+                        Expression conditionExpression;
 
-                    filterExpression = filterExpression == null
-                        ? containsExpression
-                        : Expression.OrElse(filterExpression, containsExpression);
+                        if (property.PropertyType == typeof(string) && filter.Value is string stringValue)
+                        {
+                            var containsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+                            var filterConstant = Expression.Constant(stringValue);
+                            conditionExpression = Expression.Call(propertyAccess, containsMethod, filterConstant);
+                        }
+                        else
+                        {
+                            var filterConstant = Expression.Constant(filter.Value, property.PropertyType);
+                            conditionExpression = Expression.Equal(propertyAccess, filterConstant);
+                        }
+
+                        filterExpression = filterExpression == null
+                            ? conditionExpression
+                            : Expression.AndAlso(filterExpression, conditionExpression);
+                    }
                 }
 
                 if (filterExpression != null)
                 {
                     var lambda = Expression.Lambda<Func<T, bool>>(filterExpression, parameter);
+                    query = query.Where(lambda);
+                }
+            }
+
+            // Search functionality for string properties and Guid conversion
+            if (!string.IsNullOrWhiteSpace(searchValue))
+            {
+                var parameter = Expression.Parameter(typeof(T), "x");
+                Expression searchExpression = null;
+                var containsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+                var toStringMethod = typeof(object).GetMethod("ToString");
+
+                foreach (var property in typeof(T).GetProperties())
+                {
+                    // Skip non-string and non-Guid properties
+                    if (property.PropertyType != typeof(string) && property.PropertyType != typeof(Guid))
+                    {
+                        continue;
+                    }
+
+                    Expression propertyAccess = Expression.Property(parameter, property);
+                    // If the property is a Guid, convert it to string
+                    if (property.PropertyType == typeof(Guid))
+                    {
+                        propertyAccess = Expression.Call(propertyAccess, toStringMethod);
+                    }
+
+                    var searchConstant = Expression.Constant(searchValue);
+                    var containsExpression = Expression.Call(propertyAccess, containsMethod, searchConstant);
+
+                    searchExpression = searchExpression == null
+                        ? containsExpression
+                        : Expression.OrElse(searchExpression, containsExpression);
+                }
+
+                if (searchExpression != null)
+                {
+                    var lambda = Expression.Lambda<Func<T, bool>>(searchExpression, parameter);
                     query = query.Where(lambda);
                 }
             }
