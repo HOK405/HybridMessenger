@@ -1,6 +1,8 @@
 ﻿using HybridMessenger.Presentation.Models;
 using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components;
+using System.Dynamic;
+using System.Text.Json;
 
 namespace HybridMessenger.Presentation.Components.Pages
 {
@@ -8,41 +10,64 @@ namespace HybridMessenger.Presentation.Components.Pages
     {
         [Inject]
         private IHttpService HttpService { get; set; }
+        private IEnumerable<dynamic> _data;
+        private List<string> _userRequestedFields;
 
-        private List<UserResponse> users = new List<UserResponse>();
+        private UserRequestModel _requestModel;
 
-        private int totalUsers;
-        private string fieldsInput;
+        private string _fieldsInput;
 
-        private UserSortParametersModel sortModel = new()
+        private readonly List<string> _allUserDtoFields = new List<string>
         {
-            PageNumber = 1,
-            PageSize = 5,
-            SortBy = "CreatedAt",
-            SearchValue = "",
-            Ascending = true,
-            Fields = new string[] { } // Ініціалізація як порожній масив
+            "Id", "UserName", "Email", "CreatedAt", "PhoneNumber"
         };
+
+        protected override async Task OnInitializedAsync()
+        {
+            _data = new List<dynamic>();
+            _userRequestedFields = new List<string>();
+
+            _requestModel = new UserRequestModel
+            {
+                PageNumber = 1,
+                PageSize = 10,
+                SortBy = "CreatedAt",
+                SearchValue = "",
+                Ascending = true,
+                Fields = new List<string>() 
+            };
+
+            await LoadUsers();
+        }
 
         private async Task LoadUsers()
         {
-            sortModel.Fields = string.IsNullOrEmpty(fieldsInput) ? new string[] { } : fieldsInput.Split(',').Select(f => f.Trim()).ToArray();
+            _requestModel.Fields = string.IsNullOrEmpty(_fieldsInput) ? new List<string>() : _fieldsInput.Split(',').Select(f => f.Trim()).ToList();
 
-            var response = await HttpService.PostAsync<IEnumerable<UserResponse>>("api/User/get-paged-users", sortModel);
+            try
+            {
+                _data = await HttpService.PostAsync<IEnumerable<dynamic>>("api/User/get-paged-users", _requestModel);
 
-            users = response?.ToList() ?? new List<UserResponse>();
-            totalUsers = users.Count;
-            StateHasChanged();
+                _userRequestedFields = string.IsNullOrEmpty(_fieldsInput) ? _allUserDtoFields : _requestModel.Fields;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
         }
 
-
-        public class UserResponse
+        private object GetDynamicValue(string jsonItem, string fieldName)
         {
-            public Guid Id { get; set; }
-            public string UserName { get; set; }
-            public string Email { get; set; }
-            public DateTime CreatedAt { get; set; }
-            public string PhoneNumber { get; set; }
+            var item = JsonSerializer.Deserialize<ExpandoObject>(jsonItem, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (item is IDictionary<string, object> dictionary && dictionary.ContainsKey(fieldName))
+            {
+                return dictionary[fieldName] ?? "N/A";
+            }
+
+            return "N/A";
         }
     }
+
 }

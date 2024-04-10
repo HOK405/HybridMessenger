@@ -19,9 +19,9 @@ namespace HybridMessenger.API.Controllers
 
         [Authorize]
         [HttpGet("get-user")]
-        public async Task<ActionResult> GetUser([FromQuery] GetUserByIdQuery command)
+        public async Task<ActionResult> GetUser([FromQuery] GetUserByIdQuery query)
         {
-            var userResult = await _mediator.Send(command);
+            var userResult = await _mediator.Send(query);
 
             return Ok(userResult);
         }

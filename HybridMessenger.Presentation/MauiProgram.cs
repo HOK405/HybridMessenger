@@ -1,7 +1,4 @@
-﻿using Blazorise;
-using Blazorise.Bootstrap;
-using Blazorise.Icons.FontAwesome;
-using HybridMessenger.Presentation.Auth;
+﻿using HybridMessenger.Presentation.Auth;
 using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +21,6 @@ namespace HybridMessenger.Presentation
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
-            /*var apiBaseAddress = "https://localhost:44314/";*/
             var apiBaseAddress = builder.Configuration["ApiBaseAddress"];
             if (string.IsNullOrEmpty(apiBaseAddress))
             {
@@ -36,14 +32,6 @@ namespace HybridMessenger.Presentation
             builder.Services.AddScoped<IHttpService, HttpService>();
 
             builder.Services.AddMauiBlazorWebView();
-
-            builder.Services
-                    .AddBlazorise(options =>
-                    {
-                        options.Immediate = true;
-                    })
-                    .AddBootstrapProviders()
-                    .AddFontAwesomeIcons();
 
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
             builder.Services.AddAuthorizationCore();

@@ -1,50 +1,59 @@
 ﻿@page "/users"
-@using Blazorise
-@using Blazorise.DataGrid
 
 <div class="input-area">
     <div class="form-group">
         <label for="PageNumber">Page Number:</label>
-        <InputNumber @bind-Value="sortModel.PageNumber" class="form-control" id="PageNumber" />
+        <InputNumber @bind-Value="_requestModel.PageNumber" class="form-control" id="PageNumber" />
     </div>
     <div class="form-group">
         <label for="PageSize">Page Size:</label>
-        <InputNumber @bind-Value="sortModel.PageSize" class="form-control" id="PageSize" />
+        <InputNumber @bind-Value="_requestModel.PageSize" class="form-control" id="PageSize" />
     </div>
     <div class="form-group">
         <label for="SortBy">Sort by:</label>
-        <InputText @bind-Value="sortModel.SortBy" class="form-control" id="SortBy" />
+        <InputText @bind-Value="_requestModel.SortBy" class="form-control" id="SortBy" />
     </div>
     <div class="form-group">
         <label for="SearchValue">Search value:</label>
-        <InputText @bind-Value="sortModel.SearchValue" class="form-control" id="SearchValue" />
-    </div>
-    <div class="form-group">
-        <label for="Ascending">Ascending:</label>
-        <InputCheckbox @bind-Value="sortModel.Ascending" id="Ascending" />
+        <InputText @bind-Value="_requestModel.SearchValue" class="form-control" id="SearchValue" />
     </div>
     <div class="form-group">
         <label for="IncludeFields">Fields to include:</label>
-        <InputText @bind-Value="sortModel.SearchValue" class="form-control" id="IncludeFields" />
+        <InputText @bind-Value="_fieldsInput" class="form-control" id="IncludeFields" />
+    </div>
+    <div class="form-group">
+        <label for="Ascending">Ascending:</label>
+        <InputCheckbox @bind-Value="_requestModel.Ascending" id="Ascending" />
     </div>
     <button class="btn btn-secondary user-full-width-button" @onclick="LoadUsers">Get Users</button> 
 </div>
 
-@typeparam TItem
-@using System.Reflection
+@if (_data != null && _data.Any())
+{
+    <table class="table" style="margin-top:50px">
+        <thead>
+            <tr>
+                @foreach (var field in _userRequestedFields)
+                {
+                    <th>@field</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _data)
+            {
+                <tr>
+                    @foreach (var field in _userRequestedFields)
+                    {
+                        <td>@GetDynamicValue(item.ToString(), field)</td>
+                    }
+                </tr>
+            }
+        </tbody>
 
-<DataGrid TItem="UserResponse"
-          ReadData="LoadUsers"
-          Data="@users"
-          TotalItems="totalUsers"
-          Sortable="true"
-          Editable="false"
-          Filterable="false"
-          Class="PagedUsers.razor.css">
-    <DataGridColumns>
-        <DataGridColumn TItem="UserResponse" Field="@nameof(UserResponse.UserName)" Caption="Username" Sortable="true" />
-        <DataGridColumn TItem="UserResponse" Field="@nameof(UserResponse.Email)" Caption="Email" Sortable="true" />
-        <DataGridColumn TItem="UserResponse" Field="@nameof(UserResponse.CreatedAt)" Caption="Creation time" Sortable="true" />
-        <DataGridColumn TItem="UserResponse" Field="@nameof(UserResponse.PhoneNumber)" Caption="Phone number" Sortable="true" />
-    </DataGridColumns>
-</DataGrid>
+    </table>
+}
+else
+{
+    <p>No data available.</p>
+}

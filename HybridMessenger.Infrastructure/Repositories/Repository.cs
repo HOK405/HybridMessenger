@@ -41,7 +41,6 @@ namespace HybridMessenger.Infrastructure.Repositories
         {
             var query = _context.Set<T>().AsQueryable();
 
-            // Filter if necessary
             if (!string.IsNullOrWhiteSpace(searchValue))
             {
                 var parameter = Expression.Parameter(typeof(T), "x");
@@ -78,6 +77,5 @@ namespace HybridMessenger.Infrastructure.Repositories
 
             return query;
         }
-
     }
 }

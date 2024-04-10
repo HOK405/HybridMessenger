@@ -17,10 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Message\" />
     <Folder Include="Contact\" />
     <Folder Include="ChatMember\" />
     <Folder Include="Chat\" />
+    <Folder Include="Message\Commands\" />
+    <Folder Include="Message\DTOs\" />
   </ItemGroup>
 
 </Project>

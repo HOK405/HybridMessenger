@@ -21,6 +21,7 @@ namespace HybridMessenger.Application.User.Queries
 
         public async Task<IEnumerable<object>> Handle(GetPagedUsersQuery request, CancellationToken cancellationToken)
         {
+            // SortFields validation
             var validSortProperty = typeof(Domain.Entities.User).GetProperty(request.SortBy, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
             if (validSortProperty == null)
             {
@@ -28,6 +29,7 @@ namespace HybridMessenger.Application.User.Queries
             }
 
             var userRepository = _unitOfWork.GetRepository<IUserRepository>();
+            // SortWithPagination + Filtering
             var query = await userRepository.GetPagedAsync(request.PageNumber, request.PageSize, request.SortBy, request.SearchValue, request.Ascending);
 
             var dtoProperties = typeof(UserDto).GetProperties(BindingFlags.Public | BindingFlags.Instance)
