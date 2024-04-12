@@ -15,10 +15,9 @@ namespace HybridMessenger.Presentation.Components.Pages
         [Inject]
         AuthenticationStateProvider AuthenticationStateProvider { get; set; }
         [Inject]
-        private IHttpService HttpService { get; set; }
-
+        private IHttpService _httpService { get; set; }
         [Inject]
-        private IJSRuntime JSRuntime { get; set; }
+        private IJSRuntime _jsRuntime { get; set; }
 
         private LoginModel loginModel = new LoginModel();
         private string loginResult;
@@ -28,11 +27,12 @@ namespace HybridMessenger.Presentation.Components.Pages
         {
             try
             {
-                var tokenResponse = await HttpService.PostAsync<TokenResponse>("api/User/login", loginModel);
+                var tokenResponse = await _httpService.PostAsync<TokenResponse>("api/User/login", loginModel);
                 if (tokenResponse != null && !string.IsNullOrWhiteSpace(tokenResponse.AccessToken) && !string.IsNullOrWhiteSpace(tokenResponse.RefreshToken))
                 {
-                    await JSRuntime.InvokeVoidAsync("localStorage.setItem", "accessToken", tokenResponse.AccessToken);
-                    await JSRuntime.InvokeVoidAsync("localStorage.setItem", "refreshToken", tokenResponse.RefreshToken);
+                    await _httpService.SetAccessToken();
+                    await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "accessToken", tokenResponse.AccessToken);
+                    await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "refreshToken", tokenResponse.RefreshToken);
 
                     loginResult = "Logged in successfully!";
                     ((CustomAuthStateProvider)AuthenticationStateProvider).NotifyUserAuthentication(tokenResponse.AccessToken);

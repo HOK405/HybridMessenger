@@ -8,7 +8,7 @@
     public interface IRepository<T, TKey> where T : class
     {
         Task<T> GetByIdAsync(TKey id);
-        void Add(T entity);
+        void AddAsync(T entity);
         void Update(T entity);
         void Remove(T entity);
 

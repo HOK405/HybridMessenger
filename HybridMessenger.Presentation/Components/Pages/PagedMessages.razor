@@ -1,0 +1,59 @@
+﻿@page "/messages"
+
+<div class="input-area">
+    <div class="form-group">
+        <label for="PageNumber">Page Number:</label>
+        <InputNumber @bind-Value="_requestModel.PageNumber" class="form-control" id="PageNumber" />
+    </div>
+    <div class="form-group">
+        <label for="PageSize">Page Size:</label>
+        <InputNumber @bind-Value="_requestModel.PageSize" class="form-control" id="PageSize" />
+    </div>
+    <div class="form-group">
+        <label for="SortBy">Sort by:</label>
+        <InputText @bind-Value="_requestModel.SortBy" class="form-control" id="SortBy" />
+    </div>
+    <div class="form-group">
+        <label for="SearchValue">Search value:</label>
+        <InputText @bind-Value="_requestModel.SearchValue" class="form-control" id="SearchValue" />
+    </div>
+    <div class="form-group">
+        <label for="IncludeFields">Fields to include:</label>
+        <InputText @bind-Value="_fieldsInput" class="form-control" id="IncludeFields" />
+    </div>
+    <div class="form-group">
+        <label for="Ascending">Ascending:</label>
+        <InputCheckbox @bind-Value="_requestModel.Ascending" id="Ascending" />
+    </div>
+    <button class="btn btn-secondary user-full-width-button" @onclick="LoadMessages">Get Users</button>
+</div>
+
+@if (_data != null && _data.Any())
+{
+    <table class="table" style="margin-top:50px">
+        <thead>
+            <tr>
+                @foreach (var field in _userRequestedFields)
+                {
+                    <th>@field</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _data)
+            {
+                <tr>
+                    @foreach (var field in _userRequestedFields)
+                    {
+                        <td>@GetDynamicValue(item.ToString(), field)</td>
+                    }
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+else
+{
+    <p>No data available.</p>
+}

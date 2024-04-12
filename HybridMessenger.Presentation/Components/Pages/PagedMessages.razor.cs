@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace HybridMessenger.Presentation.Components.Pages
 {
-    public partial class PagedUsers : ComponentBase
+    public partial class PagedMessages
     {
         [Inject]
         private IHttpService HttpService { get; set; }
@@ -19,7 +19,7 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private readonly List<string> _allUserDtoFields = new List<string>
         {
-            "Id", "UserName", "Email", "CreatedAt", "PhoneNumber"
+            "MessageId", "ChatId", "UserId", "MessageText", "SentAt"
         };
 
         protected override async Task OnInitializedAsync()
@@ -31,22 +31,23 @@ namespace HybridMessenger.Presentation.Components.Pages
             {
                 PageNumber = 1,
                 PageSize = 10,
-                SortBy = "CreatedAt",
+                SortBy = "SentAt",
                 SearchValue = "",
                 Ascending = true,
-                Fields = new List<string>() 
+                Fields = new List<string>()
             };
 
-            await LoadUsers();
+            await LoadMessages();
         }
 
-        private async Task LoadUsers()
+        private async Task LoadMessages()
         {
             _requestModel.Fields = string.IsNullOrEmpty(_fieldsInput) ? new List<string>() : _fieldsInput.Split(',').Select(f => f.Trim()).ToList();
 
             try
             {
-                _data = await HttpService.PostAsync<IEnumerable<dynamic>>("api/User/get-paged-users", _requestModel);
+                await HttpService.SetAccessToken();
+                _data = await HttpService.PostAsync<IEnumerable<dynamic>>("api/Message/get-paged-messages", _requestModel);
 
                 _userRequestedFields = string.IsNullOrEmpty(_fieldsInput) ? _allUserDtoFields : _requestModel.Fields;
                 StateHasChanged();
@@ -69,5 +70,4 @@ namespace HybridMessenger.Presentation.Components.Pages
             return "N/A";
         }
     }
-
 }

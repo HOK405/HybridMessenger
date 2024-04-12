@@ -15,5 +15,4 @@ namespace HybridMessenger.Domain.Entities
         public virtual Chat Chat { get; set; }
         public virtual User User { get; set; }
     }
-
 }

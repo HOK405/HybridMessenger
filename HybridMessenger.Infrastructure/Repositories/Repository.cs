@@ -17,9 +17,9 @@ namespace HybridMessenger.Infrastructure.Repositories
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public void Add(T entity)
+        public async void AddAsync(T entity)
         {
-            _context.Set<T>().AddAsync(entity);
+           await  _context.Set<T>().AddAsync(entity);
         }
 
         public void Update(T entity)
@@ -55,11 +55,10 @@ namespace HybridMessenger.Infrastructure.Repositories
                         var propertyAccess = Expression.Property(parameter, property);
                         Expression conditionExpression;
 
-                        if (property.PropertyType == typeof(string) && filter.Value is string stringValue)
+                        if (property.PropertyType == typeof(Guid) && Guid.TryParse(filter.Value.ToString(), out var guidValue))
                         {
-                            var containsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
-                            var filterConstant = Expression.Constant(stringValue);
-                            conditionExpression = Expression.Call(propertyAccess, containsMethod, filterConstant);
+                            var filterConstant = Expression.Constant(guidValue, property.PropertyType);
+                            conditionExpression = Expression.Equal(propertyAccess, filterConstant);
                         }
                         else
                         {

@@ -1,16 +1,17 @@
-﻿using MediatR;
-using Newtonsoft.Json;
+﻿using HybridMessenger.Application.Chat.DTOs;
+using MediatR;
 using System.ComponentModel;
+using System.Text.Json.Serialization;
 
-namespace HybridMessenger.Application.Message.Queries
+namespace HybridMessenger.Application.Chat.Queries
 {
-    public class GetPagedUserMessagesQuery : IRequest<IEnumerable<object>>
+    public class GetPagedUserChatsQuery : IRequest<IEnumerable<object>>
     {
         [DefaultValue(1)]
         public int PageNumber { get; set; }
         [DefaultValue(10)]
         public int PageSize { get; set; }
-        [DefaultValue("SentAt")]
+        [DefaultValue("CreatedAt")]
         public string SortBy { get; set; }
         [DefaultValue("")]
         public string SearchValue { get; set; }
@@ -19,6 +20,6 @@ namespace HybridMessenger.Application.Message.Queries
         public string[] Fields { get; set; }
 
         [JsonIgnore]
-        public string? UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

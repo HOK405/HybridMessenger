@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using HybridMessenger.Application.User.DTOs;
+﻿using HybridMessenger.Application.User.DTOs;
 using HybridMessenger.Domain.Repositories;
 using HybridMessenger.Domain.Services;
 using HybridMessenger.Domain.UnitOfWork;

@@ -1,0 +1,39 @@
+body {
+    color: blue;
+}
+
+th {
+    color: white;
+}
+
+.input-area {
+    width: 50%;
+    margin: auto;
+}
+
+.user-full-width-button {
+    width: 100%;
+    background-color: #6c757d;
+}
+
+.form-group {
+    padding-bottom: 10px;
+}
+
+    .form-group label {
+        font-size: 1.2rem;
+    }
+
+
+.my-custom-table .mud-table-cell {
+    padding: 12px 24px;
+}
+
+.my-custom-table .mud-table-row {
+    border-bottom: 1px solid rgba(224, 224, 224, 1);
+}
+
+.my-custom-table th {
+    background-color: #f5f5f5;
+    color: #333;
+}

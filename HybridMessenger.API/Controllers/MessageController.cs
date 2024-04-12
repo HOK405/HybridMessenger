@@ -1,6 +1,8 @@
 ﻿using HybridMessenger.Application.Message.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HybridMessenger.API.Controllers
 {
@@ -15,10 +17,22 @@ namespace HybridMessenger.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("get-messages")]
-        public async Task<ActionResult> GetUserMessages(GetPagedUserMessagesQuery query)
+        [Authorize]
+        [HttpPost("get-paged-messages")]
+        public async Task<ActionResult> GetUserMessages([FromBody] GetPagedUserMessagesQuery query)
         {
-            return Ok();
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            query.UserId = userId;
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var result = await _mediator.Send(query); 
+                return Ok(result);
+            }
+            else
+            {
+                return Unauthorized("UserId claim is missing in the token.");
+            }
         }
     }
 }

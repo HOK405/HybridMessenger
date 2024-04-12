@@ -1,6 +1,6 @@
 ﻿namespace HybridMessenger.Presentation.Models
 {
-    public class UserRequestModel
+    public class PaginationRequestModel
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
