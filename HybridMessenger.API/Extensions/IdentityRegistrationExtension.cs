@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace HybridMessenger.API.Extensions
 {
-    public static class ServiceIdentityRegistrationExtension
+    public static class IdentityRegistrationExtension
     {
         /// <summary>
         /// This extension is for registration identity and user properties (Unique email, password and so on).

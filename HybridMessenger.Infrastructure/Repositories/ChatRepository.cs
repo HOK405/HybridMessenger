@@ -23,7 +23,7 @@ namespace HybridMessenger.Infrastructure.Repositories
             };
 
             await _context.Chats.AddAsync(chat);
-            await _context.SaveChangesAsync();
+            /*await _context.SaveChangesAsync();*/
 
             return chat;
         }

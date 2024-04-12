@@ -4,7 +4,7 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace HybridMessenger.API.Extensions
 {
-    public static class ServiceSwaggerSetupExtension
+    public static class SwaggerSetupExtension
     {
         /// <summary>
         /// This extension is for set up swaager for input jwt token

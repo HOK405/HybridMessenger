@@ -20,8 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Contact\" />
-    <Folder Include="ChatMember\" />
     <Folder Include="Message\Commands\" />
   </ItemGroup>
 

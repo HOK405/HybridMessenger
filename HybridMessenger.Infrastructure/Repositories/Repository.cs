@@ -79,7 +79,6 @@ namespace HybridMessenger.Infrastructure.Repositories
                 }
             }
 
-            // Search functionality for string properties and Guid conversion
             if (!string.IsNullOrWhiteSpace(searchValue))
             {
                 var parameter = Expression.Parameter(typeof(T), "x");

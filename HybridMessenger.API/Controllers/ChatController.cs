@@ -1,29 +1,30 @@
 ﻿using HybridMessenger.Application.Chat.Commands;
 using HybridMessenger.Application.Chat.Queries;
+using HybridMessenger.Domain.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace HybridMessenger.API.Controllers
 {
     public class ChatController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly IUserClaimsService _userClaimsService;
 
-        public ChatController(IMediator mediator)
+        public ChatController(IMediator mediator, IUserClaimsService userClaimsService)
         {
             _mediator = mediator;
+            _userClaimsService = userClaimsService;
         }
 
         [Authorize]
         [HttpPost("create-group")]
         public async Task<ActionResult> CreateGroup([FromBody] CreateGroupCommand command)
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            command.UserId = userId;
+            command.UserId = _userClaimsService.GetUserId(User);
 
-            if (!string.IsNullOrEmpty(userId))
+            if (!string.IsNullOrEmpty(command.UserId))
             {
                 var result = await _mediator.Send(command);
                 return Ok(result);
@@ -38,10 +39,9 @@ namespace HybridMessenger.API.Controllers
         [HttpPost("create-private-chat")]
         public async Task<ActionResult> CreatePrivateChat([FromBody] CreatePrivateChatCommand command)
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            command.UserCreatorId = userId;
+            command.UserCreatorId = _userClaimsService.GetUserId(User);
 
-            if (!string.IsNullOrEmpty(userId))
+            if (!string.IsNullOrEmpty(command.UserCreatorId))
             {
                 var result = await _mediator.Send(command);
                 return Ok(result);
@@ -56,11 +56,9 @@ namespace HybridMessenger.API.Controllers
         [HttpPost("get-paged-chats")]
         public async Task<ActionResult> GetUserChats([FromBody] GetPagedUserChatsQuery query)
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            query.UserId = _userClaimsService.GetUserId(User);
 
-            query.UserId = userId;
-
-            if (!string.IsNullOrEmpty(userId))
+            if (!string.IsNullOrEmpty(query.UserId))
             {
                 var result = await _mediator.Send(query);
                 return Ok(result);
@@ -75,11 +73,9 @@ namespace HybridMessenger.API.Controllers
         [HttpPost("delete-chat")]
         public async Task<ActionResult> DeleteChat([FromBody] DeleteChatCommand command)
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            command.UserId = _userClaimsService.GetUserId(User);
 
-            command.UserId = userId;
-
-            if (!string.IsNullOrEmpty(userId))
+            if (!string.IsNullOrEmpty(command.UserId))
             {
                 var result = await _mediator.Send(command);
                 if (result)
@@ -88,7 +84,7 @@ namespace HybridMessenger.API.Controllers
                 }
                 else
                 {
-                    return Ok("The specified chat doesn't exist in the system.");
+                    return BadRequest("The specified chat doesn't exist in the system.");
                 }
             }
             else

@@ -19,7 +19,7 @@ namespace HybridMessenger.Infrastructure.Repositories
             };
 
             await _context.ChatMembers.AddAsync(newMember);       
-            await _context.SaveChangesAsync();
+            /*await _context.SaveChangesAsync();*/
 
             return newMember;
         }

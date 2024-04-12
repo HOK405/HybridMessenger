@@ -4,7 +4,7 @@ using System.Text;
 
 namespace HybridMessenger.API.Extensions
 {
-    public static class ServiceAuthenticationExtension
+    public static class AuthenticationExtension
     {
         /// <summary>
         /// This extension is for adding JWT Authentication. It defines key from the configuration.

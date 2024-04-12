@@ -26,6 +26,7 @@ namespace HybridMessenger.API.Extensions
             services.AddScoped<IUserIdentityService, UserIdentityService>();
             services.AddScoped<IJwtTokenService, JwtTokenService>();
             services.AddScoped<IDynamicProjectionService, DynamicProjectionService>();
+            services.AddScoped<IUserClaimsService, UserClaimsService>();
 
             return services;
         }

@@ -29,23 +29,25 @@ namespace HybridMessenger.Application.Chat.Commands
 
             var userToAdd = await _userRepository.GetByIdAsync(userGuidId);
 
-            using (var transaction = await _unitOfWork.BeginTransactionAsync())
+/*            using (var transaction = await _unitOfWork.BeginTransactionAsync())
             {
                 try
-                {
+                {*/
                     var createdChat = await _chatRepository.CreateChatAsync(request.ChatName, true);
                     await _chatMemberRepository.AddUserToChatAsync(userToAdd, createdChat);
 
-                    await transaction.CommitAsync(cancellationToken);
+                    /*await transaction.CommitAsync(cancellationToken);*/
+
+                    await _unitOfWork.SaveChangesAsync();
 
                     return _mapper.Map<ChatDto>(createdChat);
-                }
-                catch
+                
+/*                catch
                 {
                     await transaction.RollbackAsync(cancellationToken);
                     throw;
                 }
-            }
+            }*/
         }
     }
 }

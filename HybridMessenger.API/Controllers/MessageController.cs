@@ -1,8 +1,8 @@
 ﻿using HybridMessenger.Application.Message.Queries;
+using HybridMessenger.Domain.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace HybridMessenger.API.Controllers
 {
@@ -11,20 +11,21 @@ namespace HybridMessenger.API.Controllers
     public class MessageController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly IUserClaimsService _userClaimsService;
 
-        public MessageController(IMediator mediator)
+        public MessageController(IMediator mediator, IUserClaimsService userClaimsService)
         {
             _mediator = mediator;
+            _userClaimsService = userClaimsService;
         }
 
         [Authorize]
         [HttpPost("get-paged-messages")]
         public async Task<ActionResult> GetUserMessages([FromBody] GetPagedUserMessagesQuery query)
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            query.UserId = userId;
+            query.UserId = _userClaimsService.GetUserId(User);
 
-            if (!string.IsNullOrEmpty(userId))
+            if (!string.IsNullOrEmpty(query.UserId))
             {
                 var result = await _mediator.Send(query); 
                 return Ok(result);
