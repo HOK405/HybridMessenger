@@ -1,4 +1,5 @@
 ﻿using HybridMessenger.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace HybridMessenger.Infrastructure.Repositories
@@ -30,6 +31,11 @@ namespace HybridMessenger.Infrastructure.Repositories
         public void Remove(T entity)
         {
             _context.Set<T>().Remove(entity);
+        }
+
+        public async Task<bool> ExistsAsync(TKey id, Func<T, TKey> idSelector)
+        {
+            return await _context.Set<T>().AnyAsync(e => idSelector(e).Equals(id));
         }
 
         public async Task<IQueryable<T>> GetPagedAsync(int pageNumber,

@@ -1,6 +1,4 @@
 ﻿using HybridMessenger.Domain.UnitOfWork;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HybridMessenger.Infrastructure.UnitOfWork
@@ -22,18 +20,6 @@ namespace HybridMessenger.Infrastructure.UnitOfWork
                 throw new InvalidOperationException($"Repository not registered for type {typeof(TRepository).Name}");
             }
             return repositoryInstance;
-        }
-
-        public async Task<IDbContextTransaction> BeginTransactionAsync()
-        {
-            var dbContext = _serviceProvider.GetService<ApiDbContext>();
-
-            if (dbContext == null)
-            {
-                throw new InvalidOperationException("DbContext not registered in the service provider");
-            }
-
-            return await dbContext.Database.BeginTransactionAsync();
         }
 
         public async Task<int> SaveChangesAsync()

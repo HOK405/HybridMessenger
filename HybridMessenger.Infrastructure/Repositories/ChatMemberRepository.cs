@@ -1,5 +1,6 @@
 ﻿using HybridMessenger.Domain.Entities;
 using HybridMessenger.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace HybridMessenger.Infrastructure.Repositories
 {
@@ -7,6 +8,11 @@ namespace HybridMessenger.Infrastructure.Repositories
     {
         public ChatMemberRepository(ApiDbContext context) : base(context) 
         { 
+        }
+
+        public async Task<bool> IsUserMemberOfChatAsync(Guid userId, Guid chatId)
+        {
+            return await _context.ChatMembers.AnyAsync(cm => cm.ChatId == chatId && cm.UserId == userId);
         }
 
         public async Task<ChatMember> AddUserToChatAsync(User user, Chat chat)

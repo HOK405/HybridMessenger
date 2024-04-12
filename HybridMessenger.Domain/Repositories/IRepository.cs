@@ -8,9 +8,14 @@
     public interface IRepository<T, TKey> where T : class
     {
         Task<T> GetByIdAsync(TKey id);
+
         void AddAsync(T entity);
+
         void Update(T entity);
+
         void Remove(T entity);
+
+        Task<bool> ExistsAsync(TKey id, Func<T, TKey> idSelector);
 
         Task<IQueryable<T>> GetPagedAsync(
             int pageNumber, 

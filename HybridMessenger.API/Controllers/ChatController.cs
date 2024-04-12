@@ -4,6 +4,7 @@ using HybridMessenger.Domain.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace HybridMessenger.API.Controllers
 {
@@ -62,6 +63,31 @@ namespace HybridMessenger.API.Controllers
             {
                 var result = await _mediator.Send(query);
                 return Ok(result);
+            }
+            else
+            {
+                return Unauthorized("UserId claim is missing in the token.");
+            }
+        }
+
+        [Authorize]
+        [HttpPut("change-chat-name")]
+        public async Task<ActionResult> ChangeChatName([FromBody] ChangeChatNameCommand command)
+        {
+            command.UserId = _userClaimsService.GetUserId(User);
+
+            if(!string.IsNullOrEmpty(command.UserId))
+            {
+                var result = await _mediator.Send(command);
+
+                if (result is not null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest(result);
+                }
             }
             else
             {

@@ -15,7 +15,6 @@ namespace HybridMessenger.Domain.Entities
         [Required]
         public DateTime CreatedAt { get; set; }
 
-
         public ICollection<ChatMember> ChatMembers { get; set; }
         public ICollection<Message> Messages { get; set; }
     }
