@@ -20,20 +20,13 @@ namespace HybridMessenger.API.Controllers
         }
 
         [Authorize]
-        [HttpPost("get-paged-messages")]
+        [HttpPost("get-paged")]
         public async Task<ActionResult> GetUserMessages([FromBody] GetPagedUserMessagesQuery query)
         {
             query.UserId = _userClaimsService.GetUserId(User);
 
-            if (!string.IsNullOrEmpty(query.UserId))
-            {
-                var result = await _mediator.Send(query); 
-                return Ok(result);
-            }
-            else
-            {
-                return Unauthorized("UserId claim is missing in the token.");
-            }
+            var result = await _mediator.Send(query); 
+            return Ok(result);
         }
     }
 }

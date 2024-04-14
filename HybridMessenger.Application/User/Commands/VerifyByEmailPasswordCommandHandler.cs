@@ -18,11 +18,6 @@ namespace HybridMessenger.Application.User.Commands
         {
             var user =  await _userService.VerifyUserByEmailAndPasswordAsync(request.Email, request.Password);
 
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
             return (await _jwtTokenService.GenerateAccessToken(user), await _jwtTokenService.GenerateRefreshToken(user));
         }
     }

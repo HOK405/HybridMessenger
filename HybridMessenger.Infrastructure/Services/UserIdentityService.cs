@@ -28,15 +28,15 @@ namespace HybridMessenger.Infrastructure.Services
         public async Task<User> VerifyUserByEmailAndPasswordAsync(string email, string password)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
+            if (user is null)
             {
-                throw new ArgumentNullException(nameof(user), "User not found.");
+                return null;
             }
 
             var result = await _userManager.CheckPasswordAsync(user, password);
             if (!result)
             {
-                throw new ArgumentException("Invalid password.");
+                return null;
             }
 
             return user;
@@ -49,7 +49,7 @@ namespace HybridMessenger.Infrastructure.Services
 
             if (user == null)
             {
-                throw new KeyNotFoundException($"User with ID {id} was not found.");
+                return null;
             }
 
             return user;

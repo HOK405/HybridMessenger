@@ -36,7 +36,6 @@ namespace HybridMessenger.Infrastructure.Repositories
 
         public async Task<IQueryable<Chat>> GetPagedUserChatsAsync(Guid userId, int pageNumber, int pageSize, string sortBy, string searchValue = "", bool ascending = true)
         {
-            // Start with querying the ChatMembers to filter by the specified UserId
             var userChatsQuery = _context.ChatMembers
                 .Where(cm => cm.UserId == userId)
                 .Select(cm => cm.Chat);

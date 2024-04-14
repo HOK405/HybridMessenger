@@ -3,8 +3,8 @@ using MediatR;
 
 namespace HybridMessenger.Application.User.Queries
 {
-    public class GetUserByIdQuery : IRequest<DTOs.UserDto>
+    public class GetUserByIdQuery : IRequest<UserDto>
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; }
     }
 }

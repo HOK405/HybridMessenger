@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using HybridMessenger.Application.User.DTOs;
 using HybridMessenger.Domain.Services;
-using HybridMessenger.Domain.UnitOfWork;
 using MediatR;
 
 namespace HybridMessenger.Application.User.Queries
 {
-    public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, DTOs.UserDto>
+    public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDto>
     {
         private readonly IUserIdentityService _userService;
         private readonly IMapper _mapper;
@@ -17,9 +16,9 @@ namespace HybridMessenger.Application.User.Queries
             _mapper = mapper;
         }
 
-        public async Task<DTOs.UserDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+        public async Task<UserDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
-            var user = await _userService.GetUserByIdAsync(request.Id);
+            var user = await _userService.GetUserByIdAsync(Guid.Parse(request.Id));
 
             return _mapper.Map<UserDto>(user);
         }

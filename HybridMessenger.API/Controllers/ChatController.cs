@@ -67,7 +67,7 @@ namespace HybridMessenger.API.Controllers
 
             await _mediator.Send(command);
 
-            return Ok();
+            return Ok("Group member is successfully added.");
         }
 
         [Authorize]
@@ -76,15 +76,8 @@ namespace HybridMessenger.API.Controllers
         {
             command.UserId = _userClaimsService.GetUserId(User);
 
-            var result = await _mediator.Send(command);
-            if (result)
-            {
-                return Ok("Chat is successfully deleted.");
-            }
-            else
-            {
-                return BadRequest("The specified chat doesn't exist in the system.");
-            }
+            await _mediator.Send(command);
+            return Ok("Chat is successfully deleted.");
         }
     }
 }

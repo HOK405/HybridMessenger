@@ -20,17 +20,26 @@ namespace HybridMessenger.Application.User.Commands
             var refreshToken = command.RefreshToken;
 
             var principal = _jwtTokenService.GetPrincipalFromExpiredToken(refreshToken);
-
             if (principal == null)
             {
                 throw new ArgumentException("Invalid token");
             }
 
-            var user = await _userService.GetUserByIdAsync(Guid.Parse(principal.FindFirst(ClaimTypes.NameIdentifier)?.Value));
+            var userIdString = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdString, out Guid userId))
+            {
+                throw new ArgumentException("Invalid token - user ID missing or malformed.");
+            }
+
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found");
+            }
 
             var newAccessToken = await _jwtTokenService.GenerateAccessToken(user);
-
             return newAccessToken;
         }
     }
+
 }
