@@ -25,29 +25,14 @@ namespace HybridMessenger.Application.Chat.Commands
 
         public async Task<ChatDto> Handle(CreateGroupCommand request, CancellationToken cancellationToken)
         {
-            Guid.TryParse(request.UserId, out Guid userGuidId);
+            var userToAdd = await _userRepository.GetByIdAsync(Guid.Parse(request.UserId));
 
-            var userToAdd = await _userRepository.GetByIdAsync(userGuidId);
+            var createdChat = await _chatRepository.CreateChatAsync(request.ChatName, true);
+            await _chatMemberRepository.AddUserToChatAsync(userToAdd, createdChat);
 
-/*            using (var transaction = await _unitOfWork.BeginTransactionAsync())
-            {
-                try
-                {*/
-                    var createdChat = await _chatRepository.CreateChatAsync(request.ChatName, true);
-                    await _chatMemberRepository.AddUserToChatAsync(userToAdd, createdChat);
+            await _unitOfWork.SaveChangesAsync();
 
-                    /*await transaction.CommitAsync(cancellationToken);*/
-
-                    await _unitOfWork.SaveChangesAsync();
-
-                    return _mapper.Map<ChatDto>(createdChat);
-                
-/*                catch
-                {
-                    await transaction.RollbackAsync(cancellationToken);
-                    throw;
-                }
-            }*/
+            return _mapper.Map<ChatDto>(createdChat);                
         }
     }
 }

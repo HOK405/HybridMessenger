@@ -5,6 +5,8 @@ namespace HybridMessenger.Domain.Repositories
     public interface IChatRepository : IRepository<Chat, Guid>
     {
         Task<Chat> CreateChatAsync(string chatName, bool isGroup);
+
+        Task<bool> ExistsAsync(Guid id);
         Task<IQueryable<Chat>> GetPagedUserChatsAsync(
             Guid userId,
             int pageNumber,

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace HybridMessenger.Application.Chat.Commands
 {
-    public class ChangeChatNameCommand : IRequest<ChatDto>
+    public class ChangeGroupNameCommand : IRequest<ChatDto>
     {
         public string NewChatName { get; set; }
 

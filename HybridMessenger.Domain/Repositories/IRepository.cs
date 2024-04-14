@@ -15,8 +15,6 @@
 
         void Remove(T entity);
 
-        Task<bool> ExistsAsync(TKey id, Func<T, TKey> idSelector);
-
         Task<IQueryable<T>> GetPagedAsync(
             int pageNumber, 
             int pageSize, 

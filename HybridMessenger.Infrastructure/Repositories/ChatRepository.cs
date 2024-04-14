@@ -1,6 +1,8 @@
 ﻿using HybridMessenger.Domain.Entities;
 using HybridMessenger.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using System.Reflection.Metadata.Ecma335;
 
 namespace HybridMessenger.Infrastructure.Repositories
 {
@@ -23,9 +25,13 @@ namespace HybridMessenger.Infrastructure.Repositories
             };
 
             await _context.Chats.AddAsync(chat);
-            /*await _context.SaveChangesAsync();*/
 
             return chat;
+        }
+
+        public async Task<bool> ExistsAsync(Guid id)
+        {
+            return await _context.Chats.AnyAsync(c => c.ChatID == id);
         }
 
         public async Task<IQueryable<Chat>> GetPagedUserChatsAsync(Guid userId, int pageNumber, int pageSize, string sortBy, string searchValue = "", bool ascending = true)

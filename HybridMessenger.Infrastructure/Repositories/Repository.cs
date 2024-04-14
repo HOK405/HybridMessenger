@@ -33,11 +33,6 @@ namespace HybridMessenger.Infrastructure.Repositories
             _context.Set<T>().Remove(entity);
         }
 
-        public async Task<bool> ExistsAsync(TKey id, Func<T, TKey> idSelector)
-        {
-            return await _context.Set<T>().AnyAsync(e => idSelector(e).Equals(id));
-        }
-
         public async Task<IQueryable<T>> GetPagedAsync(int pageNumber,
                                                        int pageSize,
                                                        string sortBy,

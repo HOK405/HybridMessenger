@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using HybridMessenger.Application.Message.DTOs;
-using HybridMessenger.Application.User.DTOs;
 using System.Reflection;
 
 namespace HybridMessenger.Application.Message.Queries

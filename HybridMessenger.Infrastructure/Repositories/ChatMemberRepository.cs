@@ -10,7 +10,7 @@ namespace HybridMessenger.Infrastructure.Repositories
         { 
         }
 
-        public async Task<bool> IsUserMemberOfChatAsync(Guid userId, Guid chatId)
+        public async Task<bool> IsUserMemberOfGroupAsync(Guid userId, Guid chatId)
         {
             return await _context.ChatMembers.AnyAsync(cm => cm.ChatId == chatId && cm.UserId == userId);
         }
@@ -25,7 +25,6 @@ namespace HybridMessenger.Infrastructure.Repositories
             };
 
             await _context.ChatMembers.AddAsync(newMember);       
-            /*await _context.SaveChangesAsync();*/
 
             return newMember;
         }

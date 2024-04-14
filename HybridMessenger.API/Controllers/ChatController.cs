@@ -4,7 +4,6 @@ using HybridMessenger.Domain.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace HybridMessenger.API.Controllers
 {
@@ -25,15 +24,8 @@ namespace HybridMessenger.API.Controllers
         {
             command.UserId = _userClaimsService.GetUserId(User);
 
-            if (!string.IsNullOrEmpty(command.UserId))
-            {
-                var result = await _mediator.Send(command);
-                return Ok(result);
-            }
-            else
-            {
-                return Unauthorized("UserId claim is missing in the token.");
-            }
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
         [Authorize]
@@ -42,57 +34,40 @@ namespace HybridMessenger.API.Controllers
         {
             command.UserCreatorId = _userClaimsService.GetUserId(User);
 
-            if (!string.IsNullOrEmpty(command.UserCreatorId))
-            {
-                var result = await _mediator.Send(command);
-                return Ok(result);
-            }
-            else
-            {
-                return Unauthorized("UserId claim is missing in the token.");
-            }
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
         [Authorize]
-        [HttpPost("get-paged-chats")]
+        [HttpPost("get-my-chats")]
         public async Task<ActionResult> GetUserChats([FromBody] GetPagedUserChatsQuery query)
         {
             query.UserId = _userClaimsService.GetUserId(User);
 
-            if (!string.IsNullOrEmpty(query.UserId))
-            {
-                var result = await _mediator.Send(query);
-                return Ok(result);
-            }
-            else
-            {
-                return Unauthorized("UserId claim is missing in the token.");
-            }
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
 
         [Authorize]
         [HttpPut("change-chat-name")]
-        public async Task<ActionResult> ChangeChatName([FromBody] ChangeChatNameCommand command)
+        public async Task<ActionResult> ChangeChatName([FromBody] ChangeGroupNameCommand command)
         {
             command.UserId = _userClaimsService.GetUserId(User);
 
-            if(!string.IsNullOrEmpty(command.UserId))
-            {
-                var result = await _mediator.Send(command);
+            var result = await _mediator.Send(command);
 
-                if (result is not null)
-                {
-                    return Ok(result);
-                }
-                else
-                {
-                    return BadRequest(result);
-                }
-            }
-            else
-            {
-                return Unauthorized("UserId claim is missing in the token.");
-            }
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPut("add-group-member")]
+        public async Task<ActionResult> AddGroupMemberByUsername([FromBody] AddGroupMemberCommand command)
+        {
+            command.UserId = _userClaimsService.GetUserId(User);
+
+            await _mediator.Send(command);
+
+            return Ok();
         }
 
         [Authorize]
@@ -101,21 +76,14 @@ namespace HybridMessenger.API.Controllers
         {
             command.UserId = _userClaimsService.GetUserId(User);
 
-            if (!string.IsNullOrEmpty(command.UserId))
+            var result = await _mediator.Send(command);
+            if (result)
             {
-                var result = await _mediator.Send(command);
-                if (result)
-                {
-                    return Ok("Chat is successfully deleted.");
-                }
-                else
-                {
-                    return BadRequest("The specified chat doesn't exist in the system.");
-                }
+                return Ok("Chat is successfully deleted.");
             }
             else
             {
-                return Unauthorized("UserId claim is missing in the token.");
+                return BadRequest("The specified chat doesn't exist in the system.");
             }
         }
     }

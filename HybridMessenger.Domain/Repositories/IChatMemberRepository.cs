@@ -6,6 +6,6 @@ namespace HybridMessenger.Domain.Repositories
     {
         Task<ChatMember> AddUserToChatAsync(User user, Chat chat);
 
-        Task<bool> IsUserMemberOfChatAsync(Guid userId, Guid chatId);
+        Task<bool> IsUserMemberOfGroupAsync(Guid userId, Guid chatId);
     }
 }

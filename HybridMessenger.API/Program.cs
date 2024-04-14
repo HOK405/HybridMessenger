@@ -13,10 +13,8 @@ namespace HybridMessenger.API
 
             // Add services to the container.
             builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
 
-            // Assembly registration
-            builder.Services.AddApplication();
+            builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddDbContext<ApiDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -26,6 +24,10 @@ namespace HybridMessenger.API
             builder.Services.AddServices();
             builder.Services.AddIdentity();
             builder.Services.AddJwtAuthentication(builder.Configuration);
+
+            // Assembly registration
+            builder.Services.AddApplication();
+            builder.Services.AddApplicationValidation();
 
             var app = builder.Build();
 

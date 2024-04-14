@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
 namespace HybridMessenger.Application
 {
@@ -14,7 +15,20 @@ namespace HybridMessenger.Application
             services.AddMediatR(configuration =>
                 configuration.RegisterServicesFromAssembly(assembly));
 
-            services.AddValidatorsFromAssembly(assembly);
+            return services;
+        }
+
+        public static IServiceCollection AddApplicationValidation(this IServiceCollection services)
+        {
+            var assembly = typeof(ApplicationRegistrations).Assembly;
+
+            services.AddValidatorsFromAssembly(assembly); 
+            services.AddFluentValidationAutoValidation(configuration =>
+            {
+                configuration.DisableBuiltInModelValidation = true;
+            });
+
+            ValidatorOptions.Global.CascadeMode = CascadeMode.Stop;
 
             return services;
         }

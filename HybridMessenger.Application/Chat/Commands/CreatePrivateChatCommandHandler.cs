@@ -27,12 +27,7 @@ namespace HybridMessenger.Application.Chat.Commands
         {
             var userToCreateWith = await _userRepository.GetUserByUsernameAsync(command.UserNameToCreateWith);
 
-            if(!Guid.TryParse(command.UserCreatorId, out Guid userGuidId))
-            {
-                throw new ArgumentException("The provided UserId is not a valid GUID.", nameof(command.UserCreatorId));
-            }
-
-            var userCreator = await _userRepository.GetByIdAsync(userGuidId);
+            var userCreator = await _userRepository.GetByIdAsync(Guid.Parse(command.UserCreatorId));
 
             var createdChat = await _chatRepository.CreateChatAsync(null, false);
 
