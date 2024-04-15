@@ -1,4 +1,4 @@
-﻿@page "/messages"
+﻿@page "/my-chats"
 @using HybridMessenger.Presentation.Services
 
 <div class="input-area">
@@ -26,15 +26,16 @@
         <label for="Ascending">Ascending:</label>
         <InputCheckbox @bind-Value="_requestModel.Ascending" id="Ascending" />
     </div>
-    <button class="btn btn-secondary user-full-width-button" @onclick="LoadMessages">Get Users</button>
+    <button class="btn btn-secondary user-full-width-button" @onclick="LoadChats">Get Chats</button>
 </div>
+
 
 @if (_data != null && _data.Any())
 {
     <table class="table" style="margin-top:50px">
         <thead>
             <tr>
-                @foreach (var field in _userRequestedFields)
+                @foreach (var field in _chatRequestedFields)
                 {
                     <th>@field</th>
                 }
@@ -44,7 +45,7 @@
             @foreach (var item in _data)
             {
                 <tr>
-                    @foreach (var field in _userRequestedFields)
+                    @foreach (var field in _chatRequestedFields)
                     {
                         <td>@JsonHelper.GetDynamicValue(item.ToString(), field)</td>
                     }

@@ -1,52 +1,54 @@
 ﻿using HybridMessenger.Presentation.Models;
 using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components;
+using System.Dynamic;
+using System.Text.Json;
 
 namespace HybridMessenger.Presentation.Components.Pages
 {
-    public partial class PagedMessages
+    public partial class PagedChats
     {
         [Inject]
         private IHttpService HttpService { get; set; }
+
         private IEnumerable<dynamic> _data;
-        private List<string> _userRequestedFields;
+
+        private List<string> _chatRequestedFields;
 
         private PaginationRequestModel _requestModel;
-
         private string _fieldsInput;
 
-        private readonly List<string> _allUserDtoFields = new List<string>
+        private readonly List<string> _allChatDtoFields = new List<string>
         {
-            "MessageId", "ChatId", "UserId", "MessageText", "SentAt"
+            "ChatId", "ChatName", "IsGroup", "CreatedAt"
         };
 
         protected override async Task OnInitializedAsync()
         {
             _data = new List<dynamic>();
-            _userRequestedFields = new List<string>();
+            _chatRequestedFields = new List<string>();
 
             _requestModel = new PaginationRequestModel
             {
                 PageNumber = 1,
                 PageSize = 10,
-                SortBy = "SentAt",
+                SortBy = "CreatedAt",
                 SearchValue = "",
                 Ascending = true,
                 Fields = new List<string>()
             };
 
-            await LoadMessages();
+            await LoadChats();
         }
 
-        private async Task LoadMessages()
+        private async Task LoadChats()
         {
             _requestModel.Fields = string.IsNullOrEmpty(_fieldsInput) ? new List<string>() : _fieldsInput.Split(',').Select(f => f.Trim()).ToList();
 
             await HttpService.SetAccessToken();
-            _data = await HttpService.PostAsync<IEnumerable<dynamic>>("api/Message/get-paged", _requestModel);
+            _data = await HttpService.PostAsync<IEnumerable<dynamic>>("api/chat/get-my-chats", _requestModel);
 
-            _userRequestedFields = string.IsNullOrEmpty(_fieldsInput) ? _allUserDtoFields : _requestModel.Fields;
-
+            _chatRequestedFields = string.IsNullOrEmpty(_fieldsInput) ? _allChatDtoFields : _requestModel.Fields;
             StateHasChanged();
         }
     }

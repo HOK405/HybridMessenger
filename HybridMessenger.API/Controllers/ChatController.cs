@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HybridMessenger.API.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class ChatController : Controller
     {
         private readonly IMediator _mediator;

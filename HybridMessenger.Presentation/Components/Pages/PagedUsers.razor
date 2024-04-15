@@ -1,4 +1,5 @@
 ﻿@page "/users"
+@using HybridMessenger.Presentation.Services
 
 <div class="input-area">
     <div class="form-group">
@@ -45,7 +46,7 @@
                 <tr>
                     @foreach (var field in _userRequestedFields)
                     {
-                        <td>@GetDynamicValue(item.ToString(), field)</td>
+                        <td>@JsonHelper.GetDynamicValue(item.ToString(), field)</td>
                     }
                 </tr>
             }

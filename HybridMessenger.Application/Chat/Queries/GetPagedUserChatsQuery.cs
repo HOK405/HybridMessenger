@@ -1,5 +1,4 @@
-﻿using HybridMessenger.Application.Chat.DTOs;
-using MediatR;
+﻿using MediatR;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 

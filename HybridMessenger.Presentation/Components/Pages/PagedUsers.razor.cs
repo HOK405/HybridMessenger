@@ -1,8 +1,6 @@
 ﻿using HybridMessenger.Presentation.Models;
 using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components;
-using System.Dynamic;
-using System.Text.Json;
 
 namespace HybridMessenger.Presentation.Components.Pages
 {
@@ -44,30 +42,11 @@ namespace HybridMessenger.Presentation.Components.Pages
         {
             _requestModel.Fields = string.IsNullOrEmpty(_fieldsInput) ? new List<string>() : _fieldsInput.Split(',').Select(f => f.Trim()).ToList();
 
-            try
-            {
-                _data = await HttpService.PostAsync<IEnumerable<dynamic>>("api/User/get-paged-users", _requestModel);
+            _data = await HttpService.PostAsync<IEnumerable<dynamic>>("api/User/get-paged", _requestModel);
 
-                _userRequestedFields = string.IsNullOrEmpty(_fieldsInput) ? _allUserDtoFields : _requestModel.Fields;
-                StateHasChanged();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred: {ex.Message}");
-            }
-        }
+            _userRequestedFields = string.IsNullOrEmpty(_fieldsInput) ? _allUserDtoFields : _requestModel.Fields;
 
-        private object GetDynamicValue(string jsonItem, string fieldName)
-        {
-            var item = JsonSerializer.Deserialize<ExpandoObject>(jsonItem, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            if (item is IDictionary<string, object> dictionary && dictionary.ContainsKey(fieldName))
-            {
-                return dictionary[fieldName] ?? "N/A";
-            }
-
-            return "N/A";
+            StateHasChanged();
         }
     }
-
 }

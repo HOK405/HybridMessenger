@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace HybridMessenger.Presentation.Components.Pages
 {
-    public partial class Home
+    public partial class Login
     {
         [Inject]
         NavigationManager NavigationManager { get; set; }

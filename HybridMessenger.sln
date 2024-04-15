@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HybridMessenger.Domain", "H
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HybridMessenger.Infrastructure", "HybridMessenger.Infrastructure\HybridMessenger.Infrastructure.csproj", "{E5F31D07-F972-42E4-A797-F3E5568A06C6}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "HybriDMessenger.Database", "HybricMessenger.Database\HybridMessenger.Database.sqlproj", "{A1BBD371-3AFC-4128-A1CB-C1DB60AF5AE2}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "HybridMessenger.Database", "HybricMessenger.Database\HybridMessenger.Database.sqlproj", "{A1BBD371-3AFC-4128-A1CB-C1DB60AF5AE2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HybridMessenger.Presentation", "HybridMessenger.Presentation\HybridMessenger.Presentation.csproj", "{86E45A4E-A265-49FA-8F31-BD608C8574DA}"
 EndProject
