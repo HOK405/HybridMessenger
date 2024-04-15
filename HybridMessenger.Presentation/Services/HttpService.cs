@@ -30,6 +30,19 @@ namespace HybridMessenger.Presentation.Services
             return await response.Content.ReadFromJsonAsync<T>();
         }
 
+        public async Task<T> PutAsync<T>(string uri, object value)
+        {
+            var response = await _httpClient.PutAsJsonAsync(uri, value);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>();
+        }
+
+        public async Task DeleteAsync(string uri)
+        {
+            var response = await _httpClient.DeleteAsync(uri);
+            response.EnsureSuccessStatusCode();
+        }
+
         public async Task SetAccessToken()
         {
             string accessToken = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "accessToken");

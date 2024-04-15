@@ -1,8 +1,6 @@
 ﻿using HybridMessenger.Presentation.Models;
 using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components;
-using System.Dynamic;
-using System.Text.Json;
 
 namespace HybridMessenger.Presentation.Components.Pages
 {
@@ -12,11 +10,18 @@ namespace HybridMessenger.Presentation.Components.Pages
         private IHttpService HttpService { get; set; }
 
         private IEnumerable<dynamic> _data;
-
         private List<string> _chatRequestedFields;
-
         private PaginationRequestModel _requestModel;
+
         private string _fieldsInput;
+        private string _groupNameToCreate;
+
+        private string _newPrivateChatUserName;
+
+        private string _groupNameToUpdate;
+        private string _groupIdToUpdate;
+
+        private string _chatIdToDelete;
 
         private readonly List<string> _allChatDtoFields = new List<string>
         {
@@ -41,6 +46,64 @@ namespace HybridMessenger.Presentation.Components.Pages
             await LoadChats();
         }
 
+        private async Task CreateGroup()
+        {
+            if (!string.IsNullOrEmpty(_groupNameToCreate))
+            {
+                await HttpService.SetAccessToken();
+                var result = await HttpService.PostAsync<ResponeChatObject>("api/chat/create-group", new CreateGroupModel()
+                {
+                    ChatName = _groupNameToCreate
+                });
+
+                _groupNameToCreate = "";
+                await LoadChats();
+            }
+        }
+
+        private async Task CreatePrivateChat()
+        {
+            if (!string.IsNullOrEmpty(_newPrivateChatUserName))
+            {
+                await HttpService.PostAsync<ResponeChatObject>("api/chat/create-private-chat", new CreatePrivateChatModel()
+                {
+                    UserNameToCreateWith = _newPrivateChatUserName
+                });
+
+                _newPrivateChatUserName = "";
+                await LoadChats();
+            }
+        }
+
+        private async Task ChangeGroupName()
+        {
+            if (!string.IsNullOrEmpty(_groupNameToUpdate) && !string.IsNullOrEmpty(_groupIdToUpdate))
+            {
+                await HttpService.PutAsync<ResponeChatObject>("api/chat/change-chat-name", new ChangeGroupNameModel()
+                {
+                    NewChatName = _groupNameToUpdate,
+                    ChatId = _groupIdToUpdate       
+                });
+
+                _newPrivateChatUserName = "";
+                await LoadChats();
+            }
+        }
+
+        private async Task DeleteChat()
+        {
+            if (!string.IsNullOrEmpty(_chatIdToDelete))
+            {
+                await HttpService.PostAsync<string>("api/chat/delete-chat", new DeleteChatModel()
+                {
+                    ChatId = _chatIdToDelete
+                });
+
+                _chatIdToDelete = "";
+                await LoadChats(); 
+            }
+        }
+
         private async Task LoadChats()
         {
             _requestModel.Fields = string.IsNullOrEmpty(_fieldsInput) ? new List<string>() : _fieldsInput.Split(',').Select(f => f.Trim()).ToList();
@@ -50,6 +113,17 @@ namespace HybridMessenger.Presentation.Components.Pages
 
             _chatRequestedFields = string.IsNullOrEmpty(_fieldsInput) ? _allChatDtoFields : _requestModel.Fields;
             StateHasChanged();
+        }
+
+        public class ResponeChatObject
+        {
+            public Guid ChatId { get; set; }
+
+            public string? ChatName { get; set; }
+
+            public bool IsGroup { get; set; }
+
+            public DateTime CreatedAt { get; set; }
         }
     }
 }

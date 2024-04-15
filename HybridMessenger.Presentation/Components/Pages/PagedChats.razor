@@ -1,33 +1,81 @@
 ﻿@page "/my-chats"
 @using HybridMessenger.Presentation.Services
 
-<div class="input-area">
-    <div class="form-group">
-        <label for="PageNumber">Page Number:</label>
-        <InputNumber @bind-Value="_requestModel.PageNumber" class="form-control" id="PageNumber" />
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <!-- INPUT VALUES FOR PAGINATION -->
+            <div class="input-area">
+                <div class="form-group">
+                    <label for="PageNumber">Page Number:</label>
+                    <InputNumber @bind-Value="_requestModel.PageNumber" class="form-control" id="PageNumber" />
+                </div>
+                <div class="form-group">
+                    <label for="PageSize">Page Size:</label>
+                    <InputNumber @bind-Value="_requestModel.PageSize" class="form-control" id="PageSize" />
+                </div>
+                <div class="form-group">
+                    <label for="SortBy">Sort by:</label>
+                    <InputText @bind-Value="_requestModel.SortBy" class="form-control" id="SortBy" />
+                </div>
+                <div class="form-group">
+                    <label for="SearchValue">Search value:</label>
+                    <InputText @bind-Value="_requestModel.SearchValue" class="form-control" id="SearchValue" />
+                </div>
+                <div class="form-group">
+                    <label for="IncludeFields">Fields to include:</label>
+                    <InputText @bind-Value="_fieldsInput" class="form-control" id="IncludeFields" />
+                </div>
+                <div class="form-group">
+                    <label for="Ascending">Ascending:</label>
+                    <InputCheckbox @bind-Value="_requestModel.Ascending" id="Ascending" />
+                </div>
+                <button class="btn btn-secondary user-full-width-button" @onclick="LoadChats">Get all groups/private chats</button>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- NEW CHAT CREATION -->
+            <div class="input-area">
+                <div class="form-group">
+                    <label for="NewChatName">Group name:</label>
+                    <InputText @bind-Value="_groupNameToCreate" class="form-control" id="NewChatName" placeholder="Enter chat name" />
+                </div>
+                <button class="btn btn-secondary user-full-width-button" @onclick="CreateGroup">Create new group</button>
+            </div>
+
+            <!-- CHANGE CHAT NAME -->
+            <div class="input-area">
+                <div class="form-group">
+                    <label for="ChangeChatName">Change chat name:</label>
+                    <InputText @bind-Value="_groupNameToUpdate" class="form-control" id="ChangeChatName" placeholder="Enter new chat name" />
+                    <InputText @bind-Value="_groupIdToUpdate" class="form-control" id="ChangeChatName" placeholder="Enter chat id" />
+                </div>
+                <button class="btn btn-secondary user-full-width-button" @onclick="ChangeGroupName">Change group name</button>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- CREATE PRIVATE CHAT -->
+            <div class="input-area">
+                <div class="form-group">
+                    <label for="NewPrivateChatUser">Username to create with:</label>
+                    <InputText @bind-Value="_newPrivateChatUserName" class="form-control" id="NewPrivateChatUser" placeholder="Enter user name" />
+                </div>
+                <button class="btn btn-secondary user-full-width-button" @onclick="CreatePrivateChat">Create private chat</button>
+            </div>
+
+            <div class="input-area">
+                <div class="form-group">
+                    <label for="DeleteChat">Delete chat</label>
+                    <InputText @bind-Value="_chatIdToDelete" class="form-control" id="DeleteChat" placeholder="Enter chat id" />
+                </div>
+                <button class="btn btn-secondary user-full-width-button" @onclick="DeleteChat">Delete chat</button>
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="PageSize">Page Size:</label>
-        <InputNumber @bind-Value="_requestModel.PageSize" class="form-control" id="PageSize" />
-    </div>
-    <div class="form-group">
-        <label for="SortBy">Sort by:</label>
-        <InputText @bind-Value="_requestModel.SortBy" class="form-control" id="SortBy" />
-    </div>
-    <div class="form-group">
-        <label for="SearchValue">Search value:</label>
-        <InputText @bind-Value="_requestModel.SearchValue" class="form-control" id="SearchValue" />
-    </div>
-    <div class="form-group">
-        <label for="IncludeFields">Fields to include:</label>
-        <InputText @bind-Value="_fieldsInput" class="form-control" id="IncludeFields" />
-    </div>
-    <div class="form-group">
-        <label for="Ascending">Ascending:</label>
-        <InputCheckbox @bind-Value="_requestModel.Ascending" id="Ascending" />
-    </div>
-    <button class="btn btn-secondary user-full-width-button" @onclick="LoadChats">Get Chats</button>
 </div>
+
 
 
 @if (_data != null && _data.Any())
