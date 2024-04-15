@@ -31,7 +31,6 @@ namespace HybridMessenger.Application.Chat.Commands
             var chat = await _chatRepository.GetByIdAsync(Guid.Parse(command.ChatId));
 
             chat.ChatName = command.NewChatName;
-
             await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<ChatDto>(chat);

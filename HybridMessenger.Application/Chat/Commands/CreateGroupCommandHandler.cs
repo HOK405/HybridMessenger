@@ -29,7 +29,6 @@ namespace HybridMessenger.Application.Chat.Commands
 
             var createdChat = await _chatRepository.CreateChatAsync(request.ChatName, true);
             await _chatMemberRepository.AddUserToChatAsync(userToAdd, createdChat);
-
             await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<ChatDto>(createdChat);                

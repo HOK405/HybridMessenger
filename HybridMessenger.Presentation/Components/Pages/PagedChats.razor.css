@@ -7,7 +7,7 @@ th {
 }
 
 .input-area {
-    width: 80%;
+    width: 90%;
     margin: auto;
 }
 
@@ -36,4 +36,9 @@ th {
 .my-custom-table th {
     background-color: #f5f5f5;
     color: #333;
+}
+
+.mini-form-padding
+{
+    padding-bottom:20px;
 }

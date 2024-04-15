@@ -6,6 +6,7 @@ namespace HybridMessenger.Domain.Entities
     public class Contact
     {
         public Guid UserId { get; set; }
+
         public Guid ContactUserId { get; set; }
 
         [Required]

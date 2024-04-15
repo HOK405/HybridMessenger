@@ -21,6 +21,9 @@ namespace HybridMessenger.Presentation.Components.Pages
         private string _groupNameToUpdate;
         private string _groupIdToUpdate;
 
+        private string _userNameToAddToGroup;
+        private string _groupIdToAddMember;
+
         private string _chatIdToDelete;
 
         private readonly List<string> _allChatDtoFields = new List<string>
@@ -85,8 +88,24 @@ namespace HybridMessenger.Presentation.Components.Pages
                     ChatId = _groupIdToUpdate       
                 });
 
-                _newPrivateChatUserName = "";
+                _groupNameToUpdate = "";
+                _groupIdToUpdate = "";
                 await LoadChats();
+            }
+        }
+
+        private async Task AddMemberToChat()
+        {
+            if (!string.IsNullOrEmpty(_userNameToAddToGroup) && !string.IsNullOrEmpty(_groupIdToAddMember))
+            {
+                await HttpService.PutAsync<StringOkResponse>("api/chat/add-group-member", new AddGroupMemberModel()
+                {
+                    ChatId = _groupIdToAddMember,
+                    UserNameToAdd = _userNameToAddToGroup
+                });
+
+                _userNameToAddToGroup = "";
+                _groupIdToAddMember = "";
             }
         }
 
@@ -94,7 +113,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         {
             if (!string.IsNullOrEmpty(_chatIdToDelete))
             {
-                await HttpService.PostAsync<string>("api/chat/delete-chat", new DeleteChatModel()
+                await HttpService.PostAsync<StringOkResponse>("api/chat/delete-chat", new DeleteChatModel()
                 {
                     ChatId = _chatIdToDelete
                 });
@@ -113,6 +132,11 @@ namespace HybridMessenger.Presentation.Components.Pages
 
             _chatRequestedFields = string.IsNullOrEmpty(_fieldsInput) ? _allChatDtoFields : _requestModel.Fields;
             StateHasChanged();
+        }
+
+        public class StringOkResponse
+        {
+            public string Message { get; set; }
         }
 
         public class ResponeChatObject

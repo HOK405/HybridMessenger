@@ -1,12 +1,12 @@
 ﻿using FluentValidation;
-using HybridMessenger.Application.Message.DTOs;
+using HybridMessenger.Application.Chat.DTOs;
 using System.Reflection;
 
-namespace HybridMessenger.Application.Message.Queries
+namespace HybridMessenger.Application.Chat.Queries
 {
-    public class GetPagedUserMessagesQueryValidator : AbstractValidator<GetPagedUserMessagesQuery>
+    public class GetPagedUserChatsQueryValidator : AbstractValidator<GetPagedUserChatsQuery>
     {
-        public GetPagedUserMessagesQueryValidator()
+        public GetPagedUserChatsQueryValidator()
         {
             RuleFor(query => query.SortBy)
                 .Must(BeAValidSortProperty)
@@ -20,12 +20,12 @@ namespace HybridMessenger.Application.Message.Queries
 
         private bool BeAValidSortProperty(string sortBy)
         {
-            return typeof(MessageDto).GetProperty(sortBy, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance) != null;
+            return typeof(ChatDto).GetProperty(sortBy, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance) != null;
         }
 
         private bool BeValidRequestedFields(IEnumerable<string> fields)
         {
-            var dtoProperties = typeof(MessageDto).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            var dtoProperties = typeof(ChatDto).GetProperties(BindingFlags.Public | BindingFlags.Instance)
                                                .Select(p => p.Name)
                                                .ToList();
 

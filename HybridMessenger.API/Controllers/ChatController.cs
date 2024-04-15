@@ -69,7 +69,7 @@ namespace HybridMessenger.API.Controllers
 
             await _mediator.Send(command);
 
-            return Ok("Group member is successfully added.");
+            return Ok(new { Message = "Group member is successfully added." });
         }
 
         [Authorize]
@@ -79,7 +79,7 @@ namespace HybridMessenger.API.Controllers
             command.UserId = _userClaimsService.GetUserId(User);
 
             await _mediator.Send(command);
-            return Ok("Chat is successfully deleted.");
+            return Ok(new { Message = "Chat is successfully deleted." });
         }
     }
 }
