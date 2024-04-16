@@ -1,8 +1,6 @@
 ﻿using HybridMessenger.Domain.Entities;
 using HybridMessenger.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using System.Reflection.Metadata.Ecma335;
 
 namespace HybridMessenger.Infrastructure.Repositories
 {
@@ -34,7 +32,13 @@ namespace HybridMessenger.Infrastructure.Repositories
             return await _context.Chats.AnyAsync(c => c.ChatID == id);
         }
 
-        public async Task<IQueryable<Chat>> GetPagedUserChatsAsync(Guid userId, int pageNumber, int pageSize, string sortBy, string searchValue = "", bool ascending = true)
+        public async Task<IQueryable<Chat>> GetPagedUserChatsAsync(
+            Guid userId, 
+            int pageNumber, 
+            int pageSize, 
+            string sortBy, 
+            string searchValue = "", 
+            bool ascending = true)
         {
             var userChatsQuery = _context.ChatMembers
                 .Where(cm => cm.UserId == userId)
@@ -46,46 +50,12 @@ namespace HybridMessenger.Infrastructure.Repositories
             }
 
             // Apply dynamic sorting
-            var sortParameter = Expression.Parameter(typeof(Chat), "x");
-            Expression sortProperty = Expression.Property(sortParameter, sortBy);
-            var sortLambda = Expression.Lambda<Func<Chat, object>>(Expression.Convert(sortProperty, typeof(object)), sortParameter);
-
-            userChatsQuery = ascending ? userChatsQuery.OrderBy(sortLambda) : userChatsQuery.OrderByDescending(sortLambda);
+            userChatsQuery = ApplySorting(userChatsQuery, sortBy, ascending);
 
             // Apply pagination
-            userChatsQuery = userChatsQuery.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            userChatsQuery = ApplyPagination(userChatsQuery, pageNumber, pageSize);
 
             return userChatsQuery;
         }
-
-        private IQueryable<Chat> ApplySearch(IQueryable<Chat> query, string searchValue)
-        {
-            var parameter = Expression.Parameter(typeof(Chat), "x");
-            Expression searchExpression = null;
-            var containsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
-
-            foreach (var property in typeof(Chat).GetProperties())
-            {
-                if (property.PropertyType != typeof(string))
-                {
-                    continue;
-                }
-
-                var propertyAccess = Expression.Property(parameter, property);
-                var searchConstant = Expression.Constant(searchValue);
-                var containsExpression = Expression.Call(propertyAccess, containsMethod, searchConstant);
-
-                searchExpression = searchExpression == null ? containsExpression : Expression.OrElse(searchExpression, containsExpression);
-            }
-
-            if (searchExpression != null)
-            {
-                var lambda = Expression.Lambda<Func<Chat, bool>>(searchExpression, parameter);
-                query = query.Where(lambda);
-            }
-
-            return query;
-        }
-
     }
 }

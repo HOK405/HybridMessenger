@@ -20,7 +20,7 @@ namespace HybridMessenger.Application.User.Queries
 
         private bool BeAValidSortProperty(string sortBy)
         {
-            return typeof(Domain.Entities.User).GetProperty(sortBy, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance) != null;
+            return typeof(UserDto).GetProperty(sortBy, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance) != null;
         }
 
         private bool BeValidRequestedFields(IEnumerable<string> fields)

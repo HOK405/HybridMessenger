@@ -1,5 +1,4 @@
 ﻿using HybridMessenger.Domain.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace HybridMessenger.Infrastructure.Repositories
@@ -45,87 +44,102 @@ namespace HybridMessenger.Infrastructure.Repositories
             // Dynamic filtering based on specific fields
             if (filters != null && filters.Any())
             {
-                var parameter = Expression.Parameter(typeof(T), "x");
-                Expression filterExpression = null;
-
-                foreach (var filter in filters)
-                {
-                    var property = typeof(T).GetProperty(filter.Key);
-                    if (property != null)
-                    {
-                        var propertyAccess = Expression.Property(parameter, property);
-                        Expression conditionExpression;
-
-                        if (property.PropertyType == typeof(Guid) && Guid.TryParse(filter.Value.ToString(), out var guidValue))
-                        {
-                            var filterConstant = Expression.Constant(guidValue, property.PropertyType);
-                            conditionExpression = Expression.Equal(propertyAccess, filterConstant);
-                        }
-                        else
-                        {
-                            var filterConstant = Expression.Constant(filter.Value, property.PropertyType);
-                            conditionExpression = Expression.Equal(propertyAccess, filterConstant);
-                        }
-
-                        filterExpression = filterExpression == null
-                            ? conditionExpression
-                            : Expression.AndAlso(filterExpression, conditionExpression);
-                    }
-                }
-
-                if (filterExpression != null)
-                {
-                    var lambda = Expression.Lambda<Func<T, bool>>(filterExpression, parameter);
-                    query = query.Where(lambda);
-                }
+                query = ApplyFilters(query, filters);
             }
 
+            // Searching
             if (!string.IsNullOrWhiteSpace(searchValue))
             {
-                var parameter = Expression.Parameter(typeof(T), "x");
-                Expression searchExpression = null;
-                var containsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
-                var toStringMethod = typeof(object).GetMethod("ToString");
-
-                foreach (var property in typeof(T).GetProperties())
-                {
-                    // Skip non-string and non-Guid properties
-                    if (property.PropertyType != typeof(string) && property.PropertyType != typeof(Guid))
-                    {
-                        continue;
-                    }
-
-                    Expression propertyAccess = Expression.Property(parameter, property);
-                    // If the property is a Guid, convert it to string
-                    if (property.PropertyType == typeof(Guid))
-                    {
-                        propertyAccess = Expression.Call(propertyAccess, toStringMethod);
-                    }
-
-                    var searchConstant = Expression.Constant(searchValue);
-                    var containsExpression = Expression.Call(propertyAccess, containsMethod, searchConstant);
-
-                    searchExpression = searchExpression == null
-                        ? containsExpression
-                        : Expression.OrElse(searchExpression, containsExpression);
-                }
-
-                if (searchExpression != null)
-                {
-                    var lambda = Expression.Lambda<Func<T, bool>>(searchExpression, parameter);
-                    query = query.Where(lambda);
-                }
+                query = ApplySearch(query, searchValue);
             }
 
             // Sorting
+            query = ApplySorting(query, sortBy, ascending);
+            
+            // Pagination
+            query = ApplyPagination(query, pageNumber, pageSize);
+
+            return query;
+        }
+
+        protected IQueryable<T> ApplySearch(IQueryable<T> query, string searchValue)
+        {
+            var parameter = Expression.Parameter(typeof(T), "x");
+            Expression searchExpression = null;
+            var containsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+            var toStringMethod = typeof(object).GetMethod("ToString");
+
+            foreach (var property in typeof(T).GetProperties())
+            {
+                // Skip non-string and non-Guid properties
+                if (property.PropertyType != typeof(string) && property.PropertyType != typeof(Guid))
+                {
+                    continue;
+                }
+
+                Expression propertyAccess = Expression.Property(parameter, property);
+                // If the property is a Guid, convert it to string
+                if (property.PropertyType == typeof(Guid))
+                {
+                    propertyAccess = Expression.Call(propertyAccess, toStringMethod);
+                }
+
+                var searchConstant = Expression.Constant(searchValue);
+                var containsExpression = Expression.Call(propertyAccess, containsMethod, searchConstant);
+
+                searchExpression = searchExpression == null
+                    ? containsExpression
+                    : Expression.OrElse(searchExpression, containsExpression);
+            }
+
+            if (searchExpression != null)
+            {
+                var lambda = Expression.Lambda<Func<T, bool>>(searchExpression, parameter);
+                query = query.Where(lambda);
+            }
+
+            return query;
+        }
+
+        protected IQueryable<T> ApplyPagination(IQueryable<T> query, int pageNumber, int pageSize)
+        {
+            return query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+        }
+
+        protected IQueryable<T> ApplySorting(IQueryable<T> query, string sortBy, bool ascending)
+        {
             var sortParameter = Expression.Parameter(typeof(T), "x");
             Expression sortProperty = Expression.Property(sortParameter, sortBy);
             var sortLambda = Expression.Lambda<Func<T, object>>(Expression.Convert(sortProperty, typeof(object)), sortParameter);
 
-            query = ascending ? query.OrderBy(sortLambda) : query.OrderByDescending(sortLambda);
+            return ascending ? query.OrderBy(sortLambda) : query.OrderByDescending(sortLambda);
+        }
 
-            // Pagination
-            query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+        protected IQueryable<T> ApplyFilters(IQueryable<T> query, Dictionary<string, object> filters)
+        {
+            var parameter = Expression.Parameter(typeof(T), "x");
+            Expression filterExpression = null;
+
+            foreach (var filter in filters)
+            {
+                var property = typeof(T).GetProperty(filter.Key);
+                if (property != null)
+                {
+                    var propertyAccess = Expression.Property(parameter, property);
+                    var filterConstant = Expression.Constant(filter.Value, property.PropertyType);
+                    var conditionExpression = Expression.Equal(propertyAccess, filterConstant);
+
+                    filterExpression = filterExpression == null
+                        ? conditionExpression
+                        : Expression.AndAlso(filterExpression, conditionExpression);
+                }
+            }
+
+            if (filterExpression != null)
+            {
+                var lambda = Expression.Lambda<Func<T, bool>>(filterExpression, parameter);
+                query = query.Where(lambda);
+            }
 
             return query;
         }
