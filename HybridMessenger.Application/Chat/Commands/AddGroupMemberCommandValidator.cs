@@ -53,7 +53,7 @@ namespace HybridMessenger.Application.Chat.Commands
         {
             var userToAdd = await _userRepository.GetUserByUsernameAsync(userNameToAdd);
             if (userToAdd == null) return false;
-            return !await _chatMemberRepository.IsUserMemberOfGroupAsync(userToAdd.Id, Guid.Parse(command.ChatId));
+            return !await _chatMemberRepository.IsUserMemberOfChatAsync(userToAdd.Id, Guid.Parse(command.ChatId));
         }
     }
 }

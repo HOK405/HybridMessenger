@@ -25,6 +25,7 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private async Task HandleLogin()
         {
+
             try
             {
                 var tokenResponse = await _httpService.PostAsync<TokenResponse>("api/User/login", loginModel);

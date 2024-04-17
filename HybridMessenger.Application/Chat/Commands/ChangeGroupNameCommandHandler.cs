@@ -38,7 +38,7 @@ namespace HybridMessenger.Application.Chat.Commands
 
         private async Task<bool> UserIsInChat(string userId, string chatId)
         {
-            return await _chatMemberRepository.IsUserMemberOfGroupAsync(Guid.Parse(userId), Guid.Parse(chatId));
+            return await _chatMemberRepository.IsUserMemberOfChatAsync(Guid.Parse(userId), Guid.Parse(chatId));
         }
     }
 }

@@ -1,0 +1,61 @@
+﻿@page "/chatting"
+@using HybridMessenger.Presentation.Services
+
+
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-md-6">
+            <div class="input-area">
+                <div class="form-group">
+                    <label for="ChatId">Input chat id:</label>
+                    <InputText @bind-Value="_requestModel.ChatId" class="form-control" id="ChatId" />
+                </div>
+                <button class="btn btn-secondary user-full-width-button" @onclick="LoadMessages">Get messages</button>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="input-area">
+                <div class="form-group">
+                    <label for="SendMessage">Input message text:</label>
+                    <InputText @bind-Value="_sendModel.MessageText" class="form-control" id="SendMessage" />
+                </div>
+                <button class="btn btn-secondary user-full-width-button" @onclick="SendMessage">Send message</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+@if (_data != null && _data.Any())
+{
+    <table class="table" style="margin-top:50px">
+        <thead>
+            <tr>
+                @foreach (var field in _allUserDtoFields)
+                {
+                    <th>@field</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _data)
+            {
+                <tr>
+                    @foreach (var field in _allUserDtoFields)
+                    {
+                        <td>@JsonHelper.GetDynamicValue(item.ToString(), field)</td>
+                    }
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+else
+{
+    <p>No data available.</p>
+}

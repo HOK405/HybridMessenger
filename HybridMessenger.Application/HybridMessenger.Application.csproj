@@ -19,8 +19,4 @@
     <ProjectReference Include="..\HybridMessenger.Domain\HybridMessenger.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Message\Commands\" />
-  </ItemGroup>
-
 </Project>
