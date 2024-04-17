@@ -1,9 +1,11 @@
 ﻿using HybridMessenger.Application.Chat.Commands;
 using HybridMessenger.Application.Chat.Queries;
 using HybridMessenger.Domain.Services;
+using HybridMessenger.Infrastructure.Hubs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace HybridMessenger.API.Controllers
 {

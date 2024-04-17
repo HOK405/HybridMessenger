@@ -1,6 +1,7 @@
 using HybridMessenger.API.Extensions;
 using HybridMessenger.Application;
 using HybridMessenger.Infrastructure;
+using HybridMessenger.Infrastructure.Hubs;
 using Microsoft.EntityFrameworkCore;
 
 namespace HybridMessenger.API
@@ -29,6 +30,8 @@ namespace HybridMessenger.API
             builder.Services.AddApplication();
             builder.Services.AddApplicationValidation();
 
+            builder.Services.AddSignalR();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -44,6 +47,8 @@ namespace HybridMessenger.API
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.MapHub<ChatHub>("/chathub");
 
             app.Run();
         }

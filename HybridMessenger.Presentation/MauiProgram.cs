@@ -42,6 +42,7 @@ namespace HybridMessenger.Presentation
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBaseAddress) });
 
             builder.Services.AddScoped<IHttpService, HttpService>();
+            builder.Services.AddScoped<ChatService>();
 
             builder.Services.AddMauiBlazorWebView();
 

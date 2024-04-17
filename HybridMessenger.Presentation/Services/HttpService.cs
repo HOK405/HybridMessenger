@@ -47,10 +47,7 @@ namespace HybridMessenger.Presentation.Services
         {
             string accessToken = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "accessToken");
 
-            var sdf = _httpClient.DefaultRequestHeaders.Authorization?.Parameter;
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-
-            var sdfsdf = _httpClient.DefaultRequestHeaders.Authorization?.Parameter;
         }
     }
 }
