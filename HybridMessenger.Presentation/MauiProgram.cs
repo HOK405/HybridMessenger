@@ -21,19 +21,8 @@ namespace HybridMessenger.Presentation
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
-            string apiBaseAddress;
-
-            if (OperatingSystem.IsAndroid())
-            {
-                /*apiBaseAddress = "https://192.168.1.11:44314";*/
-                apiBaseAddress = "http://10.0.2.2:44314/";
-            }
-            else
-            {
-                apiBaseAddress = builder.Configuration["ApiBaseAddress"];
-            }
+            string apiBaseAddress = builder.Configuration["ApiBaseAddress"];
            
-            /*var apiBaseAddress = "https://localhost:44314/";*/
             if (string.IsNullOrEmpty(apiBaseAddress))
             {
                 throw new InvalidOperationException("API base address is not configured properly.");

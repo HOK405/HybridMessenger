@@ -1,16 +1,23 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Configuration;
 
 namespace HybridMessenger.Presentation.Services
 {
     public class ChatService
     {
-        private HubConnection _hubConnection;
         public event Action OnMessageReceived;
 
-        public async Task InitializeAsync(string url)
+        private HubConnection _hubConnection;
+        private string _url;
+
+        public ChatService(IConfiguration configuration)
+        {
+            _url = configuration.GetValue<string>("HubEndpoint");
+        }
+        public async Task InitializeAsync()
         {
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl(url)
+                .WithUrl(_url)
                 .WithAutomaticReconnect()
                 .Build();
 
@@ -22,5 +29,4 @@ namespace HybridMessenger.Presentation.Services
             await _hubConnection.StartAsync();
         }
     }
-
 }

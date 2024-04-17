@@ -37,7 +37,7 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            await _chatService.InitializeAsync("https://localhost:44314/chathub");
+            await _chatService.InitializeAsync();
             _chatService.OnMessageReceived += HandleNewMessage;
 
             _data = new List<dynamic>();
