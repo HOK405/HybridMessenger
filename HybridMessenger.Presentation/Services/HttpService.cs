@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Net.Http.Json;
+using System.Text;
 
 namespace HybridMessenger.Presentation.Services
 {
@@ -48,6 +49,11 @@ namespace HybridMessenger.Presentation.Services
             string accessToken = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "accessToken");
 
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        }
+
+        public async Task<string> GetToken()
+        {
+            return await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "accessToken");
         }
     }
 }

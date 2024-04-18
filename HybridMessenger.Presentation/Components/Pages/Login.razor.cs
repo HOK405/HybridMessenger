@@ -36,7 +36,7 @@ namespace HybridMessenger.Presentation.Components.Pages
                     await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "refreshToken", tokenResponse.RefreshToken);
 
                     loginResult = "Logged in successfully!";
-                    ((CustomAuthStateProvider)AuthenticationStateProvider).NotifyUserAuthentication(tokenResponse.AccessToken);
+                    ((AuthenticationService)AuthenticationStateProvider).NotifyUserAuthentication(tokenResponse.AccessToken);
                     NavigationManager.NavigateTo("/users", true);
                 }
                 else

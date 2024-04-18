@@ -5,12 +5,12 @@ using System.Security.Claims;
 
 namespace HybridMessenger.Presentation.Auth
 {
-    public class CustomAuthStateProvider : AuthenticationStateProvider
+    public class AuthenticationService : AuthenticationStateProvider
     {
         private readonly IJSRuntime _jsRuntime;
         private readonly static string _accessTokenKey = "accessToken";
 
-        public CustomAuthStateProvider(IJSRuntime jsRuntime)
+        public AuthenticationService(IJSRuntime jsRuntime)
         {
             _jsRuntime = jsRuntime;
         }

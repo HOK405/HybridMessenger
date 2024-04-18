@@ -94,7 +94,7 @@
         await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "accessToken");
         await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "refreshToken");
 
-        ((CustomAuthStateProvider)AuthenticationStateProvider).NotifyUserLogout();
+        ((AuthenticationService)AuthenticationStateProvider).NotifyUserLogout();
 
         // Redirect
         NavigationManager.NavigateTo("/", true);

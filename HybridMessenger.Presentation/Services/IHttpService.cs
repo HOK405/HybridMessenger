@@ -10,6 +10,8 @@
 
         Task DeleteAsync(string uri);
 
+        Task<string> GetToken();
+
         Task SetAccessToken();
     }
 }

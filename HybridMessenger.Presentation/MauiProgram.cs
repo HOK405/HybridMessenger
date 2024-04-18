@@ -35,7 +35,7 @@ namespace HybridMessenger.Presentation
 
             builder.Services.AddMauiBlazorWebView();
 
-            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+            builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationService>();
 
             builder.Services.AddAuthorizationCore();
 
