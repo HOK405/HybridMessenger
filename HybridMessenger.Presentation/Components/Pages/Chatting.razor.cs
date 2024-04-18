@@ -1,4 +1,5 @@
-﻿using HybridMessenger.Presentation.Models;
+﻿using HybridMessenger.Presentation.RequestModels;
+using HybridMessenger.Presentation.ResponseModels;
 using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components;
 
@@ -12,22 +13,19 @@ namespace HybridMessenger.Presentation.Components.Pages
         [Inject]
         public ChatService _chatService { get; set; }
 
-        private IEnumerable<dynamic> _data;
+        private string _messageText;
+
+        private List<MessageModel> _data;
 
         private ChatMessagesRequestModel _requestModel = new ChatMessagesRequestModel
         {
             ChatId = "default",
             PageNumber = 1,
-            PageSize = 20,
+            PageSize = 100,
             SortBy = "SentAt",
             SearchValue = "",
             Ascending = true,
-            Fields = new List<string>()  
-        };
-
-        private SendMessageRequestModel _sendModel = new SendMessageRequestModel()
-        {
-            MessageText = ""
+            Fields = new List<string>()
         };
 
         private readonly List<string> _allUserDtoFields = new List<string>
@@ -40,30 +38,30 @@ namespace HybridMessenger.Presentation.Components.Pages
             await _chatService.InitializeAsync();
             _chatService.OnMessageReceived += HandleNewMessage;
 
-            _data = new List<dynamic>();
+            _data = new List<MessageModel>();
 
             await HttpService.SetAccessToken();
         }
 
-        private void HandleNewMessage()
+        private void HandleNewMessage(MessageModel message)
         {
-            InvokeAsync(async () =>
+            InvokeAsync(() =>
             {
-                await LoadMessages();
+                _data.Add(message);
+                StateHasChanged();
             });
         }
 
         private async Task LoadMessages()
         {
-            _data = await HttpService.PostAsync<IEnumerable<dynamic>>("api/Message/get-chat-messages", _requestModel);         
+            _data = await HttpService.PostAsync<List<MessageModel>>("api/Message/get-chat-messages", _requestModel);         
 
             StateHasChanged();
         }
 
         private async Task SendMessage()
         {
-            _sendModel.ChatId = _requestModel.ChatId;
-            await HttpService.PostAsync<StringOkResponse>("api/Message/send-message", _sendModel);
+            await _chatService.SendMessage(_requestModel.ChatId, _messageText);
         }
 
         public class StringOkResponse

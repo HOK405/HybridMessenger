@@ -25,18 +25,6 @@ namespace HybridMessenger.API.Controllers
         }
 
         [Authorize]
-        [HttpPost("send-message")]
-        public async Task<ActionResult> SendMessage([FromBody] SendMessageCommand command)
-        {
-            command.UserId = _userClaimsService.GetUserId(User);
-
-            await _mediator.Send(command);
-
-            await _hubContext.Clients.All.SendAsync("ReceiveMessage", User.Identity.Name, command.MessageText);
-            return Ok(new { Message = "Message is sent successfully."});
-        }
-
-        [Authorize]
         [HttpPost("get-chat-messages")]
         public async Task<ActionResult> GetChatMessages([FromBody] GetPagedChatMessagesQuery query)
         {

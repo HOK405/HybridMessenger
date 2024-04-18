@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using HybridMessenger.Presentation.ResponseModels;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 
 namespace HybridMessenger.Presentation.Services
 {
     public class ChatService
     {
-        public event Action OnMessageReceived;
+        public event Action<MessageModel> OnMessageReceived;
 
         private IHttpService _httpService;
         private HubConnection _hubConnection;
@@ -28,12 +29,17 @@ namespace HybridMessenger.Presentation.Services
                 .WithAutomaticReconnect()
                 .Build();
 
-            _hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+            _hubConnection.On<MessageModel>("ReceiveMessage", (message) =>
             {
-                OnMessageReceived?.Invoke();
+                OnMessageReceived?.Invoke(message);
             });
 
             await _hubConnection.StartAsync();
+        }
+
+        public async Task SendMessage(string chatId, string message)
+        {
+            await _hubConnection.SendAsync("SendMessage", chatId, message);
         }
     }
 }

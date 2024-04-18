@@ -17,9 +17,11 @@ namespace HybridMessenger.Infrastructure.Repositories
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public async void AddAsync(T entity)
+        public async Task<T> AddAsync(T entity)
         {
-           await  _context.Set<T>().AddAsync(entity);
+            var result = await  _context.Set<T>().AddAsync(entity);
+
+            return result.Entity;
         }
 
         public void Update(T entity)

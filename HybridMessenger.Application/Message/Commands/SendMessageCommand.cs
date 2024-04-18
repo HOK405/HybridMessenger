@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace HybridMessenger.Application.Message.Commands
 {
-    public class SendMessageCommand : IRequest
+    public class SendMessageCommand : IRequest<MessageDto>
     {
         public string MessageText { get; set; }
 
@@ -12,6 +12,5 @@ namespace HybridMessenger.Application.Message.Commands
 
         [JsonIgnore]
         public string UserId { get; set; }
-
     }
 }

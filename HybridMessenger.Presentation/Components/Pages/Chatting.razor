@@ -18,7 +18,7 @@
             <div class="input-area">
                 <div class="form-group">
                     <label for="SendMessage">Input message text:</label>
-                    <InputText @bind-Value="_sendModel.MessageText" class="form-control" id="SendMessage" />
+                    <InputText @bind-Value="_messageText" class="form-control" id="SendMessage" />
                 </div>
                 <button class="btn btn-secondary user-full-width-button" @onclick="SendMessage">Send message</button>
             </div>
@@ -39,13 +39,13 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in _data)
+            @foreach (var message in _data)
             {
                 <tr>
-                    @foreach (var field in _allUserDtoFields)
-                    {
-                        <td>@JsonHelper.GetDynamicValue(item.ToString(), field)</td>
-                    }
+                    <td>@message.MessageId</td>
+                    <td>@message.UserId</td>
+                    <td>@message.MessageText</td>
+                    <td>@message.SentAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
                 </tr>
             }
         </tbody>

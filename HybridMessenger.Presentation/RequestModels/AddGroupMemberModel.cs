@@ -1,4 +1,4 @@
-﻿namespace HybridMessenger.Presentation.Models
+﻿namespace HybridMessenger.Presentation.RequestModels
 {
     public class AddGroupMemberModel
     {

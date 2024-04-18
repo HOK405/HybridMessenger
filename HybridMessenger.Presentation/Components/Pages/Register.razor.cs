@@ -1,5 +1,5 @@
 ﻿using HybridMessenger.Presentation.Auth;
-using HybridMessenger.Presentation.Models;
+using HybridMessenger.Presentation.RequestModels;
 using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;

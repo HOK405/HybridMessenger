@@ -9,7 +9,7 @@
     {
         Task<T> GetByIdAsync(TKey id);
 
-        void AddAsync(T entity);
+        Task<T> AddAsync(T entity);
 
         void Update(T entity);
 
