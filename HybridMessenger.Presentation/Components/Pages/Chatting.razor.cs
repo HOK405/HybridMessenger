@@ -19,7 +19,7 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private ChatMessagesRequestModel _requestModel = new ChatMessagesRequestModel
         {
-            ChatId = "default",
+            ChatId = "AE859DC5-2892-4300-98A4-2C5B6CB9D1B6",
             PageNumber = 1,
             PageSize = 100,
             SortBy = "SentAt",
@@ -41,6 +41,10 @@ namespace HybridMessenger.Presentation.Components.Pages
             _data = new List<MessageModel>();
 
             await HttpService.SetAccessToken();
+
+            await _chatService.JoinGroup(_requestModel.ChatId);
+
+            await LoadMessages();
         }
 
         private void HandleNewMessage(MessageModel message)
@@ -62,6 +66,11 @@ namespace HybridMessenger.Presentation.Components.Pages
         private async Task SendMessage()
         {
             await _chatService.SendMessage(_requestModel.ChatId, _messageText);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await _chatService.LeaveGroup(_requestModel.ChatId);
         }
 
         public class StringOkResponse

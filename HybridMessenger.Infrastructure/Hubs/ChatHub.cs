@@ -17,20 +17,32 @@ namespace HybridMessenger.Infrastructure.Hubs
             _mediator = mediator;
             _userClaimsService = userClaimsService;
         }
-        public async Task SendMessage(string chatId, string messageText)
+
+        public async Task JoinGroup(string groupId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString());
+        }
+
+        public async Task LeaveGroup(string groupId)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString());
+        }
+
+        public async Task SendMessage(string groupId, string messageText)
         {
             var userId = _userClaimsService.GetUserId(Context.User);
-
             var command = new SendMessageCommand
             {
-                ChatId = chatId,
+                ChatId = groupId.ToString(),
                 MessageText = messageText,
                 UserId = userId
             };
 
             var messageDto = await _mediator.Send(command);
 
-            await Clients.All.SendAsync("ReceiveMessage", messageDto);
+            // Send to all clients in the specified group
+            await Clients.Group(groupId.ToString()).SendAsync("ReceiveMessage", messageDto);
         }
     }
+
 }
