@@ -15,12 +15,16 @@ namespace HybridMessenger.API.Extensions
         public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             // Configure JWT Authentication
-            var key = Encoding.ASCII.GetBytes(configuration["JwtSettings:Key"]);
+            /*var key = Encoding.ASCII.GetBytes(configuration["JwtSettings:Key"]);
             var audience = configuration["JwtSettings:Audience"];
-            var issuer = configuration["JwtSettings:Issuer"];
+            var issuer = configuration["JwtSettings:Issuer"];*/
+
+            var key = Encoding.ASCII.GetBytes("MyVeryVeryVeryLongSecretAndItShouldBePlacedSomewhereInSafePlace");
+            var audience = "HybridMessenger";
+            var issuer = "HybridMessenger";
 
             // Validate key
-            if (key is null || key.Length == 0)
+            /*if (key is null || key.Length == 0)
             {
                 throw new ArgumentNullException("JwtSettings:Key", "JWT Key must not be null or empty.");
             }
@@ -35,7 +39,7 @@ namespace HybridMessenger.API.Extensions
             if (string.IsNullOrWhiteSpace(issuer))
             {
                 throw new ArgumentNullException("JwtSettings:Issuer", "Issuer must not be null or empty.");
-            }
+            }*/
 
 
             services.AddAuthentication(x =>

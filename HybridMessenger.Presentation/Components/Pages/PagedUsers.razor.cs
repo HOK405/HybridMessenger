@@ -11,7 +11,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         private IEnumerable<dynamic> _data;
         private List<string> _userRequestedFields;
 
-        private PaginationRequestModel _requestModel;
+        private PaginationRequest _requestModel;
 
         private string _fieldsInput;
 
@@ -25,7 +25,7 @@ namespace HybridMessenger.Presentation.Components.Pages
             _data = new List<dynamic>();
             _userRequestedFields = new List<string>();
 
-            _requestModel = new PaginationRequestModel
+            _requestModel = new PaginationRequest
             {
                 PageNumber = 1,
                 PageSize = 10,

@@ -1,6 +1,6 @@
 ﻿namespace HybridMessenger.Presentation.RequestModels
 {
-    public class DeleteChatModel
+    public class DeleteChatRequest
     {
         public string ChatId { get; set; }
     }

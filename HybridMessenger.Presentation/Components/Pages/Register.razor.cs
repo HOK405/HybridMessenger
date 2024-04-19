@@ -19,7 +19,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         [Inject]
         private IHttpService _httpService { get; set; }
 
-        private RegisterModel registerModel = new RegisterModel();
+        private RegisterRequest registerModel = new RegisterRequest();
         private string registerResult;
         private string alertClass => registerResult == "Registered successfully!" ? "status-success" : "status-danger";
 

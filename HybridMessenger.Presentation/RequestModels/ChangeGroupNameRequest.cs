@@ -1,6 +1,6 @@
 ﻿namespace HybridMessenger.Presentation.RequestModels
 {
-    public class ChangeGroupNameModel
+    public class ChangeGroupNameRequest
     {
         public string NewChatName { get; set; }
 

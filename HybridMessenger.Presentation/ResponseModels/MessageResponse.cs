@@ -1,6 +1,6 @@
 ﻿namespace HybridMessenger.Presentation.ResponseModels
 {
-    public class MessageModel
+    public class MessageResponse
     {
         public int MessageId { get; set; }
 

@@ -20,20 +20,21 @@ namespace HybridMessenger.Infrastructure.Hubs
 
         public async Task JoinGroup(string groupId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString());
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
         }
 
         public async Task LeaveGroup(string groupId)
         {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString());
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
         }
 
         public async Task SendMessage(string groupId, string messageText)
         {
             var userId = _userClaimsService.GetUserId(Context.User);
+
             var command = new SendMessageCommand
             {
-                ChatId = groupId.ToString(),
+                ChatId = groupId,
                 MessageText = messageText,
                 UserId = userId
             };
@@ -41,8 +42,7 @@ namespace HybridMessenger.Infrastructure.Hubs
             var messageDto = await _mediator.Send(command);
 
             // Send to all clients in the specified group
-            await Clients.Group(groupId.ToString()).SendAsync("ReceiveMessage", messageDto);
+            await Clients.Group(groupId).SendAsync("ReceiveMessage", messageDto);
         }
     }
-
 }

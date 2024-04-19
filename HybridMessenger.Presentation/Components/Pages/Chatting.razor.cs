@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace HybridMessenger.Presentation.Components.Pages
 {
-    public partial class Chatting : ComponentBase
+    public partial class Chatting : ComponentBase, IAsyncDisposable
     {
         [Inject]
         public IHttpService HttpService { get; set; }
@@ -13,20 +13,16 @@ namespace HybridMessenger.Presentation.Components.Pages
         [Inject]
         public ChatService _chatService { get; set; }
 
+        [Parameter]
+        public string ChatId { get; set; }
+
         private string _messageText;
 
-        private List<MessageModel> _data;
+        private List<MessageResponse> _data;
 
-        private ChatMessagesRequestModel _requestModel = new ChatMessagesRequestModel
-        {
-            ChatId = "AE859DC5-2892-4300-98A4-2C5B6CB9D1B6",
-            PageNumber = 1,
-            PageSize = 100,
-            SortBy = "SentAt",
-            SearchValue = "",
-            Ascending = true,
-            Fields = new List<string>()
-        };
+        private ChatMessagesRequest _requestModel;
+
+        private bool _disposed = false;
 
         private readonly List<string> _allUserDtoFields = new List<string>
         {
@@ -38,16 +34,27 @@ namespace HybridMessenger.Presentation.Components.Pages
             await _chatService.InitializeAsync();
             _chatService.OnMessageReceived += HandleNewMessage;
 
-            _data = new List<MessageModel>();
+            _data = new List<MessageResponse>();
 
-            await HttpService.SetAccessToken();
+            _requestModel = new ChatMessagesRequest
+            {
+                PageNumber = 1,
+                PageSize = 100,
+                SortBy = "SentAt",
+                SearchValue = "",
+                Ascending = true,
+                Fields = new List<string>()
+            };
 
-            await _chatService.JoinGroup(_requestModel.ChatId);
-
-            await LoadMessages();
+            if (!string.IsNullOrEmpty(ChatId))
+            {
+                _requestModel.ChatId = ChatId;
+                await _chatService.JoinGroup(_requestModel.ChatId);
+                await LoadMessages();
+            }
         }
 
-        private void HandleNewMessage(MessageModel message)
+        private void HandleNewMessage(MessageResponse message)
         {
             InvokeAsync(() =>
             {
@@ -58,7 +65,7 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private async Task LoadMessages()
         {
-            _data = await HttpService.PostAsync<List<MessageModel>>("api/Message/get-chat-messages", _requestModel);         
+            _data = await HttpService.PostAsync<List<MessageResponse>>("api/Message/get-chat-messages", _requestModel);         
 
             StateHasChanged();
         }
@@ -70,12 +77,14 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         public async ValueTask DisposeAsync()
         {
-            await _chatService.LeaveGroup(_requestModel.ChatId);
-        }
+            if (!_disposed)
+            {
+                _chatService.OnMessageReceived -= HandleNewMessage;
+                await _chatService.LeaveGroup(_requestModel.ChatId);
+                _disposed = true;
+            }
 
-        public class StringOkResponse
-        {
-            public string Message { get; set; }
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using HybridMessenger.Presentation.RequestModels;
+using HybridMessenger.Presentation.ResponseModels;
 using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components;
 
@@ -9,9 +10,12 @@ namespace HybridMessenger.Presentation.Components.Pages
         [Inject]
         private IHttpService HttpService { get; set; }
 
-        private IEnumerable<dynamic> _data;
-        private List<string> _chatRequestedFields;
-        private PaginationRequestModel _requestModel;
+        [Inject]
+        public NavigationManager NavigationManager { get; set; }
+
+
+        private IEnumerable<ResponeChatObject> _data;
+        private PaginationRequest _requestModel;
 
         private string _fieldsInput;
         private string _groupNameToCreate;
@@ -26,17 +30,16 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private string _chatIdToDelete;
 
-        private readonly List<string> _allChatDtoFields = new List<string>
+        private void RedirectToChatPage(Guid chatId)
         {
-            "ChatId", "ChatName", "IsGroup", "CreatedAt"
-        };
+            NavigationManager.NavigateTo($"/chatting/{chatId}");
+        }
 
         protected override async Task OnInitializedAsync()
         {
-            _data = new List<dynamic>();
-            _chatRequestedFields = new List<string>();
+            _data = new List<ResponeChatObject>();
 
-            _requestModel = new PaginationRequestModel
+            _requestModel = new PaginationRequest
             {
                 PageNumber = 1,
                 PageSize = 10,
@@ -54,7 +57,7 @@ namespace HybridMessenger.Presentation.Components.Pages
             if (!string.IsNullOrEmpty(_groupNameToCreate))
             {
                 await HttpService.SetAccessToken();
-                var result = await HttpService.PostAsync<ResponeChatObject>("api/chat/create-group", new CreateGroupModel()
+                var result = await HttpService.PostAsync<ResponeChatObject>("api/chat/create-group", new CreateGroupRequest()
                 {
                     ChatName = _groupNameToCreate
                 });
@@ -68,7 +71,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         {
             if (!string.IsNullOrEmpty(_newPrivateChatUserName))
             {
-                await HttpService.PostAsync<ResponeChatObject>("api/chat/create-private-chat", new CreatePrivateChatModel()
+                await HttpService.PostAsync<ResponeChatObject>("api/chat/create-private-chat", new CreatePrivateChatRequest()
                 {
                     UserNameToCreateWith = _newPrivateChatUserName
                 });
@@ -82,7 +85,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         {
             if (!string.IsNullOrEmpty(_groupNameToUpdate) && !string.IsNullOrEmpty(_groupIdToUpdate))
             {
-                await HttpService.PutAsync<ResponeChatObject>("api/chat/change-chat-name", new ChangeGroupNameModel()
+                await HttpService.PutAsync<ResponeChatObject>("api/chat/change-chat-name", new ChangeGroupNameRequest()
                 {
                     NewChatName = _groupNameToUpdate,
                     ChatId = _groupIdToUpdate       
@@ -98,7 +101,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         {
             if (!string.IsNullOrEmpty(_userNameToAddToGroup) && !string.IsNullOrEmpty(_groupIdToAddMember))
             {
-                await HttpService.PutAsync<StringOkResponse>("api/chat/add-group-member", new AddGroupMemberModel()
+                await HttpService.PutAsync<StringOkResponse>("api/chat/add-group-member", new AddGroupMemberRequest()
                 {
                     ChatId = _groupIdToAddMember,
                     UserNameToAdd = _userNameToAddToGroup
@@ -113,7 +116,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         {
             if (!string.IsNullOrEmpty(_chatIdToDelete))
             {
-                await HttpService.PostAsync<StringOkResponse>("api/chat/delete-chat", new DeleteChatModel()
+                await HttpService.PostAsync<StringOkResponse>("api/chat/delete-chat", new DeleteChatRequest()
                 {
                     ChatId = _chatIdToDelete
                 });
@@ -128,26 +131,9 @@ namespace HybridMessenger.Presentation.Components.Pages
             _requestModel.Fields = string.IsNullOrEmpty(_fieldsInput) ? new List<string>() : _fieldsInput.Split(',').Select(f => f.Trim()).ToList();
 
             await HttpService.SetAccessToken();
-            _data = await HttpService.PostAsync<IEnumerable<dynamic>>("api/chat/get-my-chats", _requestModel);
+            _data = await HttpService.PostAsync<IEnumerable<ResponeChatObject>>("api/chat/get-my-chats", _requestModel);
 
-            _chatRequestedFields = string.IsNullOrEmpty(_fieldsInput) ? _allChatDtoFields : _requestModel.Fields;
             StateHasChanged();
-        }
-
-        public class StringOkResponse
-        {
-            public string Message { get; set; }
-        }
-
-        public class ResponeChatObject
-        {
-            public Guid ChatId { get; set; }
-
-            public string? ChatName { get; set; }
-
-            public bool IsGroup { get; set; }
-
-            public DateTime CreatedAt { get; set; }
         }
     }
 }

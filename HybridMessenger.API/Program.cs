@@ -26,11 +26,12 @@ namespace HybridMessenger.API
             builder.Services.AddIdentity();
             builder.Services.AddJwtAuthentication(builder.Configuration);
 
-            // Assembly registration
+            // Assembly registration 
             builder.Services.AddApplication();
             builder.Services.AddApplicationValidation();
 
             builder.Services.AddSignalR();
+            builder.Services.AddHealthChecks();
 
             var app = builder.Build();
 
@@ -41,14 +42,14 @@ namespace HybridMessenger.API
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
             app.MapControllers();
 
             app.MapHub<ChatHub>("/chathub");
+            app.MapHealthChecks("/health");
+
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.Run();
         }

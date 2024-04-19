@@ -1,20 +1,41 @@
-﻿@page "/chatting"
+﻿@page "/chatting/{ChatId}"
 @using HybridMessenger.Presentation.Services
+@using MudBlazor
 
-<div class="container-fluid">
-    <div class="row">
+@if (_data != null && _data.Any())
+{
+    <div class="scrollable-table">
+        <table class="table" style="margin-top:50px">
+            <thead>
+                <tr>
+                    @foreach (var field in _allUserDtoFields)
+                    {
+                        <th>@field</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var message in _data)
+                {
+                    <tr>
+                        <td>@message.MessageId</td>
+                        <td>@message.UserId</td>
+                        <td>@message.MessageText</td>
+                        <td>@message.SentAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>No data available.</p>
+}
 
-        <div class="col-md-6">
-            <div class="input-area">
-                <div class="form-group">
-                    <label for="ChatId">Input chat id:</label>
-                    <InputText @bind-Value="_requestModel.ChatId" class="form-control" id="ChatId" />
-                </div>
-                <button class="btn btn-secondary user-full-width-button" @onclick="LoadMessages">Get messages</button>
-            </div>
-        </div>
-
-        <div class="col-md-6">
+<div>
+    <div >
+        <div>
             <div class="input-area">
                 <div class="form-group">
                     <label for="SendMessage">Input message text:</label>
@@ -23,35 +44,5 @@
                 <button class="btn btn-secondary user-full-width-button" @onclick="SendMessage">Send message</button>
             </div>
         </div>
-
     </div>
 </div>
-
-@if (_data != null && _data.Any())
-{
-    <table class="table" style="margin-top:50px">
-        <thead>
-            <tr>
-                @foreach (var field in _allUserDtoFields)
-                {
-                    <th>@field</th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var message in _data)
-            {
-                <tr>
-                    <td>@message.MessageId</td>
-                    <td>@message.UserId</td>
-                    <td>@message.MessageText</td>
-                    <td>@message.SentAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>No data available.</p>
-}

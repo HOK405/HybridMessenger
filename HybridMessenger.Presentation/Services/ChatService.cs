@@ -6,7 +6,7 @@ namespace HybridMessenger.Presentation.Services
 {
     public class ChatService
     {
-        public event Action<MessageModel> OnMessageReceived;
+        public event Action<MessageResponse> OnMessageReceived;
 
         private IHttpService _httpService;
         private HubConnection _hubConnection;
@@ -29,7 +29,7 @@ namespace HybridMessenger.Presentation.Services
                 .WithAutomaticReconnect()
                 .Build();
 
-            _hubConnection.On<MessageModel>("ReceiveMessage", (message) =>
+            _hubConnection.On<MessageResponse>("ReceiveMessage", (message) =>
             {
                 OnMessageReceived?.Invoke(message);
             });

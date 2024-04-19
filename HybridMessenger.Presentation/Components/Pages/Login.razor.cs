@@ -19,7 +19,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         [Inject]
         private IJSRuntime _jsRuntime { get; set; }
 
-        private LoginModel loginModel = new LoginModel();
+        private LoginRequest loginModel = new LoginRequest();
         private string loginResult;
         private string alertClass => loginResult == "Logged in successfully!" ? "status-success" : "status-danger";
 

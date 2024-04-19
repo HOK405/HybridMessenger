@@ -1,6 +1,6 @@
 ﻿namespace HybridMessenger.Presentation.RequestModels
 {
-    public class AddGroupMemberModel
+    public class AddGroupMemberRequest
     {
         public string UserNameToAdd { get; set; }
 

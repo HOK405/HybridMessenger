@@ -87,33 +87,36 @@
 </div>
 
 
-
 @if (_data != null && _data.Any())
 {
     <table class="table" style="margin-top:50px">
         <thead>
             <tr>
-                @foreach (var field in _chatRequestedFields)
-                {
-                    <th>@field</th>
-                }
+                <th>Chat ID</th>
+                <th>Chat Name</th>
+                <th>Is Group</th>
+                <th>Created At</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in _data)
             {
                 <tr>
-                    @foreach (var field in _chatRequestedFields)
-                    {
-                        <td>@JsonHelper.GetDynamicValue(item.ToString(), field)</td>
-                    }
+                    <td>
+                        <button class="btn btn-link" @onclick="() => RedirectToChatPage(item.ChatId)">
+                            @item.ChatId
+                        </button>
+                    </td>
+                    <td>@item.ChatName</td>
+                    <td>@item.IsGroup</td>
+                    <td>@item.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
                 </tr>
             }
         </tbody>
-
     </table>
 }
 else
 {
     <p>No data available.</p>
 }
+

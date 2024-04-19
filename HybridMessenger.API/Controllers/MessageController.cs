@@ -1,11 +1,8 @@
-﻿using HybridMessenger.Application.Message.Commands;
-using HybridMessenger.Application.Message.Queries;
+﻿using HybridMessenger.Application.Message.Queries;
 using HybridMessenger.Domain.Services;
-using HybridMessenger.Infrastructure.Hubs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 
 namespace HybridMessenger.API.Controllers
 {
@@ -15,13 +12,11 @@ namespace HybridMessenger.API.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IUserClaimsService _userClaimsService;
-        private readonly IHubContext<ChatHub> _hubContext;
 
-        public MessageController(IMediator mediator, IUserClaimsService userClaimsService, IHubContext<ChatHub> hubContext)
+        public MessageController(IMediator mediator, IUserClaimsService userClaimsService)
         {
             _mediator = mediator;
             _userClaimsService = userClaimsService;
-            _hubContext = hubContext;
         }
 
         [Authorize]
