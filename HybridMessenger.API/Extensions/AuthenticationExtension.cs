@@ -15,32 +15,11 @@ namespace HybridMessenger.API.Extensions
         public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             // Configure JWT Authentication
-            /*var key = Encoding.ASCII.GetBytes(configuration["JwtSettings:Key"]);
+            ValidateJwtSettings(configuration);
+
+            var key = Encoding.ASCII.GetBytes(configuration["JwtSettings:Key"]);
             var audience = configuration["JwtSettings:Audience"];
-            var issuer = configuration["JwtSettings:Issuer"];*/
-
-            var key = Encoding.ASCII.GetBytes("MyVeryVeryVeryLongSecretAndItShouldBePlacedSomewhereInSafePlace");
-            var audience = "HybridMessenger";
-            var issuer = "HybridMessenger";
-
-            // Validate key
-            /*if (key is null || key.Length == 0)
-            {
-                throw new ArgumentNullException("JwtSettings:Key", "JWT Key must not be null or empty.");
-            }
-
-            // Validate audience
-            if (string.IsNullOrWhiteSpace(audience))
-            {
-                throw new ArgumentNullException("JwtSettings:Audience", "Audience must not be null or empty.");
-            }
-
-            // Validate issuer
-            if (string.IsNullOrWhiteSpace(issuer))
-            {
-                throw new ArgumentNullException("JwtSettings:Issuer", "Issuer must not be null or empty.");
-            }*/
-
+            var issuer = configuration["JwtSettings:Issuer"];
 
             services.AddAuthentication(x =>
             {
@@ -66,6 +45,28 @@ namespace HybridMessenger.API.Extensions
             services.AddAuthorization();
 
             return services;
+        }
+
+        private static void ValidateJwtSettings(IConfiguration configuration)
+        {
+            var key = Encoding.ASCII.GetBytes(configuration["JwtSettings:Key"]);
+            var audience = configuration["JwtSettings:Audience"];
+            var issuer = configuration["JwtSettings:Issuer"];
+
+            if (key is null || key.Length == 0)
+            {
+                throw new ArgumentNullException("JwtSettings:Key", "JWT Key must not be null or empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(audience))
+            {
+                throw new ArgumentNullException("JwtSettings:Audience", "Audience must not be null or empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(issuer))
+            {
+                throw new ArgumentNullException("JwtSettings:Issuer", "Issuer must not be null or empty.");
+            }
         }
     }
 }
