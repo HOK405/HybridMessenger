@@ -3,7 +3,6 @@ using HybridMessenger.Presentation.RequestModels;
 using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.JSInterop;
 using System.Text.Json;
 
 namespace HybridMessenger.Presentation.Components.Pages
@@ -12,10 +11,10 @@ namespace HybridMessenger.Presentation.Components.Pages
     {
         [Inject]
         NavigationManager NavigationManager { get; set; }
+
         [Inject]
         AuthenticationStateProvider AuthenticationStateProvider { get; set; }
-        [Inject]
-        private IJSRuntime _jsRuntime { get; set; }
+
         [Inject]
         private IHttpService _httpService { get; set; }
 
@@ -30,9 +29,7 @@ namespace HybridMessenger.Presentation.Components.Pages
                 var tokenResponse = await _httpService.PostAsync<TokenResponse>("api/User/register", registerModel);
                 if (tokenResponse != null && !string.IsNullOrWhiteSpace(tokenResponse.AccessToken) && !string.IsNullOrWhiteSpace(tokenResponse.RefreshToken))
                 {
-                    await _httpService.SetAccessToken();
-                    await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "accessToken", tokenResponse.AccessToken);
-                    await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "refreshToken", tokenResponse.RefreshToken);
+                    await _httpService.SetTokens(tokenResponse.AccessToken, tokenResponse.RefreshToken);
 
                     registerResult = "Registered successfully!";
                     ((AuthenticationService)AuthenticationStateProvider).NotifyUserAuthentication(tokenResponse.AccessToken);

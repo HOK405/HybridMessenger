@@ -2,7 +2,7 @@
 {
     public class ChatMessagesRequest
     {
-        public string ChatId { get; set; }
+        public int ChatId { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
         public string SortBy { get; set; }

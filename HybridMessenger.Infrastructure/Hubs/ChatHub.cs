@@ -18,14 +18,14 @@ namespace HybridMessenger.Infrastructure.Hubs
             _userClaimsService = userClaimsService;
         }
 
-        public async Task JoinGroup(string groupId)
+        public async Task JoinChat(int groupId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString());
         }
 
-        public async Task LeaveGroup(string groupId)
+        public async Task LeaveChat(int groupId)
         {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString());
         }
 
         public async Task SendMessage(int groupId, string messageText)

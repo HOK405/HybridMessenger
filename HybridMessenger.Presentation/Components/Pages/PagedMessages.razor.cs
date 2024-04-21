@@ -42,7 +42,6 @@ namespace HybridMessenger.Presentation.Components.Pages
         {
             _requestModel.Fields = string.IsNullOrEmpty(_fieldsInput) ? new List<string>() : _fieldsInput.Split(',').Select(f => f.Trim()).ToList();
 
-            await HttpService.SetAccessToken();
             _data = await HttpService.PostAsync<IEnumerable<dynamic>>("api/Message/get-user-messages", _requestModel);
 
             _userRequestedFields = string.IsNullOrEmpty(_fieldsInput) ? _allUserDtoFields : _requestModel.Fields;

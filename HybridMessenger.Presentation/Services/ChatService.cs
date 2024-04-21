@@ -37,19 +37,19 @@ namespace HybridMessenger.Presentation.Services
             await _hubConnection.StartAsync();
         }
 
-        public async Task SendMessage(string chatId, string message)
+        public async Task SendMessage(int chatId, string message)
         {
             await _hubConnection.SendAsync("SendMessage", chatId, message);
         }
 
-        public async Task JoinGroup(string groupId)
+        public async Task JoinChat(int chatId)
         {
-            await _hubConnection.SendAsync("JoinGroup", groupId.ToString());
+            await _hubConnection.SendAsync("JoinChat", chatId);
         }
 
-        public async Task LeaveGroup(string groupId)
+        public async Task LeaveChat(int chatId)
         {
-            await _hubConnection.SendAsync("LeaveGroup", groupId.ToString());
+            await _hubConnection.SendAsync("LeaveChat", chatId);
         }
     }
 }

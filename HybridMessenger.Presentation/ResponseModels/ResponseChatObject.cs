@@ -8,7 +8,7 @@ namespace HybridMessenger.Presentation.ResponseModels
 {
     public class ResponeChatObject
     {
-        public Guid ChatId { get; set; }
+        public int ChatId { get; set; }
 
         public string? ChatName { get; set; }
 

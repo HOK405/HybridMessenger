@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
 
 namespace HybridMessenger.Presentation.Services
 {
@@ -15,7 +15,10 @@ namespace HybridMessenger.Presentation.Services
         {
             _httpClient = httpClient;
             _jsRuntime = jsRuntime;
+            EnsureAccessToken();
         }
+
+        #region HTTP Methods
 
         public async Task<T> GetAsync<T>(string uri)
         {
@@ -44,16 +47,42 @@ namespace HybridMessenger.Presentation.Services
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task SetAccessToken()
-        {
-            string accessToken = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "accessToken");
+        #endregion
 
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        public async Task SetTokens(string accessToken, string refreshToken)
+        {
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "accessToken", accessToken);
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "refreshToken", refreshToken);
+            UpdateHttpClientAuthorizationHeader(accessToken);
+        }
+
+        public async Task ClearTokens()
+        {
+            await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "accessToken");
+            await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "refreshToken");
+            _httpClient.DefaultRequestHeaders.Authorization = null;
         }
 
         public async Task<string> GetToken()
         {
             return await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "accessToken");
+        }
+
+        private async Task EnsureAccessToken()
+        {
+            if (_httpClient.DefaultRequestHeaders.Authorization == null)
+            {
+                var token = await GetToken();
+                UpdateHttpClientAuthorizationHeader(token);
+            }
+        }
+
+        private void UpdateHttpClientAuthorizationHeader(string accessToken)
+        {
+            if (!string.IsNullOrWhiteSpace(accessToken))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            }
         }
     }
 }

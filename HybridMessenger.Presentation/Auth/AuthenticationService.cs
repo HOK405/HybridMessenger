@@ -31,7 +31,7 @@ namespace HybridMessenger.Presentation.Auth
                 }
                 catch
                 {
-                    throw new ArgumentException();  // change it in the future
+                    throw new ArgumentException();
                 }
             }
 

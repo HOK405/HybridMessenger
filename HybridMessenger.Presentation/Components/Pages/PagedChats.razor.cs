@@ -30,7 +30,7 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private string _chatIdToDelete;
 
-        private void RedirectToChatPage(Guid chatId)
+        private void RedirectToChatPage(int chatId)
         {
             NavigationManager.NavigateTo($"/chatting/{chatId}");
         }
@@ -56,7 +56,6 @@ namespace HybridMessenger.Presentation.Components.Pages
         {
             if (!string.IsNullOrEmpty(_groupNameToCreate))
             {
-                await HttpService.SetAccessToken();
                 var result = await HttpService.PostAsync<ResponeChatObject>("api/chat/create-group", new CreateGroupRequest()
                 {
                     ChatName = _groupNameToCreate
@@ -130,7 +129,6 @@ namespace HybridMessenger.Presentation.Components.Pages
         {
             _requestModel.Fields = string.IsNullOrEmpty(_fieldsInput) ? new List<string>() : _fieldsInput.Split(',').Select(f => f.Trim()).ToList();
 
-            await HttpService.SetAccessToken();
             _data = await HttpService.PostAsync<IEnumerable<ResponeChatObject>>("api/chat/get-my-chats", _requestModel);
 
             StateHasChanged();

@@ -14,7 +14,23 @@ namespace HybridMessenger.Presentation.Components.Pages
         public ChatService _chatService { get; set; }
 
         [Parameter]
-        public string ChatId { get; set; }
+        public string ChatId
+        {
+            get => _chatId.ToString();
+            set
+            {
+                if (int.TryParse(value, out var parsedId))
+                {
+                    _chatId = parsedId;
+                }
+                else
+                {
+                    throw new ArgumentException("ChatId must be a valid integer");
+                }
+            }
+        }
+
+        private int _chatId;
 
         private string _messageText;
 
@@ -46,10 +62,10 @@ namespace HybridMessenger.Presentation.Components.Pages
                 Fields = new List<string>()
             };
 
-            if (!string.IsNullOrEmpty(ChatId))
+            if (_chatId != 0)
             {
-                _requestModel.ChatId = ChatId;
-                await _chatService.JoinGroup(_requestModel.ChatId);
+                _requestModel.ChatId = _chatId; 
+                await _chatService.JoinChat(_chatId);
                 await LoadMessages();
             }
         }
@@ -80,7 +96,7 @@ namespace HybridMessenger.Presentation.Components.Pages
             if (!_disposed)
             {
                 _chatService.OnMessageReceived -= HandleNewMessage;
-                await _chatService.LeaveGroup(_requestModel.ChatId);
+                await _chatService.LeaveChat(_requestModel.ChatId);
                 _disposed = true;
             }
 

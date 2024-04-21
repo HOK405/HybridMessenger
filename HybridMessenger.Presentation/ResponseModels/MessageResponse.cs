@@ -4,9 +4,9 @@
     {
         public int MessageId { get; set; }
 
-        public Guid ChatId { get; set; }
+        public int ChatId { get; set; }
 
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
 
         public string MessageText { get; set; }
 
