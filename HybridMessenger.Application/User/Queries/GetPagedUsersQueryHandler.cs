@@ -24,7 +24,6 @@ namespace HybridMessenger.Application.User.Queries
 
             var query = await userRepository.GetPagedAsync(request.PageNumber, request.PageSize, request.SortBy, null, request.SearchValue, request.Ascending);
 
-
             IEnumerable<string> fieldsToInclude = request.Fields != null && request.Fields.Any() ? 
                 request.Fields : typeof(UserDto).GetProperties(BindingFlags.Public | BindingFlags.Instance).Select(p => p.Name);
 

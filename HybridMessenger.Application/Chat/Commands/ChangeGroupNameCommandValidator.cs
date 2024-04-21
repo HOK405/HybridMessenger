@@ -16,7 +16,6 @@ namespace HybridMessenger.Application.Chat.Commands
 
             RuleFor(command => command.ChatId)
                 .NotEmpty().WithMessage("Chat ID cannot be empty")
-                .Must(BeAValidGuid).WithMessage("Chat ID must be a valid GUID")
                 .MustAsync(async (chatId, cancellation) => await ChatExists(chatId)).WithMessage("Invalid chat id.")
                 .MustAsync(async (chatId, cancellation) => await IsGroupChat(chatId))
                 .WithMessage("Only group chats can have their names changed.");
@@ -26,19 +25,14 @@ namespace HybridMessenger.Application.Chat.Commands
                 .Length(1, 255).WithMessage("New chat name must be between 1 and 255 characters");
         }
 
-        private bool BeAValidGuid(string guid)
+        private async Task<bool> ChatExists(int chatId)
         {
-            return Guid.TryParse(guid, out _);
+            return await _chatRepository.ExistsAsync(chatId);
         }
 
-        private async Task<bool> ChatExists(string chatId)
+        private async Task<bool> IsGroupChat(int chatId)
         {
-            return await _chatRepository.ExistsAsync(Guid.Parse(chatId));
-        }
-
-        private async Task<bool> IsGroupChat(string chatId)
-        {
-            var chat = await _chatRepository.GetByIdAsync(Guid.Parse(chatId));
+            var chat = await _chatRepository.GetByIdAsync(chatId);
             return chat.IsGroup;
         }
     }

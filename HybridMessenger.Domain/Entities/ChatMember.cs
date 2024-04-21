@@ -5,9 +5,9 @@ namespace HybridMessenger.Domain.Entities
 {
     public class ChatMember
     {
-        public Guid ChatId { get; set; }
+        public int ChatId { get; set; }
 
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
 
         [Required]
         public DateTime JoinedAt { get; set; }

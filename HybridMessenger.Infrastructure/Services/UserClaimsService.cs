@@ -5,9 +5,14 @@ namespace HybridMessenger.Infrastructure.Services
 {
     public class UserClaimsService : IUserClaimsService
     {
-        public string GetUserId(ClaimsPrincipal principal)
+        public int GetUserId(ClaimsPrincipal principal)
         {
-            return principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var idClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (int.TryParse(idClaim, out int userId))
+            {
+                return userId;
+            }
+            throw new InvalidOperationException("Invalid user ID claim.");
         }
     }
 }

@@ -8,6 +8,6 @@ namespace HybridMessenger.Application.Chat.Commands
     {
         public string UserNameToCreateWith { get; set; }
         [JsonIgnore]
-        public string UserCreatorId { get; set; }
+        public int UserCreatorId { get; set; }
     }
 }

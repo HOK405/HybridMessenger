@@ -8,9 +8,9 @@ namespace HybridMessenger.Application.Message.Commands
     {
         public string MessageText { get; set; }
 
-        public string ChatId { get; set; }
+        public int ChatId { get; set; }
 
         [JsonIgnore]
-        public string UserId { get; set; }
+        public int UserId { get; set; }
     }
 }

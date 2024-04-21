@@ -14,7 +14,7 @@ namespace HybridMessenger.API.Extensions
         public static IServiceCollection AddIdentity(this IServiceCollection services)
         {
             // Configure Identity
-            services.AddIdentity<User, IdentityRole<Guid>>(options =>
+            services.AddIdentity<User, IdentityRole<int>>(options =>
             {
                 // Password settings
                 options.Password.RequireDigit = true;

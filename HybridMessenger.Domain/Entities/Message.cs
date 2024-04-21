@@ -5,13 +5,13 @@ namespace HybridMessenger.Domain.Entities
 {
     public class Message
     {
-        public int MessageID { get; set; }
+        public int MessageId { get; set; }
 
         [ForeignKey("Chat")]
-        public Guid ChatID { get; set; }
+        public int ChatId { get; set; }
 
         [ForeignKey("User")]
-        public Guid UserID { get; set; }
+        public int UserId { get; set; }
 
         [Required]
         public string MessageText { get; set; }

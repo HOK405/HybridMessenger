@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace HybridMessenger.Infrastructure.Repositories
 {
-    public class Repository<T, TKey> : IRepository<T, TKey> where T : class
+    public class Repository<T> : IRepository<T> where T : class
     {
         protected readonly ApiDbContext _context;
 
@@ -12,7 +12,7 @@ namespace HybridMessenger.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<T> GetByIdAsync(TKey id)
+        public async Task<T> GetByIdAsync(int id)
         {
             return await _context.Set<T>().FindAsync(id);
         }

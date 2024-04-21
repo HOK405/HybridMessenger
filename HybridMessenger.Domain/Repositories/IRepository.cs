@@ -5,9 +5,9 @@
     /// </summary>
     /// <typeparam name="T">T is a type of repository entity</typeparam>
     /// <typeparam name="TKey">TKey is a type of entity Id</typeparam>
-    public interface IRepository<T, TKey> where T : class
+    public interface IRepository<T> where T : class
     {
-        Task<T> GetByIdAsync(TKey id);
+        Task<T> GetByIdAsync(int id);
 
         Task<T> AddAsync(T entity);
 

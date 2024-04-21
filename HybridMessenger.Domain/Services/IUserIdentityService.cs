@@ -9,7 +9,7 @@ namespace HybridMessenger.Domain.Services
 
         Task<User> VerifyUserByEmailAndPasswordAsync(string email, string password);
 
-        Task<User> GetUserByIdAsync(Guid id);
+        Task<User> GetUserByIdAsync(int id);
 
         Task<IdentityResult> AddRoleAsync(User user, string role);
 

@@ -28,7 +28,7 @@ namespace HybridMessenger.Application.Chat.Commands
                 throw new InvalidOperationException("User is not a member of the specified chat.");
             }
 
-            var chat = await _chatRepository.GetByIdAsync(Guid.Parse(command.ChatId));
+            var chat = await _chatRepository.GetByIdAsync(command.ChatId);
 
             chat.ChatName = command.NewChatName;
             await _unitOfWork.SaveChangesAsync();
@@ -36,9 +36,9 @@ namespace HybridMessenger.Application.Chat.Commands
             return _mapper.Map<ChatDto>(chat);
         }
 
-        private async Task<bool> UserIsInChat(string userId, string chatId)
+        private async Task<bool> UserIsInChat(int userId, int chatId)
         {
-            return await _chatMemberRepository.IsUserMemberOfChatAsync(Guid.Parse(userId), Guid.Parse(chatId));
+            return await _chatMemberRepository.IsUserMemberOfChatAsync(userId, chatId);
         }
     }
 }

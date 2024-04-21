@@ -5,9 +5,9 @@ namespace HybridMessenger.Application.Chat.Commands
 {
     public class DeleteChatCommand : IRequest
     {
-        public string ChatId { get; set; }
+        public int ChatId { get; set; }
 
         [JsonIgnore]
-        public string UserId { get; set; }
+        public int UserId { get; set; }
     }
 }

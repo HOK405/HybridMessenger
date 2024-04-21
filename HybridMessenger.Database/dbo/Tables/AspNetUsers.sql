@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[AspNetUsers] (
-    [Id]                   UNIQUEIDENTIFIER   NOT NULL,
+    [Id]                   INT                IDENTITY (1, 1) NOT NULL,
     [CreatedAt]            DATETIME2 (7)      NOT NULL,
     [UserName]             NVARCHAR (256)     NULL,
     [NormalizedUserName]   NVARCHAR (256)     NULL,

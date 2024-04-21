@@ -4,7 +4,7 @@ namespace HybridMessenger.Domain.Entities
 {
     public class Chat
     {
-        public Guid ChatID { get; set; }
+        public int ChatId { get; set; }
 
         [MaxLength(255)]
         public string? ChatName { get; set; }

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HybridMessenger.Infrastructure.Repositories
 {
-    public class UserRepository : Repository<User, Guid>, IUserRepository
+    public class UserRepository : Repository<User>, IUserRepository
     {
         public UserRepository(ApiDbContext context) : base(context) { }
 

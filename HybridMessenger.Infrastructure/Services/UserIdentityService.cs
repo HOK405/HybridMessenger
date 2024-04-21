@@ -42,10 +42,9 @@ namespace HybridMessenger.Infrastructure.Services
             return user;
         }
 
-        public async Task<User> GetUserByIdAsync(Guid id)
+        public async Task<User> GetUserByIdAsync(int id)
         {
-            var userIdAsString = id.ToString();
-            var user = await _userManager.FindByIdAsync(userIdAsString);
+            var user = await _userManager.FindByIdAsync(id.ToString());
 
             if (user == null)
             {

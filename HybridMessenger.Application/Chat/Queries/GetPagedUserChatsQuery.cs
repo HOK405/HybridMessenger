@@ -19,6 +19,6 @@ namespace HybridMessenger.Application.Chat.Queries
         public string[] Fields { get; set; }
 
         [JsonIgnore]
-        public string UserId { get; set; }
+        public int UserId { get; set; }
     }
 }

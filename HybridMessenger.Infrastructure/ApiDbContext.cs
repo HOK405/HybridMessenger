@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HybridMessenger.Infrastructure
 {
-    public class ApiDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
+    public class ApiDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     {
         public  ApiDbContext(DbContextOptions<ApiDbContext> options) : base (options)
         {
@@ -36,7 +36,7 @@ namespace HybridMessenger.Infrastructure
 
             // Contact relationships
             modelBuilder.Entity<Contact>()
-                .HasKey(c => new { c.UserId, c.ContactUserId }); // composite key
+                .HasKey(c => new { c.UserId, c.ContactUserId });
 
             modelBuilder.Entity<Contact>()
                 .HasOne(c => c.User)
@@ -55,20 +55,20 @@ namespace HybridMessenger.Infrastructure
             modelBuilder.Entity<Message>()
                 .HasOne(m => m.Chat)
                 .WithMany(c => c.Messages)
-                .HasForeignKey(m => m.ChatID);
+                .HasForeignKey(m => m.ChatId);
 
             modelBuilder.Entity<Message>()
                 .HasOne(m => m.User)
                 .WithMany(u => u.Messages)
-                .HasForeignKey(m => m.UserID);
+                .HasForeignKey(m => m.UserId);
 
             // Ensure MessageID is unique and set as the primary key
             modelBuilder.Entity<Message>()
-                .HasKey(m => m.MessageID);
+                .HasKey(m => m.MessageId);
 
             // Configure Chat entity
             modelBuilder.Entity<Chat>()
-                .HasKey(c => c.ChatID); 
+                .HasKey(c => c.ChatId); 
         }
     }
 }

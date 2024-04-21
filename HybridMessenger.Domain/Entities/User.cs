@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System;
 using Microsoft.AspNetCore.Identity;
-
 
 namespace HybridMessenger.Domain.Entities
 {
-    public class User : IdentityUser<Guid>
+    public class User : IdentityUser<int>
     {
         [Required]
         public DateTime CreatedAt { get; set; }

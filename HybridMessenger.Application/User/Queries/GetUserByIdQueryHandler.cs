@@ -18,7 +18,7 @@ namespace HybridMessenger.Application.User.Queries
 
         public async Task<UserDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
-            var user = await _userService.GetUserByIdAsync(Guid.Parse(request.Id));
+            var user = await _userService.GetUserByIdAsync(request.Id);
 
             return _mapper.Map<UserDto>(user);
         }

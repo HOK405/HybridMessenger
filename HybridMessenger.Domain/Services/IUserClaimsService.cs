@@ -4,6 +4,6 @@ namespace HybridMessenger.Domain.Services
 {
     public interface IUserClaimsService
     {
-        string GetUserId(ClaimsPrincipal principal);
+        int GetUserId(ClaimsPrincipal principal);
     }
 }

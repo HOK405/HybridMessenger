@@ -27,7 +27,7 @@ namespace HybridMessenger.Application.Chat.Commands
         {
             var userToCreateWith = await _userRepository.GetUserByUsernameAsync(command.UserNameToCreateWith);
 
-            var userCreator = await _userRepository.GetByIdAsync(Guid.Parse(command.UserCreatorId));
+            var userCreator = await _userRepository.GetByIdAsync(command.UserCreatorId);
 
             var createdChat = await _chatRepository.CreateChatAsync(null, false);
 

@@ -25,7 +25,7 @@ namespace HybridMessenger.Application.Chat.Commands
 
         public async Task<ChatDto> Handle(CreateGroupCommand request, CancellationToken cancellationToken)
         {
-            var userToAdd = await _userRepository.GetByIdAsync(Guid.Parse(request.UserId));
+            var userToAdd = await _userRepository.GetByIdAsync(request.UserId);
 
             var createdChat = await _chatRepository.CreateChatAsync(request.ChatName, true);
             await _chatMemberRepository.AddUserToChatAsync(userToAdd, createdChat);

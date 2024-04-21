@@ -8,9 +8,9 @@ namespace HybridMessenger.Application.Shared.Profiles
         public MessageProfile()
         {
             CreateMap<Domain.Entities.Message, MessageDto>()
-            .ForMember(dto => dto.MessageId, opt => opt.MapFrom(src => src.MessageID))
-            .ForMember(dto => dto.ChatId, opt => opt.MapFrom(src => src.ChatID))
-            .ForMember(dto => dto.UserId, opt => opt.MapFrom(src => src.UserID))
+            .ForMember(dto => dto.MessageId, opt => opt.MapFrom(src => src.MessageId))
+            .ForMember(dto => dto.ChatId, opt => opt.MapFrom(src => src.ChatId))
+            .ForMember(dto => dto.UserId, opt => opt.MapFrom(src => src.UserId))
             .ForMember(dto => dto.MessageText, opt => opt.MapFrom(src => src.MessageText))
             .ForMember(dto => dto.SentAt, opt => opt.MapFrom(src => src.SentAt));
         }

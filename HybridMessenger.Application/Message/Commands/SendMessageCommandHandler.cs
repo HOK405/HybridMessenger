@@ -24,8 +24,8 @@ namespace HybridMessenger.Application.Message.Commands
             var newMessge = new Domain.Entities.Message()
             {
                 MessageText = command.MessageText,
-                ChatID = Guid.Parse(command.ChatId),
-                UserID = Guid.Parse(command.UserId),
+                ChatId = command.ChatId,
+                UserId = command.UserId,
                 SentAt = DateTime.UtcNow
             };
 

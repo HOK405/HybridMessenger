@@ -17,7 +17,7 @@ namespace HybridMessenger.Application.Chat.Commands
 
         public async Task Handle(DeleteChatCommand request, CancellationToken cancellationToken)
         {
-            var chat = await _chatRepository.GetByIdAsync(Guid.Parse(request.ChatId));
+            var chat = await _chatRepository.GetByIdAsync(request.ChatId);
 
             _chatRepository.Remove(chat);
 

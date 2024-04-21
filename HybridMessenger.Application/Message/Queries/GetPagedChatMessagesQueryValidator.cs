@@ -18,7 +18,6 @@ namespace HybridMessenger.Application.Message.Queries
 
             RuleFor(query => query.ChatId)
                 .NotEmpty().WithMessage("Chat ID cannot be empty")
-                .Must(BeAValidGuid).WithMessage("Chat ID must be a valid GUID")
                 .MustAsync(async (chatId, cancellation) => await ChatExists(chatId)).WithMessage("Invalid chat id.");
 
             RuleFor(query => query.SortBy)
@@ -31,14 +30,9 @@ namespace HybridMessenger.Application.Message.Queries
                     .WithMessage("Invalid field(s) requested.");
         }
 
-        private bool BeAValidGuid(string guid)
+        private async Task<bool> ChatExists(int chatId)
         {
-            return Guid.TryParse(guid, out _);
-        }
-
-        private async Task<bool> ChatExists(string chatId)
-        {
-            return await _chatRepository.ExistsAsync(Guid.Parse(chatId));
+            return await _chatRepository.ExistsAsync(chatId);
         }
 
         private bool BeAValidSortProperty(string sortBy)

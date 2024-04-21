@@ -24,7 +24,7 @@ namespace HybridMessenger.Application.Chat.Commands
         {
             var userToAdd = await _userRepository.GetUserByUsernameAsync(request.UserNameToAdd);
 
-            var chatToModify = await _chatRepository.GetByIdAsync(Guid.Parse(request.ChatId));
+            var chatToModify = await _chatRepository.GetByIdAsync(request.ChatId);
 
             await _chatMemberRepository.AddUserToChatAsync(userToAdd, chatToModify);
             await _unitOfWork.SaveChangesAsync();

@@ -15,21 +15,15 @@ namespace HybridMessenger.Application.Message.Commands
 
             RuleFor(command => command.ChatId)
                .NotEmpty().WithMessage("Chat ID cannot be empty")
-               .Must(BeAValidGuid).WithMessage("Chat ID must be a valid GUID")
                .MustAsync(async (chatId, cancellation) => await ChatExists(chatId)).WithMessage("Invalid chat id.");
 
             RuleFor(command => command.MessageText)
                 .NotEmpty().WithMessage("Message cannot be empty");
         }
 
-        private bool BeAValidGuid(string guid)
+        private async Task<bool> ChatExists(int chatId)
         {
-            return Guid.TryParse(guid, out _);
-        }
-
-        private async Task<bool> ChatExists(string chatId)
-        {
-            return await _chatRepository.ExistsAsync(Guid.Parse(chatId));
+            return await _chatRepository.ExistsAsync(chatId);
         }      
     }
 }

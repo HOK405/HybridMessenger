@@ -24,7 +24,7 @@ namespace HybridMessenger.Application.Message.Queries
         {
             Dictionary<string, object> filtersToSearch = new Dictionary<string, object>
             {
-                { "UserID", Guid.Parse(request.UserId) }
+                { "UserId", request.UserId }
             };     
 
             var query = await _messageRepository.GetPagedAsync(

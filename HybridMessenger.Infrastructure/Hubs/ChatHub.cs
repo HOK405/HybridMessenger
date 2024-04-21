@@ -28,7 +28,7 @@ namespace HybridMessenger.Infrastructure.Hubs
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
         }
 
-        public async Task SendMessage(string groupId, string messageText)
+        public async Task SendMessage(int groupId, string messageText)
         {
             var userId = _userClaimsService.GetUserId(Context.User);
 
@@ -42,7 +42,7 @@ namespace HybridMessenger.Infrastructure.Hubs
             var messageDto = await _mediator.Send(command);
 
             // Send to all clients in the specified group
-            await Clients.Group(groupId).SendAsync("ReceiveMessage", messageDto);
+            await Clients.Group(groupId.ToString()).SendAsync("ReceiveMessage", messageDto);
         }
     }
 }

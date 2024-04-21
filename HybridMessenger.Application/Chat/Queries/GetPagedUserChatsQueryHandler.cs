@@ -22,13 +22,9 @@ namespace HybridMessenger.Application.Chat.Queries
 
         public async Task<IEnumerable<object>> Handle(GetPagedUserChatsQuery request, CancellationToken cancellationToken)
         {
-            if (!Guid.TryParse(request.UserId, out Guid userIdGuid))
-            {
-                throw new ArgumentException("The provided UserId is not a valid GUID.", nameof(request.UserId));
-            }
 
             var query = await _chatRepository.GetPagedUserChatsAsync(
-                userId: userIdGuid,
+                userId: request.UserId,
                 pageNumber: request.PageNumber,
                 pageSize: request.PageSize,
                 sortBy: request.SortBy,

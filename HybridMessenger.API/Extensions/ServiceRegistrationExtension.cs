@@ -4,6 +4,7 @@ using HybridMessenger.Domain.UnitOfWork;
 using HybridMessenger.Infrastructure.Repositories;
 using HybridMessenger.Infrastructure.Services;
 using HybridMessenger.Infrastructure.UnitOfWork;
+using Microsoft.AspNetCore.Identity;
 
 namespace HybridMessenger.API.Extensions
 {

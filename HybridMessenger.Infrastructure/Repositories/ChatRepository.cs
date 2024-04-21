@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HybridMessenger.Infrastructure.Repositories
 {
-    public class ChatRepository : Repository<Chat, Guid>, IChatRepository
+    public class ChatRepository : Repository<Chat>, IChatRepository
     {
         public ChatRepository(ApiDbContext context) : base(context)
         {
@@ -12,11 +12,8 @@ namespace HybridMessenger.Infrastructure.Repositories
 
         public async Task<Chat> CreateChatAsync(string chatName, bool isGroup)
         {
-            Guid newChatId = Guid.NewGuid();
-
             var chat = new Chat
             {
-                ChatID = newChatId,
                 ChatName = isGroup ? chatName : null,
                 IsGroup = isGroup,
                 CreatedAt = DateTime.UtcNow
@@ -27,13 +24,13 @@ namespace HybridMessenger.Infrastructure.Repositories
             return chat;
         }
 
-        public async Task<bool> ExistsAsync(Guid id)
+        public async Task<bool> ExistsAsync(int id)
         {
-            return await _context.Chats.AnyAsync(c => c.ChatID == id);
+            return await _context.Chats.AnyAsync(c => c.ChatId == id);
         }
 
         public async Task<IQueryable<Chat>> GetPagedUserChatsAsync(
-            Guid userId, 
+            int userId, 
             int pageNumber, 
             int pageSize, 
             string sortBy, 

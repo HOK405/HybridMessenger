@@ -6,7 +6,7 @@ namespace HybridMessenger.Application.Message.Queries
 {
     public class GetPagedChatMessagesQuery : IRequest<IEnumerable<object>>
     {
-        public string ChatId { get; set; }
+        public int ChatId { get; set; }
 
         [DefaultValue(1)]
         public int PageNumber { get; set; }
@@ -26,6 +26,6 @@ namespace HybridMessenger.Application.Message.Queries
         public string[] Fields { get; set; }
 
         [JsonIgnore]
-        public string? UserId { get; set; }
+        public int UserId { get; set; }
     }
 }

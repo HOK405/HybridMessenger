@@ -26,7 +26,7 @@ namespace HybridMessenger.Application.User.Commands
             }
 
             var userIdString = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdString, out Guid userId))
+            if (!int.TryParse(userIdString, out int userId))
             {
                 throw new ArgumentException("Invalid token - user ID missing or malformed.");
             }
@@ -41,5 +41,4 @@ namespace HybridMessenger.Application.User.Commands
             return newAccessToken;
         }
     }
-
 }

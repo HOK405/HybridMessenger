@@ -2,10 +2,10 @@
 
 namespace HybridMessenger.Domain.Repositories
 {
-    public interface IChatMemberRepository : IRepository<ChatMember, (Guid, Guid)>
+    public interface IChatMemberRepository : IRepository<ChatMember>
     {
         Task<ChatMember> AddUserToChatAsync(User user, Chat chat);
 
-        Task<bool> IsUserMemberOfChatAsync(Guid userId, Guid chatId);
+        Task<bool> IsUserMemberOfChatAsync(int userId, int chatId);
     }
 }

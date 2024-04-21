@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using HybridMessenger.Domain.Entities;
 using HybridMessenger.Domain.Repositories;
 using HybridMessenger.Domain.UnitOfWork;
 
@@ -27,8 +28,6 @@ namespace HybridMessenger.Application.Chat.Commands
 
             RuleFor(cmd => cmd.ChatId)
                 .NotEmpty().WithMessage("Chat ID cannot be empty.")
-                .MustAsync(ValidStringId)
-                .WithMessage("The provided ChatId is not a valid GUID.")
                 .MustAsync(IsGroupChat)
                 .WithMessage("New users can't be added to private chats.");           
         }
@@ -38,14 +37,9 @@ namespace HybridMessenger.Application.Chat.Commands
             return await _userRepository.GetUserByUsernameAsync(username) != null;
         }
 
-        private async Task<bool> ValidStringId(string chatId, CancellationToken cancellation)
+        private async Task<bool> IsGroupChat(int chatId, CancellationToken cancellation)
         {
-            return Guid.TryParse(chatId, out _);
-        }
-
-        private async Task<bool> IsGroupChat(string chatId, CancellationToken cancellation)
-        {
-            var chat = await _chatRepository.GetByIdAsync(Guid.Parse(chatId));
+            var chat = await _chatRepository.GetByIdAsync(chatId);
             return chat != null && chat.IsGroup;
         }
 
@@ -53,7 +47,7 @@ namespace HybridMessenger.Application.Chat.Commands
         {
             var userToAdd = await _userRepository.GetUserByUsernameAsync(userNameToAdd);
             if (userToAdd == null) return false;
-            return !await _chatMemberRepository.IsUserMemberOfChatAsync(userToAdd.Id, Guid.Parse(command.ChatId));
+            return !await _chatMemberRepository.IsUserMemberOfChatAsync(userToAdd.Id, command.ChatId);
         }
     }
 }

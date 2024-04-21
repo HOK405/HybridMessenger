@@ -12,17 +12,12 @@ namespace HybridMessenger.Application.User.Queries
 
             RuleFor(query => query.Id)
             .NotEmpty().WithMessage("User ID is required.")
-            .MustAsync(AsyncGuidExists).WithMessage("No user found with the given ID.");
+            .MustAsync(UserExistsAsync).WithMessage("No user found with the given ID.");
         }
 
-        private async Task<bool> AsyncGuidExists(string guidString, CancellationToken cancellationToken)
+        private async Task<bool> UserExistsAsync(int id, CancellationToken cancellationToken)
         {
-            if (!Guid.TryParse(guidString, out Guid parsedGuid))
-            {
-                return false;
-            }
-
-            var user = await _userIdentityService.GetUserByIdAsync(parsedGuid);
+            var user = await _userIdentityService.GetUserByIdAsync(id);
             return user != null;
         }
     }

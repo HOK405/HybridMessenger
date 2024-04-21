@@ -3,7 +3,7 @@ using HybridMessenger.Domain.Repositories;
 
 namespace HybridMessenger.Infrastructure.Repositories
 {
-    public class ContactRepository : Repository<Contact, (Guid, Guid)>, IContactRepository
+    public class ContactRepository : Repository<Contact>, IContactRepository
     {
         public ContactRepository(ApiDbContext context) : base(context)
         {

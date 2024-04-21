@@ -2,14 +2,14 @@
 
 namespace HybridMessenger.Domain.Repositories
 {
-    public interface IChatRepository : IRepository<Chat, Guid>
+    public interface IChatRepository : IRepository<Chat>
     {
         Task<Chat> CreateChatAsync(string chatName, bool isGroup);
 
-        Task<bool> ExistsAsync(Guid id);
+        Task<bool> ExistsAsync(int id);
 
         Task<IQueryable<Chat>> GetPagedUserChatsAsync(
-            Guid userId,
+            int userId,
             int pageNumber,
             int pageSize,
             string sortBy,

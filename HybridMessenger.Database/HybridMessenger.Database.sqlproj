@@ -6,13 +6,13 @@
     <Name>HybridMessenger.Database</Name>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
-    <ProjectGuid>{a1bbd371-3afc-4128-a1cb-c1db60af5ae2}</ProjectGuid>
+    <ProjectGuid>{d0bb958f-e167-4103-a864-4a2963529c82}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
-    <RootNamespace>HybricMessenger.Database</RootNamespace>
-    <AssemblyName>HybricMessenger.Database</AssemblyName>
+    <RootNamespace>HybridMessenger.Database</RootNamespace>
+    <AssemblyName>HybridMessenger.Database</AssemblyName>
     <ModelCollation>1033,CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
@@ -62,6 +62,10 @@
     <Folder Include="dbo\Tables\" />
   </ItemGroup>
   <ItemGroup>
+    <Build Include="dbo\Tables\AspNetRoles.sql" />
+    <Build Include="dbo\Tables\AspNetUsers.sql" />
+    <Build Include="dbo\Tables\Chats.sql" />
+    <Build Include="dbo\Tables\AspNetRoleClaims.sql" />
     <Build Include="dbo\Tables\AspNetUserClaims.sql" />
     <Build Include="dbo\Tables\AspNetUserLogins.sql" />
     <Build Include="dbo\Tables\AspNetUserRoles.sql" />
@@ -69,10 +73,5 @@
     <Build Include="dbo\Tables\Contacts.sql" />
     <Build Include="dbo\Tables\ChatMembers.sql" />
     <Build Include="dbo\Tables\Messages.sql" />
-    <Build Include="dbo\Tables\__EFMigrationsHistory.sql" />
-    <Build Include="dbo\Tables\AspNetRoles.sql" />
-    <Build Include="dbo\Tables\AspNetUsers.sql" />
-    <Build Include="dbo\Tables\Chats.sql" />
-    <Build Include="dbo\Tables\AspNetRoleClaims.sql" />
   </ItemGroup>
 </Project>
