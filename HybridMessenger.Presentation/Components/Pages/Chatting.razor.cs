@@ -36,7 +36,7 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private List<MessageResponse> _data;
 
-        private ChatMessagesRequest _requestModel;
+        private ChatMessagesPaginationRequest _requestModel;
 
         private bool _disposed = false;
 
@@ -52,7 +52,7 @@ namespace HybridMessenger.Presentation.Components.Pages
 
             _data = new List<MessageResponse>();
 
-            _requestModel = new ChatMessagesRequest{ SortBy = "SentAt" };
+            _requestModel = new ChatMessagesPaginationRequest{ SortBy = "SentAt" };
 
             if (_chatId != 0)
             {
