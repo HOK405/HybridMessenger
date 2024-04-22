@@ -25,15 +25,7 @@ namespace HybridMessenger.Presentation.Components.Pages
             _data = new List<dynamic>();
             _userRequestedFields = new List<string>();
 
-            _requestModel = new PaginationRequest
-            {
-                PageNumber = 1,
-                PageSize = 10,
-                SortBy = "SentAt",
-                SearchValue = "",
-                Ascending = true,
-                Fields = new List<string>()
-            };
+            _requestModel = new PaginationRequest { SortBy = "SentAt" };
 
             await LoadMessages();
         }

@@ -39,15 +39,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         {
             _data = new List<ResponeChatObject>();
 
-            _requestModel = new PaginationRequest
-            {
-                PageNumber = 1,
-                PageSize = 10,
-                SortBy = "CreatedAt",
-                SearchValue = "",
-                Ascending = true,
-                Fields = new List<string>()
-            };
+            _requestModel = new PaginationRequest { SortBy = "CreatedAt" };
 
             await LoadChats();
         }

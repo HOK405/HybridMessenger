@@ -52,15 +52,7 @@ namespace HybridMessenger.Presentation.Components.Pages
 
             _data = new List<MessageResponse>();
 
-            _requestModel = new ChatMessagesRequest
-            {
-                PageNumber = 1,
-                PageSize = 100,
-                SortBy = "SentAt",
-                SearchValue = "",
-                Ascending = true,
-                Fields = new List<string>()
-            };
+            _requestModel = new ChatMessagesRequest{ SortBy = "SentAt" };
 
             if (_chatId != 0)
             {

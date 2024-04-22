@@ -2,11 +2,11 @@
 {
     public class PaginationRequest
     {
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 50;
         public string SortBy { get; set; }
-        public string SearchValue { get; set; }
-        public bool Ascending { get; set; }
-        public List<string> Fields { get; set; }
+        public string SearchValue { get; set; } = "";
+        public bool Ascending { get; set; } = true;
+        public List<string> Fields { get; set; } = new List<string>();
     }
 }
