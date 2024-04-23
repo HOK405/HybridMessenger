@@ -13,7 +13,7 @@ namespace HybridMessenger.Tests.Application.User.Commands
         }
 
         [Fact]
-        public void RefreshToken_WhenEmpty_ShouldHaveValidationError()
+        public void Validate_WhenRefreshTokenEmpty_ShouldHaveValidationError()
         {
             // Arrange
             var command = new RefreshTokenCommand { RefreshToken = "" };
@@ -28,7 +28,7 @@ namespace HybridMessenger.Tests.Application.User.Commands
 
 
         [Fact]
-        public void RefreshToken_WhenNull_ShouldHaveValidationError()
+        public void Validate_WhenRefreshTokenNull_ShouldHaveValidationError()
         {
             // Arrange
             var command = new RefreshTokenCommand { RefreshToken = null };
@@ -43,7 +43,7 @@ namespace HybridMessenger.Tests.Application.User.Commands
 
 
         [Fact]
-        public void RefreshToken_WhenValid_ShouldNotHaveValidationError()
+        public void Validate_WhenRefreshTokenValid_ShouldNotHaveValidationError()
         {
             // Arrange
             var command = new RefreshTokenCommand { RefreshToken = "valid_token" };
