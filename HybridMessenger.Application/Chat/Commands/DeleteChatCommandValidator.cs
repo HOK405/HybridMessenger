@@ -7,7 +7,7 @@ namespace HybridMessenger.Application.Chat.Commands
     {
         private readonly IChatRepository _chatRepository;
 
-        public DeleteChatCommandValidator(IChatRepository chatRepository, IUserRepository userRepository)
+        public DeleteChatCommandValidator(IChatRepository chatRepository)
         {
             _chatRepository = chatRepository;
 

@@ -31,7 +31,7 @@ namespace HybridMessenger.Presentation.Auth
                 }
                 catch
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("An error occurred while processing the JWT.");
                 }
             }
 

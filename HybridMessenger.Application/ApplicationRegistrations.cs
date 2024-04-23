@@ -28,7 +28,7 @@ namespace HybridMessenger.Application
                 configuration.DisableBuiltInModelValidation = true;
             });
 
-            ValidatorOptions.Global.CascadeMode = CascadeMode.Stop;
+            ValidatorOptions.Global.CascadeMode = CascadeMode.StopOnFirstFailure;
 
             return services;
         }
