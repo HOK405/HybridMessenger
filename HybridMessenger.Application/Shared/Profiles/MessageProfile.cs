@@ -12,7 +12,8 @@ namespace HybridMessenger.Application.Shared.Profiles
             .ForMember(dto => dto.ChatId, opt => opt.MapFrom(src => src.ChatId))
             .ForMember(dto => dto.UserId, opt => opt.MapFrom(src => src.UserId))
             .ForMember(dto => dto.MessageText, opt => opt.MapFrom(src => src.MessageText))
-            .ForMember(dto => dto.SentAt, opt => opt.MapFrom(src => src.SentAt));
+            .ForMember(dto => dto.SentAt, opt => opt.MapFrom(src => src.SentAt))
+            .ForMember(dto => dto.SenderUserName, opt => opt.MapFrom(src => src.User.UserName));
         }
     }
 }

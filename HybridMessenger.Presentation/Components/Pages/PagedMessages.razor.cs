@@ -17,7 +17,7 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private readonly List<string> _allUserDtoFields = new List<string>
         {
-            "MessageId", "ChatId", "UserId", "MessageText", "SentAt"
+            "SenderUserName", "MessageText", "SentAt"
         };
 
         protected override async Task OnInitializedAsync()

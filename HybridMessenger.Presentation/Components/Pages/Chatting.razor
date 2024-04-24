@@ -18,8 +18,7 @@
                 @foreach (var message in _data)
                 {
                     <tr>
-                        <td>@message.MessageId</td>
-                        <td>@message.UserId</td>
+                        <td>@message.SenderUserName</td>
                         <td>@message.MessageText</td>
                         <td>@message.SentAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
                     </tr>

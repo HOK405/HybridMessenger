@@ -27,7 +27,7 @@ namespace HybridMessenger.Application.Message.Queries
                 { "UserId", request.UserId }
             };     
 
-            var query = await _messageRepository.GetPagedAsync(
+            var query = await _messageRepository.GetPagedMessagesAsync(
                 pageNumber: request.PageNumber,
                 pageSize: request.PageSize,
                 sortBy: request.SortBy,

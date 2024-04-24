@@ -11,5 +11,7 @@
         public string MessageText { get; set; }
 
         public DateTime SentAt { get; set; }
+
+        public string SenderUserName { get; set; }
     }
 }
