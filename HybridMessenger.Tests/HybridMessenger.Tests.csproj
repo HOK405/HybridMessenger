@@ -28,10 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Infrastructure\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\HybridMessenger.Application\HybridMessenger.Application.csproj" />
     <ProjectReference Include="..\HybridMessenger.Infrastructure\HybridMessenger.Infrastructure.csproj" />
   </ItemGroup>
