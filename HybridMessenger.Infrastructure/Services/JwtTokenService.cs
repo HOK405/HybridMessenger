@@ -46,7 +46,6 @@ namespace HybridMessenger.Infrastructure.Services
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddDays(7),
-                /*Expires = DateTime.UtcNow.AddSeconds(20),*/
                 Issuer = issuer,
                 Audience = audience,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

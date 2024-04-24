@@ -39,10 +39,10 @@ namespace HybridMessenger.Tests.Infrastructure.Services
             var jwtToken = handler.ReadJwtToken(token);
 
             // Assert
-            Assert.Contains(jwtToken.Claims, c => c.Type == ClaimTypes.Name && c.Value == "JohnDoe");
-            Assert.Contains(jwtToken.Claims, c => c.Type == ClaimTypes.Email && c.Value == "john@example.com");
-            Assert.Contains(jwtToken.Claims, c => c.Type == ClaimTypes.Role && c.Value == "Admin");
-            Assert.Contains(jwtToken.Claims, c => c.Type == ClaimTypes.Role && c.Value == "User");
+            Assert.Contains(jwtToken.Claims, c => c.Type == "unique_name" && c.Value == "JohnDoe");
+            Assert.Contains(jwtToken.Claims, c => c.Type == "email" && c.Value == "john@example.com");
+            Assert.Contains(jwtToken.Claims, c => c.Type == "role" && c.Value == "Admin");
+            Assert.Contains(jwtToken.Claims, c => c.Type == "role" && c.Value == "User");
         }
 
 
@@ -64,10 +64,15 @@ namespace HybridMessenger.Tests.Infrastructure.Services
 
 
         [Fact]
-        public void GetPrincipalFromExpiredToken_ReturnsValidPrincipal()
+        public async Task GetPrincipalFromExpiredToken_ReturnsValidPrincipal()
         {
             // Arrange
-            var token = _jwtTokenService.GenerateAccessToken(new User { Id = 1, UserName = "JohnDoe", Email = "john@example.com" }).Result; // Generating a real token for testing
+            var user = new User { Id = 1, UserName = "JohnDoe", Email = "john@example.com" };
+            var roles = new List<string>(); 
+
+            _mockIdentityService.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
+
+            var token = await _jwtTokenService.GenerateAccessToken(user); 
 
             // Act
             var principal = _jwtTokenService.GetPrincipalFromExpiredToken(token);
