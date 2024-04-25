@@ -46,7 +46,7 @@ namespace HybridMessenger.Tests.Application.Message.Queries
                 new { MessageText = "Hello", SentAt = DateTime.UtcNow }
             };
 
-            _mockMessageRepository.Setup(repo => repo.GetPagedAsync(
+            _mockMessageRepository.Setup(repo => repo.GetPagedMessagesAsync(
                 It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<string>(),
@@ -67,7 +67,7 @@ namespace HybridMessenger.Tests.Application.Message.Queries
             Assert.NotNull(result);
             Assert.Single(result);
             Assert.Equal(projectedMessages, result);
-            _mockMessageRepository.Verify(repo => repo.GetPagedAsync(
+            _mockMessageRepository.Verify(repo => repo.GetPagedMessagesAsync(
                 request.PageNumber,
                 request.PageSize,
                 request.SortBy,

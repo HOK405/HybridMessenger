@@ -41,7 +41,7 @@ namespace HybridMessenger.Tests.Application.Message.Queries
                 new { MessageText = "Hello", SentAt = DateTime.UtcNow }
             };
 
-            _mockMessageRepository.Setup(repo => repo.GetPagedAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), It.IsAny<bool>()))
+            _mockMessageRepository.Setup(repo => repo.GetPagedMessagesAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), It.IsAny<bool>()))
                                   .ReturnsAsync(messages.AsQueryable());
 
             _mockDynamicProjectionService.Setup(service => service.ProjectToDynamic<Domain.Entities.Message, MessageDto>(It.IsAny<List<Domain.Entities.Message>>(), It.IsAny<IEnumerable<string>>()))
@@ -53,7 +53,7 @@ namespace HybridMessenger.Tests.Application.Message.Queries
             // Assert
             Assert.NotNull(result);
             Assert.Equal(projectedMessages, result);
-            _mockMessageRepository.Verify(repo => repo.GetPagedAsync(query.PageNumber, query.PageSize, query.SortBy, It.IsAny<Dictionary<string, object>>(), query.SearchValue, query.Ascending), Times.Once);
+            _mockMessageRepository.Verify(repo => repo.GetPagedMessagesAsync(query.PageNumber, query.PageSize, query.SortBy, It.IsAny<Dictionary<string, object>>(), query.SearchValue, query.Ascending), Times.Once);
             _mockDynamicProjectionService.Verify(service => service.ProjectToDynamic<Domain.Entities.Message, MessageDto>(It.IsAny<List<Domain.Entities.Message>>(), It.IsAny<IEnumerable<string>>()), Times.Once);
         }
     }
