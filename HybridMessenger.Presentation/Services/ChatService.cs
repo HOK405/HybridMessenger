@@ -12,10 +12,11 @@ namespace HybridMessenger.Presentation.Services
         private HubConnection _hubConnection;
         private string _url;
 
-        public ChatService(IConfiguration configuration, IHttpService httpServie)
+        public ChatService(IConfiguration configuration, IHttpService httpService)
         {
-            _url = configuration.GetValue<string>("HubEndpoint");
-            _httpService = httpServie;
+            _url = ApiConfiguration.FullHub;
+
+            _httpService = httpService;
         }
         public async Task InitializeAsync()
         {

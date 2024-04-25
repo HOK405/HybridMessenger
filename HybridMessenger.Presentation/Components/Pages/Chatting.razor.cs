@@ -2,6 +2,8 @@
 using HybridMessenger.Presentation.ResponseModels;
 using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.JSInterop;
 
 namespace HybridMessenger.Presentation.Components.Pages
 {
@@ -11,7 +13,13 @@ namespace HybridMessenger.Presentation.Components.Pages
         public IHttpService HttpService { get; set; }
 
         [Inject]
+        public IJSRuntime JSRuntime { get; set; }
+
+        [Inject]
         public ChatService _chatService { get; set; }
+
+        [Inject]
+        AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
         [Parameter]
         public string ChatId
@@ -34,16 +42,13 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private string _messageText;
 
+        private int _userId;
+
         private List<MessageResponse> _data;
 
         private ChatMessagesPaginationRequest _requestModel;
 
         private bool _disposed = false;
-
-        private readonly List<string> _allUserDtoFields = new List<string>
-        {
-            "SenderUserName", "MessageText", "SentAt"
-        };
 
         protected override async Task OnInitializedAsync()
         {
@@ -59,6 +64,17 @@ namespace HybridMessenger.Presentation.Components.Pages
                 _requestModel.ChatId = _chatId; 
                 await _chatService.JoinChat(_chatId);
                 await LoadMessages();
+            }
+
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            _userId = int.Parse(authState.User.FindFirst("nameid")?.Value ?? "0");
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (_data != null && _data.Any())
+            {
+                await JSRuntime.InvokeVoidAsync("scrollToBottom", "messageContainer");
             }
         }
 
@@ -81,6 +97,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         private async Task SendMessage()
         {
             await _chatService.SendMessage(_requestModel.ChatId, _messageText);
+            _messageText = default;
         }
 
         public async ValueTask DisposeAsync()
