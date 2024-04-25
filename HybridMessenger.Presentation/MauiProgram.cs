@@ -12,8 +12,6 @@ namespace HybridMessenger.Presentation
         {
             var builder = MauiApp.CreateBuilder();
 
-            builder.Configuration.AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
-
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
@@ -21,8 +19,10 @@ namespace HybridMessenger.Presentation
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
-            string apiBaseAddress = builder.Configuration["ApiBaseAddress"];
-           
+            builder.Configuration.AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
+
+            string apiBaseAddress = ApiConfiguration.ApiBaseAddress;
+
             if (string.IsNullOrEmpty(apiBaseAddress))
             {
                 throw new InvalidOperationException("API base address is not configured properly.");
