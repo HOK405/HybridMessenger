@@ -96,8 +96,11 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private async Task SendMessage()
         {
-            await _chatService.SendMessage(_requestModel.ChatId, _messageText);
-            _messageText = default;
+            if (!string.IsNullOrWhiteSpace(_messageText))
+            {
+                await _chatService.SendMessage(_requestModel.ChatId, _messageText);
+                _messageText = default; 
+            }
         }
 
         public async ValueTask DisposeAsync()

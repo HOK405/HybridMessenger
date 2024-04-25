@@ -11,16 +11,6 @@
         width: 0; 
     }
 
-    .message-container:hover {
-        scrollbar-width: thin; 
-    }
-
-        .message-container:hover::-webkit-scrollbar-thumb { 
-            border-radius: 10px; 
-        }
-
-
-
 .my-message, .other-message {
     align-self: flex-start;
     background-color: #fff;
@@ -28,12 +18,19 @@
     padding: 10px;
     margin: 4px;
     max-width: 60%;
+    box-shadow: -1px 1px 7px rgba(0, 0, 0, 0.5);
 }
 
 .my-message {
     align-self: flex-end;
-    background-color: #febef8; 
+    background-color: #212121;
 }
+    .my-message .message-content {
+        color: #aeaeae;
+    }
+        .my-message .sender-name{
+            color: #9cf1f3;
+        }
 
 .message-content {
     display: flex;
@@ -76,20 +73,20 @@
 }
 
 .send-button {
-    padding: 6px 8px; 
-    margin-left: 50px;
-    line-height: 1; 
+    padding: 6px 8px;
+    margin-left: 20px;
+    margin-right: 10px;
+    line-height: 1;
     border: none;
-    background-color: #6c757d; 
+    background-color: #6c757d;
 }
 
 
     .send-button svg {
-        width: 24px; 
+        width: 60px; 
         height: 24px; 
         fill: white; 
     }
-
 
 
 @media (max-width: 640px) {
@@ -120,3 +117,4 @@
     .form-group label {
         font-size: 1.2rem;
     }
+
