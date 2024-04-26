@@ -14,7 +14,9 @@ namespace HybridMessenger.Presentation.Services
 
         public ChatService(IConfiguration configuration, IHttpService httpService)
         {
-            _url = ApiConfiguration.FullHub;
+            string baseAddress = configuration.GetValue<string>("ApiBaseAddress");
+            string endpoint = configuration.GetValue<string>("HubEndpoint");
+            _url = $"{baseAddress.TrimEnd('/')}/{endpoint.TrimStart('/')}";
 
             _httpService = httpService;
         }
