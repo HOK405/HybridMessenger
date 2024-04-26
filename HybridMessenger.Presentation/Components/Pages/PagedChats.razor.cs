@@ -2,6 +2,7 @@
 using HybridMessenger.Presentation.ResponseModels;
 using HybridMessenger.Presentation.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace HybridMessenger.Presentation.Components.Pages
 {
@@ -12,6 +13,9 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         [Inject]
         public NavigationManager NavigationManager { get; set; }
+
+        [Inject]
+        public IJSRuntime JS {  get; set; }
 
 
         private IEnumerable<ResponeChatObject> _data;
@@ -28,20 +32,38 @@ namespace HybridMessenger.Presentation.Components.Pages
         private string _userNameToAddToGroup;
         private string _groupIdToAddMember;
 
-        private string _chatIdToDelete;
+        private bool _editMode;
 
-        private void RedirectToChatPage(int chatId)
-        {
-            NavigationManager.NavigateTo($"/chatting/{chatId}");
-        }
+        private ResponeChatObject _selectedChat;
 
         protected override async Task OnInitializedAsync()
         {
             _data = new List<ResponeChatObject>();
 
-            _requestModel = new PaginationRequest { SortBy = "CreatedAt" };
+            _requestModel = new PaginationRequest { SortBy = "CreatedAt", PageSize = 5 };
 
             await LoadChats();
+        }
+
+        private void ShowEditOptions(ResponeChatObject chat)
+        {
+            _selectedChat = chat;
+            _groupNameToUpdate = chat.ChatName;
+            _groupIdToUpdate = chat.ChatId.ToString();
+            _groupIdToAddMember = chat.ChatId.ToString();
+            _editMode = true;
+        }
+
+        private async Task CloseAndRefresh()
+        {
+            _selectedChat = null;
+            _editMode = false;
+            await LoadChats();
+        }
+
+        private void RedirectToChatPage(int chatId)
+        {
+            NavigationManager.NavigateTo($"/chatting/{chatId}");
         }
 
         private async Task CreateGroup()
@@ -105,17 +127,28 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private async Task DeleteChat()
         {
-            if (!string.IsNullOrEmpty(_chatIdToDelete))
+            if (!string.IsNullOrEmpty(_selectedChat.ChatId.ToString()))
             {
                 await HttpService.PostAsync<StringOkResponse>("api/chat/delete-chat", new DeleteChatRequest()
                 {
-                    ChatId = _chatIdToDelete
+                    ChatId = _selectedChat.ChatId.ToString()
                 });
 
-                _chatIdToDelete = "";
-                await LoadChats(); 
+                _selectedChat.ChatId = default;
+                await CloseAndRefresh();
             }
         }
+
+        private async Task DeleteChatById(int chatId)
+        {
+            await HttpService.PostAsync<StringOkResponse>("api/chat/delete-chat", new DeleteChatRequest()
+            {
+                ChatId = chatId.ToString()
+            });
+
+            await LoadChats(); 
+        }
+
 
         private async Task LoadChats()
         {
@@ -124,6 +157,22 @@ namespace HybridMessenger.Presentation.Components.Pages
             _data = await HttpService.PostAsync<IEnumerable<ResponeChatObject>>("api/chat/get-my-chats", _requestModel);
 
             StateHasChanged();
+        }
+
+
+        private async Task NextPage()
+        {
+            _requestModel.PageNumber++;
+            await LoadChats();
+        }
+
+        private async Task PreviousPage()
+        {
+            if (_requestModel.PageNumber > 1)
+            {
+                _requestModel.PageNumber--;
+                await LoadChats();
+            }
         }
     }
 }

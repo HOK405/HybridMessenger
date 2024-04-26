@@ -26,7 +26,7 @@
         <label for="Ascending">Ascending:</label>
         <InputCheckbox @bind-Value="_requestModel.Ascending" id="Ascending" />
     </div>
-    <button class="btn btn-secondary user-full-width-button" @onclick="LoadMessages">Get Users</button>
+    <button class="btn btn-secondary user-full-width-button" @onclick="LoadMessages">Get messages</button>
 </div>
 
 @if (_data != null && _data.Any())

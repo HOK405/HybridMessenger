@@ -1,7 +1,3 @@
-body {
-    color: blue;
-}
-
 th {
     color: white;
 }
@@ -41,4 +37,57 @@ th {
 .mini-form-padding
 {
     padding-bottom:20px;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+}
+
+.modal-content {
+    background-color: #333;
+    padding: 20px;
+    padding-bottom: 40px; 
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 500px;
+}
+
+
+.close {
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
+    color: red;
+}
+
+.modal-button {
+    display: block; 
+    width: 50%; 
+    margin: 10px auto; 
+}
+
+.sort-by-dropdown {
+    max-width: 50%;
+    margin-right: 50px;
+}
+
+.btn-group.d-block {
+    margin-top: 10px; 
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
 }
