@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using HybridMessenger.Domain.Repositories;
+﻿using HybridMessenger.Domain.Repositories;
 using HybridMessenger.Domain.UnitOfWork;
 using MediatR;
 
@@ -22,12 +21,22 @@ namespace HybridMessenger.Application.Chat.Commands
 
         public async Task Handle(AddGroupMemberCommand request, CancellationToken cancellationToken)
         {
+            if (!await UserIsInChat(request.UserId, request.ChatId))
+            {
+                throw new InvalidOperationException("User is not a member of the specified chat.");
+            }
+
             var userToAdd = await _userRepository.GetUserByUsernameAsync(request.UserNameToAdd);
 
             var chatToModify = await _chatRepository.GetByIdAsync(request.ChatId);
 
             await _chatMemberRepository.AddUserToChatAsync(userToAdd, chatToModify);
             await _unitOfWork.SaveChangesAsync();
+        }
+
+        private async Task<bool> UserIsInChat(int userId, int chatId)
+        {
+            return await _chatMemberRepository.IsUserMemberOfChatAsync(userId, chatId);
         }
     }
 }
