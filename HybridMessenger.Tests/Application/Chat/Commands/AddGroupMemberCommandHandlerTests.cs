@@ -38,8 +38,10 @@ namespace HybridMessenger.Tests.Application.Chat.Commands
             var command = new AddGroupMemberCommand { UserNameToAdd = username, ChatId = chatId, UserId = userId };
             var user = new Domain.Entities.User { Id = userId, UserName = username };
             var chat = new Domain.Entities.Chat { ChatId = chatId, ChatName = "chatName", IsGroup = true, CreatedAt = DateTime.UtcNow };
-            var chatMember = new ChatMember { UserId = user.Id, ChatId = chat.ChatId }; 
+            var chatMember = new ChatMember { UserId = user.Id, ChatId = chat.ChatId };
 
+            _mockChatMemberRepository.Setup(repo => repo.IsUserMemberOfChatAsync(userId, chatId))
+                               .ReturnsAsync(true);
             _mockUserRepository.Setup(repo => repo.GetUserByUsernameAsync(username))
                                .ReturnsAsync(user);
             _mockChatRepository.Setup(repo => repo.GetByIdAsync(chatId))
@@ -53,6 +55,24 @@ namespace HybridMessenger.Tests.Application.Chat.Commands
             // Assert
             _mockChatMemberRepository.Verify(repo => repo.AddUserToChatAsync(user, chat), Times.Once);
             _mockUnitOfWork.Verify(u => u.SaveChangesAsync(), Times.Once);
+        }
+
+
+        [Fact]
+        public async Task Handle_UserNotInChat_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            var username = "testUser";
+            var chatId = 1;
+            var userId = 1;
+            var command = new AddGroupMemberCommand { UserNameToAdd = username, ChatId = chatId, UserId = userId };
+
+            _mockChatMemberRepository.Setup(repo => repo.IsUserMemberOfChatAsync(userId, chatId))
+                                     .ReturnsAsync(false);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, new CancellationToken()));
+            _mockChatMemberRepository.Verify(repo => repo.IsUserMemberOfChatAsync(userId, chatId), Times.Once);
         }
     }
 }
