@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -29,8 +29,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HybridMessenger.API\HybridMessenger.API.csproj" />
     <ProjectReference Include="..\HybridMessenger.Application\HybridMessenger.Application.csproj" />
     <ProjectReference Include="..\HybridMessenger.Infrastructure\HybridMessenger.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="API\Controllers\" />
   </ItemGroup>
 
 </Project>
