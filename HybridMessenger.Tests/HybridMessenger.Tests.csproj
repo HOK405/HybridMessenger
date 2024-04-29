@@ -7,6 +7,7 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <UserSecretsId>e3108b2d-557c-45f0-b6dc-6bc91a170107</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,10 +33,6 @@
     <ProjectReference Include="..\HybridMessenger.API\HybridMessenger.API.csproj" />
     <ProjectReference Include="..\HybridMessenger.Application\HybridMessenger.Application.csproj" />
     <ProjectReference Include="..\HybridMessenger.Infrastructure\HybridMessenger.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="API\Controllers\" />
   </ItemGroup>
 
 </Project>
