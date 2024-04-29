@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HybridMessenger.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class MessageController : Controller
@@ -19,7 +20,6 @@ namespace HybridMessenger.API.Controllers
             _userClaimsService = userClaimsService;
         }
 
-        [Authorize]
         [HttpPost("get-chat-messages")]
         public async Task<ActionResult> GetChatMessages([FromBody] GetPagedChatMessagesQuery query)
         {
@@ -29,7 +29,6 @@ namespace HybridMessenger.API.Controllers
             return Ok(result);
         }
 
-        [Authorize]
         [HttpPost("get-user-messages")]
         public async Task<ActionResult> GetUserMessages([FromBody] GetPagedUserMessagesQuery query)
         {

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HybridMessenger.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ChatController : Controller
@@ -20,7 +21,6 @@ namespace HybridMessenger.API.Controllers
             _userClaimsService = userClaimsService;
         }
 
-        [Authorize]
         [HttpPost("create-group")]
         public async Task<ActionResult> CreateGroup([FromBody] CreateGroupCommand command)
         {
@@ -30,7 +30,6 @@ namespace HybridMessenger.API.Controllers
             return Ok(result);
         }
 
-        [Authorize]
         [HttpPost("create-private-chat")]
         public async Task<ActionResult> CreatePrivateChat([FromBody] CreatePrivateChatCommand command)
         {
@@ -40,7 +39,6 @@ namespace HybridMessenger.API.Controllers
             return Ok(result);
         }
 
-        [Authorize]
         [HttpPost("get-my-chats")]
         public async Task<ActionResult> GetUserChats([FromBody] GetPagedUserChatsQuery query)
         {
@@ -50,7 +48,6 @@ namespace HybridMessenger.API.Controllers
             return Ok(result);
         }
 
-        [Authorize]
         [HttpPut("change-chat-name")]
         public async Task<ActionResult> ChangeChatName([FromBody] ChangeGroupNameCommand command)
         {
@@ -61,7 +58,6 @@ namespace HybridMessenger.API.Controllers
             return Ok(result);
         }
 
-        [Authorize]
         [HttpPut("add-group-member")]
         public async Task<ActionResult> AddGroupMemberByUsername([FromBody] AddGroupMemberCommand command)
         {
@@ -72,7 +68,6 @@ namespace HybridMessenger.API.Controllers
             return Ok(new { Message = "Group member is successfully added." });
         }
 
-        [Authorize]
         [HttpPost("delete-chat")]
         public async Task<ActionResult> DeleteChat([FromBody] DeleteChatCommand command)
         {

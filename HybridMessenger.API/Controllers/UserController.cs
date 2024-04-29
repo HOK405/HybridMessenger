@@ -1,6 +1,7 @@
 ﻿using HybridMessenger.Application.User.Commands;
 using HybridMessenger.Application.User.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HybridMessenger.API.Controllers
@@ -16,6 +17,7 @@ namespace HybridMessenger.API.Controllers
             _mediator = mediator;
         }
 
+        [Authorize]
         [HttpGet("get-by-id")]
         public async Task<ActionResult> GetUser([FromQuery] GetUserByIdQuery query)
         {
@@ -24,6 +26,7 @@ namespace HybridMessenger.API.Controllers
             return Ok(userResult);
         }
 
+        [Authorize]
         [HttpPost("get-paged")]
         public async Task<ActionResult> GetPagedUsers([FromBody] GetPagedUsersQuery query)
         {
