@@ -1,6 +1,5 @@
 ﻿using HybridMessenger.API;
 using Microsoft.AspNetCore.Mvc.Testing;
-using System.Net;
 
 namespace HybridMessenger.Tests.API.HealthCheck
 {
