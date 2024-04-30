@@ -4,6 +4,8 @@ namespace HybridMessenger.Domain.Repositories
 {
     public interface IMessageRepository : IRepository<Message>
     {
+        Task<bool> IsUserMessageAsync(int messageId, int userId);
+
         Task<IQueryable<Message>> GetPagedMessagesAsync(
             int pageNumber,
             int pageSize,

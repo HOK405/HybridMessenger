@@ -10,6 +10,16 @@ namespace HybridMessenger.Infrastructure.Repositories
         {
         }
 
+        public async Task<bool> IsUserMessageAsync(int messageId, int userId)
+        {
+            var message = await _context.Messages.FindAsync(messageId);
+            if (message == null)
+            {
+                return false;
+            }
+
+            return message.UserId == userId;
+        }
 
         public async Task<IQueryable<Message>> GetPagedMessagesAsync(
             int pageNumber, 

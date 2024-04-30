@@ -1,4 +1,6 @@
-﻿using HybridMessenger.Application.Message.Queries;
+﻿using HybridMessenger.Application.Message.Commands;
+using HybridMessenger.Application.Message.Queries;
+using HybridMessenger.Application.User.Commands;
 using HybridMessenger.Domain.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -21,7 +23,7 @@ namespace HybridMessenger.API.Controllers
         }
 
         [HttpPost("get-chat-messages")]
-        public async Task<ActionResult> GetChatMessages([FromBody] GetPagedChatMessagesQuery query)
+        public async Task<IActionResult> GetChatMessages([FromBody] GetPagedChatMessagesQuery query)
         {
             query.UserId = _userClaimsService.GetUserId(User);
 
@@ -30,12 +32,22 @@ namespace HybridMessenger.API.Controllers
         }
 
         [HttpPost("get-user-messages")]
-        public async Task<ActionResult> GetUserMessages([FromBody] GetPagedUserMessagesQuery query)
+        public async Task<IActionResult> GetUserMessages([FromBody] GetPagedUserMessagesQuery query)
         {
             query.UserId = _userClaimsService.GetUserId(User);
 
             var result = await _mediator.Send(query); 
             return Ok(result);
+        }
+
+        [HttpDelete("delete-by-id")]
+        public async Task<IActionResult> DeleteMessage([FromBody] DeleteMessageCommand command)
+        {
+            command.UserId = _userClaimsService.GetUserId(User);
+
+            await _mediator.Send(command);
+
+            return Ok(new { Message = "Message is successfully deleted." });
         }
     }
 }
