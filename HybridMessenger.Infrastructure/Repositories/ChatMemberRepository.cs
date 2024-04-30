@@ -28,5 +28,15 @@ namespace HybridMessenger.Infrastructure.Repositories
 
             return newMember;
         }
+
+        public async Task RemoveUserFromChatAsync(User user, Chat chat)
+        {
+            var member = await _context.ChatMembers.FirstOrDefaultAsync(cm => cm.ChatId == chat.ChatId && cm.UserId == user.Id);
+            if (member != null)
+            {
+                _context.ChatMembers.Remove(member);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

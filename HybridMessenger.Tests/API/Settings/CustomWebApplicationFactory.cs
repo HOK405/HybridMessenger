@@ -15,7 +15,7 @@ namespace HybridMessenger.Tests.API.Settings
 
                 if (descriptor != null)
                 {
-                    services.Remove(descriptor); // Remove service if exists
+                    services.Remove(descriptor); // Remove service
                 }
 
                 services.AddDbContext<ApiDbContext>(options =>

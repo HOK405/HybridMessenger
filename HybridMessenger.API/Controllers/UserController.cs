@@ -19,7 +19,7 @@ namespace HybridMessenger.API.Controllers
 
         [Authorize]
         [HttpGet("get-by-id")]
-        public async Task<ActionResult> GetUser([FromQuery] GetUserByIdQuery query)
+        public async Task<IActionResult> GetUser([FromQuery] GetUserByIdQuery query)
         {
             var userResult = await _mediator.Send(query);
 
@@ -28,7 +28,7 @@ namespace HybridMessenger.API.Controllers
 
         [Authorize]
         [HttpPost("get-paged")]
-        public async Task<ActionResult> GetPagedUsers([FromBody] GetPagedUsersQuery query)
+        public async Task<IActionResult> GetPagedUsers([FromBody] GetPagedUsersQuery query)
         {
             var result = await _mediator.Send(query);
 
@@ -67,7 +67,7 @@ namespace HybridMessenger.API.Controllers
         }
 
         [HttpPost("refresh-token")]
-        public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
         {
             var result = await _mediator.Send(command);
 

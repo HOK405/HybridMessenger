@@ -6,6 +6,8 @@ namespace HybridMessenger.Domain.Repositories
     {
         Task<ChatMember> AddUserToChatAsync(User user, Chat chat);
 
+        Task RemoveUserFromChatAsync(User user, Chat chat);
+
         Task<bool> IsUserMemberOfChatAsync(int userId, int chatId);
     }
 }

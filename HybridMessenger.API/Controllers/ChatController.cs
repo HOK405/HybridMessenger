@@ -22,7 +22,7 @@ namespace HybridMessenger.API.Controllers
         }
 
         [HttpPost("create-group")]
-        public async Task<ActionResult> CreateGroup([FromBody] CreateGroupCommand command)
+        public async Task<IActionResult> CreateGroup([FromBody] CreateGroupCommand command)
         {
             command.UserId = _userClaimsService.GetUserId(User);
 
@@ -31,7 +31,7 @@ namespace HybridMessenger.API.Controllers
         }
 
         [HttpPost("create-private-chat")]
-        public async Task<ActionResult> CreatePrivateChat([FromBody] CreatePrivateChatCommand command)
+        public async Task<IActionResult> CreatePrivateChat([FromBody] CreatePrivateChatCommand command)
         {
             command.UserCreatorId = _userClaimsService.GetUserId(User);
 
@@ -40,7 +40,7 @@ namespace HybridMessenger.API.Controllers
         }
 
         [HttpPost("get-my-chats")]
-        public async Task<ActionResult> GetUserChats([FromBody] GetPagedUserChatsQuery query)
+        public async Task<IActionResult> GetUserChats([FromBody] GetPagedUserChatsQuery query)
         {
             query.UserId = _userClaimsService.GetUserId(User);
 
@@ -49,7 +49,7 @@ namespace HybridMessenger.API.Controllers
         }
 
         [HttpPut("change-chat-name")]
-        public async Task<ActionResult> ChangeChatName([FromBody] ChangeGroupNameCommand command)
+        public async Task<IActionResult> ChangeChatName([FromBody] ChangeGroupNameCommand command)
         {
             command.UserId = _userClaimsService.GetUserId(User);
 
@@ -59,7 +59,7 @@ namespace HybridMessenger.API.Controllers
         }
 
         [HttpPut("add-group-member")]
-        public async Task<ActionResult> AddGroupMemberByUsername([FromBody] AddGroupMemberCommand command)
+        public async Task<IActionResult> AddGroupMemberByUsername([FromBody] AddGroupMemberCommand command)
         {
             command.UserId = _userClaimsService.GetUserId(User);
 
@@ -68,8 +68,18 @@ namespace HybridMessenger.API.Controllers
             return Ok(new { Message = "Group member is successfully added." });
         }
 
+        [HttpPut("remove-group-member")]
+        public async Task<IActionResult> RemoveGroupMemberByUsername([FromBody] RemoveGroupMemberCommand command)
+        {
+            command.UserId = _userClaimsService.GetUserId(User);
+
+            await _mediator.Send(command);
+
+            return Ok(new { Message = "Group member is successfully removed." });
+        }
+
         [HttpPost("delete-chat")]
-        public async Task<ActionResult> DeleteChat([FromBody] DeleteChatCommand command)
+        public async Task<IActionResult> DeleteChat([FromBody] DeleteChatCommand command)
         {
             command.UserId = _userClaimsService.GetUserId(User);
 
