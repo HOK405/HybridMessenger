@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HybridMessenger.Presentatio
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "HybridMessenger.Database", "HybridMessenger.Database\HybridMessenger.Database.sqlproj", "{D0BB958F-E167-4103-A864-4A2963529C82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HybridMessenger.Tests", "HybridMessenger.Tests\HybridMessenger.Tests.csproj", "{B49FA5A5-C57A-48FA-B7BB-1A14253C067B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HybridMessenger.Tests", "HybridMessenger.Tests\HybridMessenger.Tests.csproj", "{B49FA5A5-C57A-48FA-B7BB-1A14253C067B}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "HybridMessenger.TestDatabase", "HybridMessenger.TestDatabase\HybridMessenger.TestDatabase.sqlproj", "{4A0C54AF-EF58-4DE1-9EF4-940FE2B925A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,12 @@ Global
 		{B49FA5A5-C57A-48FA-B7BB-1A14253C067B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B49FA5A5-C57A-48FA-B7BB-1A14253C067B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B49FA5A5-C57A-48FA-B7BB-1A14253C067B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A0C54AF-EF58-4DE1-9EF4-940FE2B925A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A0C54AF-EF58-4DE1-9EF4-940FE2B925A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A0C54AF-EF58-4DE1-9EF4-940FE2B925A1}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{4A0C54AF-EF58-4DE1-9EF4-940FE2B925A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A0C54AF-EF58-4DE1-9EF4-940FE2B925A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A0C54AF-EF58-4DE1-9EF4-940FE2B925A1}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
