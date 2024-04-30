@@ -14,5 +14,7 @@ namespace HybridMessenger.Domain.Services
         Task<IdentityResult> AddRoleAsync(User user, string role);
 
         Task<IList<string>> GetRolesAsync(User user);
+
+        Task<IdentityResult> DeleteUserByIdAsync(int id);
     }
 }

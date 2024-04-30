@@ -70,5 +70,23 @@ namespace HybridMessenger.Infrastructure.Services
         {
             return await _userManager.GetRolesAsync(user);
         }
+
+        public async Task<IdentityResult> DeleteUserByIdAsync(int id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                throw new InvalidOperationException($"No user found with ID {id}.");
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                throw new InvalidOperationException($"User deletion failed: {errors}");
+            }
+
+            return result;
+        }
     }
 }
