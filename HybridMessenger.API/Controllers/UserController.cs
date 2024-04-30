@@ -58,7 +58,7 @@ namespace HybridMessenger.API.Controllers
         }
 
         [Authorize]
-        [HttpDelete]
+        [HttpDelete("delete-by-id")]
         public async Task<IActionResult> Delete([FromBody] DeleteUserCommand command)
         {
             await _mediator.Send(command);
