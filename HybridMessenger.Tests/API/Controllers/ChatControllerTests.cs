@@ -27,8 +27,8 @@ namespace HybridMessenger.Tests.API.Controllers
         {
             var loginCommand = new VerifyByEmailPasswordCommand
             {
-                Email = "firstUserTest123@mail.com",
-                Password = "firstUserTest123"
+                Email = "testUser999@mail.com",
+                Password = "testUser999"
             };
 
             var response = await _httpClient.PostAsJsonAsync("user/login", loginCommand);
@@ -57,7 +57,7 @@ namespace HybridMessenger.Tests.API.Controllers
         public async Task CreatePrivateChat_ValidRequest_ReturnsOk()
         {
             // Arrange
-            var command = new CreatePrivateChatCommand { UserNameToCreateWith = "newUserTest123" };
+            var command = new CreatePrivateChatCommand { UserNameToCreateWith = "userToChatWith123" };
 
             // Act
             var response = await _httpClient.PostAsJsonAsync("chat/create-private-chat", command);
@@ -99,7 +99,7 @@ namespace HybridMessenger.Tests.API.Controllers
             // Arrange
             var command = new ChangeGroupNameCommand 
             { 
-                ChatId = 5, 
+                ChatId = 78, 
                 NewChatName = "Updated Group Name" 
             }; 
 
@@ -117,7 +117,7 @@ namespace HybridMessenger.Tests.API.Controllers
         public async Task AddGroupMemberByUsername_ValidRequest_ReturnsOk()
         {
             // Arrange
-            var command = new AddGroupMemberCommand { ChatId = 4, UserNameToAdd = "userf728322ff7654106a59c8e1236be3470" };
+            var command = new AddGroupMemberCommand { ChatId = 78, UserNameToAdd = "userToChatWith123" };
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
 
             // Act
@@ -134,7 +134,7 @@ namespace HybridMessenger.Tests.API.Controllers
         public async Task DeleteChat_ValidRequest_ReturnsSuccessMessage()
         {
             // Arrange
-            var command = new DeleteChatCommand { ChatId = 13 }; 
+            var command = new DeleteChatCommand { ChatId = 78 }; 
 
             // Act
             var response = await _httpClient.PostAsJsonAsync("chat/delete-chat", command);

@@ -58,13 +58,14 @@ namespace HybridMessenger.API.Controllers
         }
 
         [Authorize]
-        [HttpDelete("delete-by-id")]
+        [HttpPost("delete-by-id")]
         public async Task<IActionResult> Delete([FromBody] DeleteUserCommand command)
         {
             await _mediator.Send(command);
 
             return Ok(new { Message = "User is successfully deleted." });
         }
+
 
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
