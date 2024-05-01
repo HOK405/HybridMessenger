@@ -1,6 +1,5 @@
 ﻿using HybridMessenger.Application.Message.Commands;
 using HybridMessenger.Application.Message.Queries;
-using HybridMessenger.Application.User.Commands;
 using HybridMessenger.Domain.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
