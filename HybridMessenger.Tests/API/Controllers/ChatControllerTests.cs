@@ -9,10 +9,11 @@ using System.Net.Http.Headers;
 
 namespace HybridMessenger.Tests.API.Controllers
 {
-    public class ChatControllerTests : IClassFixture<CustomWebApplicationFactory<Program>>
+    public class ChatControllerTests : IClassFixture<CustomWebApplicationFactory<Program>>, IDisposable
     {
         private readonly HttpClient _httpClient;
         private readonly string _accessToken;
+        private List<int> _createdChatIds = new List<int>();
 
         public ChatControllerTests(CustomWebApplicationFactory<Program> factory)
         {
@@ -40,32 +41,22 @@ namespace HybridMessenger.Tests.API.Controllers
         [Fact]
         public async Task CreateGroup_ValidRequest_ReturnsOk()
         {
-            // Arrange
-            var command = new CreateGroupCommand { ChatName = "New Group" };
-            
-            // Act
-            var response = await _httpClient.PostAsJsonAsync("chat/create-group", command);
-            var result = await response.Content.ReadAsStringAsync();
+            // Arrange & Act
+            int newGroupId = await CreatePublicGroupAsync("New Group");
 
             // Assert
-            response.EnsureSuccessStatusCode();
-            Assert.NotNull(result);
+            Assert.True(newGroupId > 0); 
         }
 
 
         [Fact]
         public async Task CreatePrivateChat_ValidRequest_ReturnsOk()
         {
-            // Arrange
-            var command = new CreatePrivateChatCommand { UserNameToCreateWith = "userToChatWith123" };
-
-            // Act
-            var response = await _httpClient.PostAsJsonAsync("chat/create-private-chat", command);
-            var result = await response.Content.ReadAsStringAsync();
+            // Arrange & Act
+            int newPrivateChatId = await CreatePrivateChatAsync("userToChatWith123");
 
             // Assert
-            response.EnsureSuccessStatusCode();
-            Assert.NotNull(result);
+            Assert.True(newPrivateChatId > 0); 
         }
 
 
@@ -79,7 +70,7 @@ namespace HybridMessenger.Tests.API.Controllers
                 PageSize = 10, 
                 SortBy = "CreatedAt", 
                 SearchValue = "", 
-                Ascending = true, 
+                Ascending = false, 
                 Fields = { } 
             };
 
@@ -94,14 +85,33 @@ namespace HybridMessenger.Tests.API.Controllers
 
 
         [Fact]
+        public async Task AddGroupMemberByUsername_ValidRequest_ReturnsOk()
+        {
+            // Arrange
+            int newGroupId = await CreatePublicGroupAsync("Group for Adding Members");
+            var command = new AddGroupMemberCommand { ChatId = newGroupId, UserNameToAdd = "userToChatWith123" };
+
+            // Act
+            var response = await _httpClient.PutAsJsonAsync("chat/add-group-member", command);
+            var content = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<MessageResponseModel>(content);
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+            Assert.Contains("successfully added", result.Message);
+        }
+
+
+        [Fact]
         public async Task ChangeChatName_ValidRequest_ReturnsOk()
         {
             // Arrange
-            var command = new ChangeGroupNameCommand 
-            { 
-                ChatId = 78, 
-                NewChatName = "Updated Group Name" 
-            }; 
+            int newGroupId = await CreatePublicGroupAsync("Group for Name Change");
+            var command = new ChangeGroupNameCommand
+            {
+                ChatId = newGroupId,
+                NewChatName = "Updated Group Name"
+            };
 
             // Act
             var response = await _httpClient.PutAsJsonAsync("chat/change-chat-name", command);
@@ -114,27 +124,12 @@ namespace HybridMessenger.Tests.API.Controllers
 
 
         [Fact]
-        public async Task AddGroupMemberByUsername_ValidRequest_ReturnsOk()
+        public async Task DeletePublicGroup_ValidRequest_ReturnsSuccessMessage()
         {
             // Arrange
-            var command = new AddGroupMemberCommand { ChatId = 78, UserNameToAdd = "userToChatWith123" };
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
+            int publicChatId = await CreatePublicGroupAsync("New Public Group");
 
-            // Act
-            var response = await _httpClient.PutAsJsonAsync("chat/add-group-member", command);
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<MessageResponseModel>(content);
-
-            // Assert
-            response.EnsureSuccessStatusCode();
-            Assert.Contains("successfully added", result.Message);
-        }
-
-        [Fact]
-        public async Task DeleteChat_ValidRequest_ReturnsSuccessMessage()
-        {
-            // Arrange
-            var command = new DeleteChatCommand { ChatId = 78 }; 
+            var command = new DeleteChatCommand { ChatId = publicChatId };
 
             // Act
             var response = await _httpClient.PostAsJsonAsync("chat/delete-chat", command);
@@ -144,6 +139,60 @@ namespace HybridMessenger.Tests.API.Controllers
             // Assert
             response.EnsureSuccessStatusCode();
             Assert.Equal("Chat is successfully deleted.", result.Message);
+        }
+
+
+        [Fact]
+        public async Task DeletePrivateChat_ValidRequest_ReturnsSuccessMessage()
+        {
+            // Arrange
+            int privateChatId = await CreatePrivateChatAsync("userToChatWith123");
+
+            var command = new DeleteChatCommand { ChatId = privateChatId };
+
+            // Act
+            var response = await _httpClient.PostAsJsonAsync("chat/delete-chat", command);
+            var content = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<MessageResponseModel>(content);
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+            Assert.Equal("Chat is successfully deleted.", result.Message);
+        }
+
+
+        public void Dispose()
+        {
+            foreach (var chatId in _createdChatIds)
+            {
+                DeleteChat(chatId).Wait(); 
+            }
+        }
+
+        private async Task DeleteChat(int chatId)
+        {
+            var command = new DeleteChatCommand { ChatId = chatId };
+            await _httpClient.PostAsJsonAsync("chat/delete-chat", command);
+        }
+
+        private async Task<int> CreatePublicGroupAsync(string groupName)
+        {
+            var command = new CreateGroupCommand { ChatName = groupName };
+            var response = await _httpClient.PostAsJsonAsync("chat/create-group", command);
+            response.EnsureSuccessStatusCode();
+            var chatResult = JsonConvert.DeserializeObject<ChatResponseModel>(await response.Content.ReadAsStringAsync());
+            _createdChatIds.Add(chatResult.ChatId);
+            return chatResult.ChatId;
+        }
+
+        private async Task<int> CreatePrivateChatAsync(string username)
+        {
+            var command = new CreatePrivateChatCommand { UserNameToCreateWith = username };
+            var response = await _httpClient.PostAsJsonAsync("chat/create-private-chat", command);
+            response.EnsureSuccessStatusCode();
+            var chatResult = JsonConvert.DeserializeObject<ChatResponseModel>(await response.Content.ReadAsStringAsync());
+            _createdChatIds.Add(chatResult.ChatId);
+            return chatResult.ChatId;
         }
     }
 }
