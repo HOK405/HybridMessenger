@@ -2,7 +2,6 @@
 using HybridMessenger.Application.Chat.Commands;
 using HybridMessenger.Tests.API.ResponseModels;
 using HybridMessenger.Tests.API.Settings;
-using Newtonsoft.Json;
 using System.Net.Http.Headers;
 
 namespace HybridMessenger.Tests.API.Controllers
@@ -62,16 +61,13 @@ namespace HybridMessenger.Tests.API.Controllers
             var query = DefaultChatData.GetPagedUserChatsQuery();
 
             // Act
-            var response = await _httpClient.PostAsJsonAsync("chat/get-my-chats", query);
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-            var chats = JsonConvert.DeserializeObject<List<ChatResponseModel>>(result);
+            var chats = await _httpClient.PostAsJsonAsync<List<ChatResponseModel>>("chat/get-my-chats", query);
 
             // Assert
             Assert.NotNull(chats);
-            Assert.Equal(2, chats.Count);  
-            Assert.Contains(chats, chat => chat.ChatName == "Group for testing"); 
-            Assert.Contains(chats, chat => chat.ChatName == "Group for testing 2"); 
+            Assert.Equal(2, chats.Count);
+            Assert.Contains(chats, chat => chat.ChatName == "Group for testing");
+            Assert.Contains(chats, chat => chat.ChatName == "Group for testing 2");
         }
 
 
@@ -83,12 +79,9 @@ namespace HybridMessenger.Tests.API.Controllers
             var command = new AddGroupMemberCommand { ChatId = newGroup.ChatId, UserNameToAdd = "userToChatWith123" };
 
             // Act
-            var response = await _httpClient.PutAsJsonAsync("chat/add-group-member", command);
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<MessageTextResponseModel>(content);
+            var result = await _httpClient.PutAsJsonAsync<MessageTextResponseModel>("chat/add-group-member", command);
 
             // Assert
-            response.EnsureSuccessStatusCode();
             Assert.Contains("successfully added", result.Message);
         }
 
@@ -98,7 +91,6 @@ namespace HybridMessenger.Tests.API.Controllers
         {
             // Arrange
             var newGroup = await CreatePublicGroupAsync("Group for Name Change");
-
             string newGroupName = "Updated Group Name";
             var command = new ChangeGroupNameCommand
             {
@@ -107,14 +99,11 @@ namespace HybridMessenger.Tests.API.Controllers
             };
 
             // Act
-            var response = await _httpClient.PutAsJsonAsync("chat/change-chat-name", command);
-            response.EnsureSuccessStatusCode();
-            var contentResult = await response.Content.ReadAsStringAsync();
-            var updatedGroup = JsonConvert.DeserializeObject<ChatResponseModel>(contentResult);
+            var updatedGroup = await _httpClient.PutAsJsonAsync<ChatResponseModel>("chat/change-chat-name", command);
 
             // Assert
             Assert.NotNull(updatedGroup);
-            Assert.Equal(newGroupName, updatedGroup.ChatName); 
+            Assert.Equal(newGroupName, updatedGroup.ChatName);
         }
 
 
@@ -126,12 +115,9 @@ namespace HybridMessenger.Tests.API.Controllers
             var command = new DeleteChatCommand { ChatId = publicChat.ChatId };
 
             // Act
-            var response = await _httpClient.PostAsJsonAsync("chat/delete-chat", command);
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<MessageTextResponseModel>(content);
+            var result = await _httpClient.PostAsJsonAsync<MessageTextResponseModel>("chat/delete-chat", command);
 
             // Assert
-            response.EnsureSuccessStatusCode();
             Assert.Equal("Chat is successfully deleted.", result.Message);
         }
 
@@ -144,25 +130,20 @@ namespace HybridMessenger.Tests.API.Controllers
             var command = new DeleteChatCommand { ChatId = privateChat.ChatId };
 
             // Act
-            var response = await _httpClient.PostAsJsonAsync("chat/delete-chat", command);
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<MessageTextResponseModel>(content);
+            var result = await _httpClient.PostAsJsonAsync<MessageTextResponseModel>("chat/delete-chat", command);
 
             // Assert
-            response.EnsureSuccessStatusCode();
             Assert.Equal("Chat is successfully deleted.", result.Message);
         }
+
 
         private async Task<string> GetAccessTokenAsync()
         {
             var loginCommand = DefaultUserData.GetLoginCommand();
 
-            var response = await _httpClient.PostAsJsonAsync("user/login", loginCommand);
-            response.EnsureSuccessStatusCode();
-            var loginResult = JsonConvert.DeserializeObject<LoginRegisterResponseModel>(await response.Content.ReadAsStringAsync());
+            var loginResult = await _httpClient.PostAsJsonAsync<LoginRegisterResponseModel>("user/login", loginCommand);
             return loginResult.AccessToken;
         }
-
 
         private async Task DeleteChat(int chatId)
         {
@@ -173,19 +154,15 @@ namespace HybridMessenger.Tests.API.Controllers
         private async Task<ChatResponseModel> CreatePublicGroupAsync(string groupName)
         {
             var command = new CreateGroupCommand { ChatName = groupName };
-            var response = await _httpClient.PostAsJsonAsync("chat/create-group", command);
-            response.EnsureSuccessStatusCode();
-            var chatResult = JsonConvert.DeserializeObject<ChatResponseModel>(await response.Content.ReadAsStringAsync());
+            var chatResult = await _httpClient.PostAsJsonAsync<ChatResponseModel>("chat/create-group", command);
             _createdChatIds.Add(chatResult.ChatId);
             return chatResult;
         }
-
+     
         private async Task<ChatResponseModel> CreatePrivateChatAsync(string username)
         {
             var command = new CreatePrivateChatCommand { UserNameToCreateWith = username };
-            var response = await _httpClient.PostAsJsonAsync("chat/create-private-chat", command);
-            response.EnsureSuccessStatusCode();
-            var chatResult = JsonConvert.DeserializeObject<ChatResponseModel>(await response.Content.ReadAsStringAsync());
+            var chatResult = await _httpClient.PostAsJsonAsync<ChatResponseModel>("chat/create-private-chat", command);
             _createdChatIds.Add(chatResult.ChatId);
             return chatResult;
         }

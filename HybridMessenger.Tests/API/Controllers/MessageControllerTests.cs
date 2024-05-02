@@ -1,7 +1,6 @@
 ﻿using HybridMessenger.API;
 using HybridMessenger.Tests.API.ResponseModels;
 using HybridMessenger.Tests.API.Settings;
-using Newtonsoft.Json;
 using System.Net.Http.Headers;
 
 namespace HybridMessenger.Tests.API.Controllers
@@ -23,12 +22,9 @@ namespace HybridMessenger.Tests.API.Controllers
         private async Task<LoginRegisterResponseModel> AuthenticateUserAsync()
         {
             var loginCommand = DefaultUserData.GetLoginCommand();
-
-            var response = await _httpClient.PostAsJsonAsync("user/login", loginCommand);
-            response.EnsureSuccessStatusCode();
-            var responseContent = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<LoginRegisterResponseModel>(responseContent);
+            return await _httpClient.PostAsJsonAsync<LoginRegisterResponseModel>("user/login", loginCommand);
         }
+
 
         [Fact]
         public async Task GetChatMessages_ValidRequest_ReturnsOk()
@@ -38,15 +34,14 @@ namespace HybridMessenger.Tests.API.Controllers
             var query = DefaultMessageData.GetPagedChatMessagesQuery();
 
             // Act
-            var response = await _httpClient.PostAsJsonAsync("message/get-chat-messages", query);
-            response.EnsureSuccessStatusCode();
-            var messagesResult = JsonConvert.DeserializeObject<List<MessageResponseModel>>(await response.Content.ReadAsStringAsync());
+            var messagesResult = await _httpClient.PostAsJsonAsync<List<MessageResponseModel>>("message/get-chat-messages", query);
 
             // Assert
             Assert.NotEmpty(messagesResult);
             Assert.Equal(expectedMessages.Count, messagesResult.Count);
             Assert.Equal(expectedMessages, messagesResult, new MessageResponseModelComparer());
         }
+
 
         [Fact]
         public async Task GetUserMessages_ValidRequest_ReturnsOk()
@@ -56,10 +51,7 @@ namespace HybridMessenger.Tests.API.Controllers
             var query = DefaultMessageData.GetPagedUserMessagesQuery();
 
             // Act
-            var response = await _httpClient.PostAsJsonAsync("message/get-user-messages", query);
-            response.EnsureSuccessStatusCode();
-
-            var messagesResult = JsonConvert.DeserializeObject<List<MessageResponseModel>>(await response.Content.ReadAsStringAsync());
+            var messagesResult = await _httpClient.PostAsJsonAsync<List<MessageResponseModel>>("message/get-user-messages", query);
 
             // Assert
             Assert.NotNull(messagesResult);

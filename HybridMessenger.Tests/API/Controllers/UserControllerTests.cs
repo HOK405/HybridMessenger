@@ -1,9 +1,7 @@
 ﻿using HybridMessenger.API;
 using HybridMessenger.Application.User.Commands;
-using HybridMessenger.Application.User.Queries;
 using HybridMessenger.Tests.API.ResponseModels;
 using HybridMessenger.Tests.API.Settings;
-using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Headers;
@@ -26,10 +24,7 @@ namespace HybridMessenger.Tests.API.Controllers
         {
             var loginCommand = DefaultUserData.GetLoginCommand();
 
-            var response = await _httpClient.PostAsJsonAsync("login", loginCommand);
-            response.EnsureSuccessStatusCode();
-            var responseContent = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<LoginRegisterResponseModel>(responseContent);
+            return await _httpClient.PostAsJsonAsync<LoginRegisterResponseModel>("login", loginCommand);
         }
 
         public async Task InitializeAsync()
@@ -44,6 +39,7 @@ namespace HybridMessenger.Tests.API.Controllers
         {
             await Task.WhenAll(_createdUserIds.Select(DeleteUser));
         }
+
 
         [Fact]
         public async Task Register_ValidUser_ReturnsTokens()
@@ -75,13 +71,10 @@ namespace HybridMessenger.Tests.API.Controllers
         {
             // Arrange
             var expectedUsers = DefaultUserData.GetUsers();
-
             var pagedQuery = DefaultUserData.GetPagedUsersQuery();
 
             // Act
-            var response = await _httpClient.PostAsJsonAsync("get-paged", pagedQuery);
-            response.EnsureSuccessStatusCode();
-            var usersResult = JsonConvert.DeserializeObject<List<UserResponseModel>>(await response.Content.ReadAsStringAsync());
+            var usersResult = await _httpClient.PostAsJsonAsync<List<UserResponseModel>>("get-paged", pagedQuery);
 
             // Assert
             Assert.NotEmpty(usersResult);
@@ -101,10 +94,7 @@ namespace HybridMessenger.Tests.API.Controllers
             int userId = await RegisterNewUserAsync(expectedEmail, expectedUsername, "password123", expectedPhone);
 
             // Act
-            var response = await _httpClient.GetAsync($"get-by-id?id={userId}");
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<UserResponseModel>(content);
+            var result = await _httpClient.GetAsync<UserResponseModel>($"get-by-id?id={userId}");
 
             // Assert
             Assert.NotNull(result);
@@ -133,10 +123,7 @@ namespace HybridMessenger.Tests.API.Controllers
             int userIdToDelete = await RegisterNewUserAsync("userToDelete2@mail.com", "userToDelete2", "userToDelete2", "+91312311232");
 
             // Act
-            var response = await _httpClient.PostAsJsonAsync("delete-by-id", new { UserIdToDelete = userIdToDelete });
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<MessageTextResponseModel>(content);
+            var result = await _httpClient.PostAsJsonAsync<MessageTextResponseModel>("delete-by-id", new { UserIdToDelete = userIdToDelete });
 
             // Assert
             Assert.Equal("User is successfully deleted.", result.Message);
@@ -156,7 +143,6 @@ namespace HybridMessenger.Tests.API.Controllers
             }
         }
 
-
         private async Task DeleteUser(int userId)
         {
             await _httpClient.PostAsJsonAsync("delete-by-id", new { UserIdToDelete = userId });
@@ -172,16 +158,13 @@ namespace HybridMessenger.Tests.API.Controllers
                 PhoneNumber = phoneNumber
             };
 
-            var response = await _httpClient.PostAsJsonAsync("register", newUserCommand);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<LoginRegisterResponseModel>(content);
+            var result = await _httpClient.PostAsJsonAsync<LoginRegisterResponseModel>("register", newUserCommand);
 
             var userId = GetUserIdFromJwt(result.AccessToken);
             _createdUserIds.Add(userId);
+
             return userId;
         }
-
 
         private int GetUserIdFromJwt(string token)
         {
