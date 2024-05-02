@@ -54,6 +54,21 @@ namespace HybridMessenger.Tests.Infrastructure.Hubs
 
 
         [Fact]
+        public async Task LeaveChat_RemovesConnectionFromGroup()
+        {
+            // Arrange
+            int groupId = 1;
+            var groupName = groupId.ToString();
+
+            // Act
+            await _hub.LeaveChat(groupId);
+
+            // Assert
+            _mockGroups.Verify(groups => groups.RemoveFromGroupAsync("connection-id", groupName, It.IsAny<CancellationToken>()), Times.Once());
+        }
+
+
+        [Fact]
         public async Task SendMessage_CallsMediatorAndSendsMessage()
         {
             // Arrange
