@@ -11,5 +11,4 @@ namespace HybridMessenger.Application.Chat.Commands
         [JsonIgnore]
         public int UserId { get; set; } 
     }
-
 }

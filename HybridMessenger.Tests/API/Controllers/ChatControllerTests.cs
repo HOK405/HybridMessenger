@@ -2,6 +2,7 @@
 using HybridMessenger.Application.Chat.Commands;
 using HybridMessenger.Tests.API.ResponseModels;
 using HybridMessenger.Tests.API.Settings;
+using Newtonsoft.Json;
 using System.Net.Http.Headers;
 
 namespace HybridMessenger.Tests.API.Controllers
@@ -83,6 +84,25 @@ namespace HybridMessenger.Tests.API.Controllers
 
             // Assert
             Assert.Contains("successfully added", result.Message);
+        }
+
+
+        [Fact]
+        public async Task RemoveGroupMember_ValidRequest_ReturnsSuccess()
+        {
+            // Arrange
+            var newGroup = await CreatePublicGroupAsync("Test Group");
+            var addUserCommand = new AddGroupMemberCommand { ChatId = newGroup.ChatId, UserNameToAdd = "userToChatWith123" };
+            await _httpClient.PutAsJsonAsync<MessageTextResponseModel>("chat/add-group-member", addUserCommand);
+
+            var removeUserCommand = new RemoveGroupMemberCommand { ChatId = newGroup.ChatId, UserIdToRemove = 49 };
+
+            // Act
+            var response = await _httpClient.PutAsJsonAsync<MessageTextResponseModel>("chat/remove-group-member", removeUserCommand);
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.Equal("Group member is successfully removed.", response.Message);
         }
 
 
