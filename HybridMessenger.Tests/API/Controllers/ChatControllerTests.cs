@@ -1,7 +1,5 @@
 ﻿using HybridMessenger.API;
 using HybridMessenger.Application.Chat.Commands;
-using HybridMessenger.Application.Chat.Queries;
-using HybridMessenger.Application.User.Commands;
 using HybridMessenger.Tests.API.ResponseModels;
 using HybridMessenger.Tests.API.Settings;
 using Newtonsoft.Json;
@@ -61,15 +59,7 @@ namespace HybridMessenger.Tests.API.Controllers
         public async Task GetUserChats_ValidRequest_ReturnsOk()
         {
             // Arrange
-            var query = new GetPagedUserChatsQuery
-            {
-                PageNumber = 1,
-                PageSize = 10,
-                SortBy = "CreatedAt",
-                SearchValue = "",
-                Ascending = false,
-                Fields = { }
-            };
+            var query = DefaultChatData.GetPagedUserChatsQuery();
 
             // Act
             var response = await _httpClient.PostAsJsonAsync("chat/get-my-chats", query);
@@ -165,11 +155,7 @@ namespace HybridMessenger.Tests.API.Controllers
 
         private async Task<string> GetAccessTokenAsync()
         {
-            var loginCommand = new VerifyByEmailPasswordCommand
-            {
-                Email = "testUser999@mail.com",
-                Password = "testUser999"
-            };
+            var loginCommand = DefaultUserData.GetLoginCommand();
 
             var response = await _httpClient.PostAsJsonAsync("user/login", loginCommand);
             response.EnsureSuccessStatusCode();

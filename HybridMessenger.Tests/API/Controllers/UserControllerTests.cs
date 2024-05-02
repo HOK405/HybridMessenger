@@ -24,16 +24,25 @@ namespace HybridMessenger.Tests.API.Controllers
 
         private async Task<LoginRegisterResponseModel> AuthenticateUserAsync()
         {
-            var loginCommand = new VerifyByEmailPasswordCommand
-            {
-                Email = "testUser999@mail.com",
-                Password = "testUser999"
-            };
+            var loginCommand = DefaultUserData.GetLoginCommand();
 
             var response = await _httpClient.PostAsJsonAsync("login", loginCommand);
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<LoginRegisterResponseModel>(responseContent);
+        }
+
+        public async Task InitializeAsync()
+        {
+            var authResults = await AuthenticateUserAsync();
+            _accessToken = authResults.AccessToken;
+            _refreshToken = authResults.RefreshToken;
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
+        }
+
+        public async Task DisposeAsync()
+        {
+            await Task.WhenAll(_createdUserIds.Select(DeleteUser));
         }
 
         [Fact]
@@ -56,6 +65,8 @@ namespace HybridMessenger.Tests.API.Controllers
             // Assert
             Assert.NotNull(_accessToken);
             Assert.NotNull(_refreshToken);
+            Assert.Matches(@"^[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]*$", _accessToken);
+            Assert.True(_accessToken.Split('.').Length == 3, "Access token should have three parts.");
         }
 
 
@@ -63,35 +74,19 @@ namespace HybridMessenger.Tests.API.Controllers
         public async Task GetPagedUsers_ReturnsData()
         {
             // Arrange
-            var pagedQuery = new GetPagedUsersQuery
-            {
-                PageNumber = 1,
-                PageSize = 2,
-                SortBy = "CreatedAt",
-                SearchValue = "",
-                Ascending = true,
-                Fields = { }
-            };
+            var expectedUsers = DefaultUserData.GetUsers();
+
+            var pagedQuery = DefaultUserData.GetPagedUsersQuery();
 
             // Act
             var response = await _httpClient.PostAsJsonAsync("get-paged", pagedQuery);
             response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<IEnumerable<UserResponseModel>>(content).ToList();
+            var usersResult = JsonConvert.DeserializeObject<List<UserResponseModel>>(await response.Content.ReadAsStringAsync());
 
             // Assert
-            Assert.NotEmpty(result);
-            Assert.Equal(2, result.Count); 
-
-            // Assert for first user details
-            Assert.Equal("testUser999", result[0].UserName);
-            Assert.Equal("testUser999@mail.com", result[0].Email);
-            Assert.Equal("+91231212121", result[0].PhoneNumber);
-
-            // Assert for second user details
-            Assert.Equal("userToChatWith123", result[1].UserName);
-            Assert.Equal("userToChatWith123@mail.com", result[1].Email);
-            Assert.Equal("+12312311231", result[1].PhoneNumber);
+            Assert.NotEmpty(usersResult);
+            Assert.Equal(expectedUsers.Count, usersResult.Count);
+            Assert.Equal(expectedUsers, usersResult, new UserResponseModelComparer());
         }
 
 
@@ -147,18 +142,20 @@ namespace HybridMessenger.Tests.API.Controllers
             Assert.Equal("User is successfully deleted.", result.Message);
         }
 
-        public async Task InitializeAsync()
+        private class UserResponseModelComparer : IEqualityComparer<UserResponseModel>
         {
-            var authResults = await AuthenticateUserAsync();
-            _accessToken = authResults.AccessToken;
-            _refreshToken = authResults.RefreshToken;
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
+            public bool Equals(UserResponseModel x, UserResponseModel y)
+            {
+                return x.Id == y.Id && x.UserName == y.UserName && x.PhoneNumber == y.PhoneNumber &&
+                       x.Email == y.Email;
+            }
+
+            public int GetHashCode(UserResponseModel obj)
+            {
+                return obj.Id.GetHashCode();
+            }
         }
 
-        public async Task DisposeAsync()
-        {
-            await Task.WhenAll(_createdUserIds.Select(DeleteUser));
-        }
 
         private async Task DeleteUser(int userId)
         {

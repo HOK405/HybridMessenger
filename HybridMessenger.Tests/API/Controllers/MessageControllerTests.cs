@@ -1,8 +1,4 @@
 ﻿using HybridMessenger.API;
-using HybridMessenger.Application.Chat.Commands;
-using HybridMessenger.Application.Message.Commands;
-using HybridMessenger.Application.Message.Queries;
-using HybridMessenger.Application.User.Commands;
 using HybridMessenger.Tests.API.ResponseModels;
 using HybridMessenger.Tests.API.Settings;
 using Newtonsoft.Json;
@@ -10,24 +6,23 @@ using System.Net.Http.Headers;
 
 namespace HybridMessenger.Tests.API.Controllers
 {
-    public class MessageControllerTests : IClassFixture<CustomWebApplicationFactory<Program>>, IAsyncLifetime
+    public class MessageControllerTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         private readonly HttpClient _httpClient;
         private string _accessToken;
-        private List<int> _createdChatIds = new List<int>();
 
         public MessageControllerTests(CustomWebApplicationFactory<Program> factory)
         {
-            _httpClient = factory.CreateDefaultClient(new Uri("https://localhost/api/"));         
+            _httpClient = factory.CreateDefaultClient(new Uri("https://localhost/api/"));
+
+            var authResults = AuthenticateUserAsync().GetAwaiter().GetResult();
+            _accessToken = authResults.AccessToken;
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
         }
 
         private async Task<LoginRegisterResponseModel> AuthenticateUserAsync()
         {
-            var loginCommand = new VerifyByEmailPasswordCommand
-            {
-                Email = "testUser999@mail.com",
-                Password = "testUser999"
-            };
+            var loginCommand = DefaultUserData.GetLoginCommand();
 
             var response = await _httpClient.PostAsJsonAsync("user/login", loginCommand);
             response.EnsureSuccessStatusCode();
@@ -39,74 +34,51 @@ namespace HybridMessenger.Tests.API.Controllers
         public async Task GetChatMessages_ValidRequest_ReturnsOk()
         {
             // Arrange
-            var query = new GetPagedChatMessagesQuery
-            {
-                ChatId = 355,
-                PageNumber = 1,
-                PageSize = 10,
-                SortBy = "SentAt",
-                SearchValue = "",
-                Ascending = true
-            };
+            var expectedMessages = DefaultMessageData.GetMessages().Where(m => m.ChatId == 355).ToList();
+            var query = DefaultMessageData.GetPagedChatMessagesQuery();
 
             // Act
             var response = await _httpClient.PostAsJsonAsync("message/get-chat-messages", query);
             response.EnsureSuccessStatusCode();
-            var chatsResult = JsonConvert.DeserializeObject<IEnumerable<ChatResponseModel>>(await response.Content.ReadAsStringAsync());
+            var messagesResult = JsonConvert.DeserializeObject<List<MessageResponseModel>>(await response.Content.ReadAsStringAsync());
 
             // Assert
-            Assert.NotNull(chatsResult);
+            Assert.NotEmpty(messagesResult);
+            Assert.Equal(expectedMessages.Count, messagesResult.Count);
+            Assert.Equal(expectedMessages, messagesResult, new MessageResponseModelComparer());
         }
 
         [Fact]
         public async Task GetUserMessages_ValidRequest_ReturnsOk()
         {
             // Arrange
-            var query = new GetPagedUserMessagesQuery
-            {
-                PageNumber = 1,
-                PageSize = 10,
-                SortBy = "SentAt",
-                SearchValue = "",
-                Ascending = true
-            };
+            var expectedMessages = DefaultMessageData.GetMessages().Where(m => m.UserId == 31).ToList();
+            var query = DefaultMessageData.GetPagedUserMessagesQuery();
 
             // Act
             var response = await _httpClient.PostAsJsonAsync("message/get-user-messages", query);
             response.EnsureSuccessStatusCode();
 
-            var messageResult = JsonConvert.DeserializeObject<IEnumerable<MessageResponseModel>>(await response.Content.ReadAsStringAsync());
+            var messagesResult = JsonConvert.DeserializeObject<List<MessageResponseModel>>(await response.Content.ReadAsStringAsync());
 
             // Assert
-            Assert.NotNull(messageResult);
+            Assert.NotNull(messagesResult);
+            Assert.Equal(expectedMessages.Count, messagesResult.Count);
+            Assert.Equal(expectedMessages, messagesResult, new MessageResponseModelComparer());
         }
 
-        public async Task InitializeAsync()
+        private class MessageResponseModelComparer : IEqualityComparer<MessageResponseModel>
         {
-            var authResults = await AuthenticateUserAsync();
-            _accessToken = authResults.AccessToken;
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
-        }
+            public bool Equals(MessageResponseModel x, MessageResponseModel y)
+            {
+                return x.MessageId == y.MessageId && x.ChatId == y.ChatId && x.UserId == y.UserId &&
+                       x.MessageText == y.MessageText && x.SenderUserName == y.SenderUserName;
+            }
 
-        public async Task DisposeAsync()
-        {
-            await Task.WhenAll(_createdChatIds.Select(DeleteChat));
-        }
-
-        private async Task DeleteChat(int chatId)
-        {
-            var command = new DeleteChatCommand { ChatId = chatId };
-            await _httpClient.PostAsJsonAsync("chat/delete-chat", command);
-        }
-
-        private async Task<int> CreatePublicGroupAsync(string groupName)
-        {
-            var command = new CreateGroupCommand { ChatName = groupName };
-            var response = await _httpClient.PostAsJsonAsync("chat/create-group", command);
-            response.EnsureSuccessStatusCode();
-            var chatResult = JsonConvert.DeserializeObject<ChatResponseModel>(await response.Content.ReadAsStringAsync());
-            _createdChatIds.Add(chatResult.ChatId);
-            return chatResult.ChatId;
+            public int GetHashCode(MessageResponseModel obj)
+            {
+                return obj.MessageId.GetHashCode();
+            }
         }
     }
 }
