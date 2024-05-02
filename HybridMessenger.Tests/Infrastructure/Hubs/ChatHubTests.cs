@@ -39,6 +39,21 @@ namespace HybridMessenger.Tests.Infrastructure.Hubs
 
 
         [Fact]
+        public async Task JoinChat_AddsConnectionToGroup()
+        {
+            // Arrange
+            int groupId = 1;
+            var groupName = groupId.ToString();
+
+            // Act
+            await _hub.JoinChat(groupId);
+
+            // Assert
+            _mockGroups.Verify(groups => groups.AddToGroupAsync("connection-id", groupName, It.IsAny<CancellationToken>()), Times.Once());
+        }
+
+
+        [Fact]
         public async Task SendMessage_CallsMediatorAndSendsMessage()
         {
             // Arrange
