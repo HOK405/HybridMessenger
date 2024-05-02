@@ -129,6 +129,23 @@ namespace HybridMessenger.Tests.API.Controllers
             Assert.Equal("User is successfully deleted.", result.Message);
         }
 
+
+        [Fact]
+        public async Task RefreshToken_ValidRefreshToken_ReturnsNewTokens()
+        {
+            // Arrange
+            var refreshTokenCommand = new RefreshTokenCommand { RefreshToken = _refreshToken };
+
+            // Act
+            var response = await _httpClient.PostAsJsonAsync<AccessTokenResponseModel>("refresh-token", refreshTokenCommand);
+
+            // Assert
+            Assert.NotNull(response.AccessToken);
+            Assert.Matches(@"^[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]*$", response.AccessToken);
+            Assert.True(response.AccessToken.Split('.').Length == 3, "New access token should have three parts.");
+        }
+
+
         private class UserResponseModelComparer : IEqualityComparer<UserResponseModel>
         {
             public bool Equals(UserResponseModel x, UserResponseModel y)

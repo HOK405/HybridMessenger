@@ -66,13 +66,12 @@ namespace HybridMessenger.API.Controllers
             return Ok(new { Message = "User is successfully deleted." });
         }
 
-
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
         {
             var result = await _mediator.Send(command);
 
-            return Ok(result);
+            return Ok(new { AccessToken = result });
         }
     }
 }
