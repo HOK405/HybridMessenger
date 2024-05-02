@@ -2,7 +2,6 @@
 using HybridMessenger.Application.Chat.Commands;
 using HybridMessenger.Tests.API.ResponseModels;
 using HybridMessenger.Tests.API.Settings;
-using Newtonsoft.Json;
 using System.Net.Http.Headers;
 
 namespace HybridMessenger.Tests.API.Controllers
