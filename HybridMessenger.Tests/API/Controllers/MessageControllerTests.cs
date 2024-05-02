@@ -10,18 +10,15 @@ using System.Net.Http.Headers;
 
 namespace HybridMessenger.Tests.API.Controllers
 {
-    public class MessageControllerTests : IClassFixture<CustomWebApplicationFactory<Program>>
+    public class MessageControllerTests : IClassFixture<CustomWebApplicationFactory<Program>>, IAsyncLifetime
     {
         private readonly HttpClient _httpClient;
-        private readonly string _accessToken;
+        private string _accessToken;
+        private List<int> _createdChatIds = new List<int>();
 
         public MessageControllerTests(CustomWebApplicationFactory<Program> factory)
         {
-            _httpClient = factory.CreateDefaultClient(new Uri("https://localhost/api/"));
-
-            var authResults = AuthenticateUserAsync().GetAwaiter().GetResult();
-            _accessToken = authResults.AccessToken;
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
+            _httpClient = factory.CreateDefaultClient(new Uri("https://localhost/api/"));         
         }
 
         private async Task<LoginRegisterResponseModel> AuthenticateUserAsync()
@@ -55,10 +52,10 @@ namespace HybridMessenger.Tests.API.Controllers
             // Act
             var response = await _httpClient.PostAsJsonAsync("message/get-chat-messages", query);
             response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
+            var chatsResult = JsonConvert.DeserializeObject<IEnumerable<ChatResponseModel>>(await response.Content.ReadAsStringAsync());
 
             // Assert
-            Assert.NotNull(content);
+            Assert.NotNull(chatsResult);
         }
 
         [Fact]
@@ -77,10 +74,39 @@ namespace HybridMessenger.Tests.API.Controllers
             // Act
             var response = await _httpClient.PostAsJsonAsync("message/get-user-messages", query);
             response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
+
+            var messageResult = JsonConvert.DeserializeObject<IEnumerable<MessageResponseModel>>(await response.Content.ReadAsStringAsync());
 
             // Assert
-            Assert.NotNull(content);
+            Assert.NotNull(messageResult);
+        }
+
+        public async Task InitializeAsync()
+        {
+            var authResults = await AuthenticateUserAsync();
+            _accessToken = authResults.AccessToken;
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
+        }
+
+        public async Task DisposeAsync()
+        {
+            await Task.WhenAll(_createdChatIds.Select(DeleteChat));
+        }
+
+        private async Task DeleteChat(int chatId)
+        {
+            var command = new DeleteChatCommand { ChatId = chatId };
+            await _httpClient.PostAsJsonAsync("chat/delete-chat", command);
+        }
+
+        private async Task<int> CreatePublicGroupAsync(string groupName)
+        {
+            var command = new CreateGroupCommand { ChatName = groupName };
+            var response = await _httpClient.PostAsJsonAsync("chat/create-group", command);
+            response.EnsureSuccessStatusCode();
+            var chatResult = JsonConvert.DeserializeObject<ChatResponseModel>(await response.Content.ReadAsStringAsync());
+            _createdChatIds.Add(chatResult.ChatId);
+            return chatResult.ChatId;
         }
     }
 }
