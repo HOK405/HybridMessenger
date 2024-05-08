@@ -1,6 +1,7 @@
 ﻿using HybridMessenger.Presentation.ResponseModels;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
+using Microsoft.JSInterop;
 
 namespace HybridMessenger.Presentation.Services
 {
@@ -14,12 +15,10 @@ namespace HybridMessenger.Presentation.Services
 
         public ChatService(IConfiguration configuration, IHttpService httpService)
         {
-            string baseAddress = configuration.GetValue<string>("ApiBaseAddress");
-            string endpoint = configuration.GetValue<string>("HubEndpoint");
-            _url = $"{baseAddress.TrimEnd('/')}/{endpoint.TrimStart('/')}";
-
+            _url = ApiConfiguration.FullHub;
             _httpService = httpService;
         }
+
         public async Task InitializeAsync()
         {
             string token = await _httpService.GetToken();
@@ -39,6 +38,25 @@ namespace HybridMessenger.Presentation.Services
 
             await _hubConnection.StartAsync();
         }
+
+        [JSInvokable]
+        public async Task SendOffer(int chatId, string offer)
+        {
+            await _hubConnection.SendAsync("SendOffer", chatId, offer);
+        }
+
+        [JSInvokable]
+        public async Task SendAnswer(int chatId, string answer)
+        {
+            await _hubConnection.SendAsync("SendAnswer", chatId, answer);
+        }
+
+        [JSInvokable]
+        public async Task SendIceCandidate(int chatId, string candidate)
+        {
+            await _hubConnection.SendAsync("SendIceCandidate", chatId, candidate);
+        }
+
 
         public async Task SendMessage(int chatId, string message)
         {

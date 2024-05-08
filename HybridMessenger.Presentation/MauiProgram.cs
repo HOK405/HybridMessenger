@@ -21,7 +21,7 @@ namespace HybridMessenger.Presentation
 
             builder.Configuration.AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
 
-            string apiBaseAddress = builder.Configuration["ApiBaseAddress"];
+            string apiBaseAddress = ApiConfiguration.ApiBaseAddress;
 
             if (string.IsNullOrEmpty(apiBaseAddress))
             {

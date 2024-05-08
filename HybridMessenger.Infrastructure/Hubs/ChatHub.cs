@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace HybridMessenger.Infrastructure.Hubs
 {
-    [Authorize]
+    /*[Authorize]*/
     public class ChatHub : Hub
     {
         private readonly IMediator _mediator;
@@ -18,14 +18,31 @@ namespace HybridMessenger.Infrastructure.Hubs
             _userClaimsService = userClaimsService;
         }
 
-        public async Task JoinChat(int groupId)
+        public async Task SendOffer(string groupName, string offer)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString());
+            await Clients.Group(groupName).SendAsync("ReceiveOffer", Context.ConnectionId, offer);
         }
 
-        public async Task LeaveChat(int groupId)
+        public async Task SendAnswer(string groupName, string answer)
         {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString());
+            await Clients.Group(groupName).SendAsync("ReceiveAnswer", Context.ConnectionId, answer);
+        }
+
+        public async Task SendIceCandidate(string groupName, string candidate)
+        {
+            await Clients.Group(groupName).SendAsync("ReceiveIceCandidate", Context.ConnectionId, candidate);
+        }
+
+        public async Task JoinGroup(string groupName)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+            await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has joined the group {groupName}.");
+        }
+
+        public async Task LeaveGroup(string groupName)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+            await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has left the group {groupName}.");
         }
 
         public async Task SendMessage(int groupId, string messageText)

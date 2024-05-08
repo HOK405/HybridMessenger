@@ -10,7 +10,89 @@
     <link rel="stylesheet" href="HybridMessenger.Presentation.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+
+
     <script>
+        let connection;
+        let peerConnection;
+
+        async function startConnection() {
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl("https://rz2knbww-44314.euw.devtunnels.ms/chathub")
+                .configureLogging(signalR.LogLevel.Information)
+                .build();
+
+            connection.on("Send", (message) => {
+                console.log(message);
+            });
+
+            connection.onclose(async () => {
+                console.log('Connection closed');
+                await startConnection(); 
+            });
+
+            try {
+                await connection.start();
+                console.log("SignalR Connected.");
+                await connection.invoke("JoinGroup", "yourGroupName"); 
+            } catch (err) {
+                console.error(err);
+                setTimeout(startConnection, 5000); // Retry connection
+            }
+        }
+
+
+        async function startWebRtc() {
+            const localVideo = document.getElementById("localVideo");
+            const remoteVideo = document.getElementById("remoteVideo");
+            peerConnection = new RTCPeerConnection();
+
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then(stream => {
+                    localVideo.srcObject = stream;
+                    stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+                });
+
+            peerConnection.ontrack = event => {
+                remoteVideo.srcObject = event.streams[0];
+            };
+
+            connection.on("ReceiveOffer", (caller, offer) => {
+                peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
+                    .then(() => peerConnection.createAnswer())
+                    .then(answer => {
+                        peerConnection.setLocalDescription(answer);
+                        connection.invoke("SendAnswer", caller, answer);
+                    });
+            });
+
+            connection.on("ReceiveAnswer", (answer) => {
+                peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+            });
+
+            connection.on("ReceiveIceCandidate", (candidate) => {
+                peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+            });
+
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) {
+                    connection.invoke("SendIceCandidate", event.candidate);
+                }
+            };
+        }
+
+        function endCall() {
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+            if (connection) {
+                connection.stop();
+            }
+        }
+
+
         function scrollToBottom(id) {
             var element = document.getElementById(id);
             if (element) {

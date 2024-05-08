@@ -78,6 +78,17 @@ namespace HybridMessenger.Presentation.Components.Pages
             }
         }
 
+        public async Task StartCall()
+        {
+            await JSRuntime.InvokeVoidAsync("startConnection");
+            await JSRuntime.InvokeVoidAsync("startWebRtc");
+        }
+
+        public async Task EndCall()
+        {
+            await JSRuntime.InvokeVoidAsync("endCall");
+        }
+
         private void HandleNewMessage(MessageResponse message)
         {
             InvokeAsync(() =>
@@ -102,7 +113,6 @@ namespace HybridMessenger.Presentation.Components.Pages
                 _messageText = default; 
             }
         }
-
         public async ValueTask DisposeAsync()
         {
             if (!_disposed)
