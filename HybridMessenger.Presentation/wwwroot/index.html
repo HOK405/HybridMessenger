@@ -49,23 +49,32 @@
             });
 
             connection.on("ReceiveOffer", async (chatId, callerId, offer) => {
+                console.log("Received offer:", offer);
+
+                if (!offer) {
+                    console.error("Offer is undefined or not received properly.");
+                    return;  
+                }
+
                 if (!peerConnections[callerId]) {
                     console.log("Setting up new peer connection for:", callerId);
-                    setupPeerConnection(callerId, ChatID);
+                    setupPeerConnection(callerId, chatId);
                 }
 
                 const peerConnection = peerConnections[callerId];
                 try {
-                    await peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(offer)));
+                    const offerObj = JSON.parse(offer);
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(offerObj));
                     const answer = await peerConnection.createAnswer();
                     await peerConnection.setLocalDescription(answer);
-                    connection.invoke("SendAnswer", chatId, callerId, JSON.stringify(answer));
+                    connection.invoke("SendAnswer", chatId, JSON.stringify(answer));
                 } catch (error) {
                     console.error("Error handling offer:", error);
                 }
             });
 
-            connection.on("ReceiveAnswer", async (chatId, callerId, answer) => {
+
+            connection.on("ReceiveAnswer", async (callerId, answer) => {
                 const peerConnection = peerConnections[callerId];
                 try {
                     await peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(answer)));
@@ -76,7 +85,6 @@
 
             connection.on("ReceiveIceCandidate", async (callerId, candidateJson) => {
                 if (!peerConnections[callerId]) {
-                    console.log(`PeerConnection for ${callerId} is not initialized. Initializing now.`);
                     setupPeerConnection(callerId, ChatId); 
                 }
 
@@ -126,7 +134,6 @@
 
             peerConnection.onicecandidate = event => {
                 if (event.candidate) {
-                    console.log("ICE candidate: ", event.candidate);
                     connection.invoke("SendIceCandidate", chatId, JSON.stringify({ candidate: event.candidate }));
                 }
             };

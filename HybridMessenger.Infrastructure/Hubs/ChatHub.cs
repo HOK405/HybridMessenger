@@ -25,7 +25,7 @@ namespace HybridMessenger.Infrastructure.Hubs
 
         public async Task SendOffer(string chatId, string offer)
         {
-            await Clients.Group(chatId).SendAsync("ReceiveOffer", Context.ConnectionId, offer);
+            await Clients.Group(chatId).SendAsync("ReceiveOffer",chatId, Context.ConnectionId, offer);
         }
 
         public async Task SendAnswer(string chatId, string answer)
@@ -33,9 +33,9 @@ namespace HybridMessenger.Infrastructure.Hubs
             await Clients.Group(chatId).SendAsync("ReceiveAnswer", Context.ConnectionId, answer);
         }
 
-        public async Task SendIceCandidate(string chatName, string candidate)
+        public async Task SendIceCandidate(string chatid, string candidate)
         {
-            await Clients.Group(chatName).SendAsync("ReceiveIceCandidate", Context.ConnectionId, candidate);
+            await Clients.Group(chatid).SendAsync("ReceiveIceCandidate", Context.ConnectionId, candidate);
         }
 
         public async Task JoinChat(string chatId)
