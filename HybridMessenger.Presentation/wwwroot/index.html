@@ -49,8 +49,6 @@
             });
 
             connection.on("ReceiveOffer", async (chatId, callerId, offer) => {
-                console.log("Received offer:", offer);
-
                 if (!offer) {
                     console.error("Offer is undefined or not received properly.");
                     return;  
@@ -73,31 +71,53 @@
                 }
             });
 
-
-            connection.on("ReceiveAnswer", async (callerId, answer) => {
+            connection.on("ReceiveAnswer", async (callerId, answerJson) => {
                 const peerConnection = peerConnections[callerId];
+                if (!peerConnection) {
+                    console.error("PeerConnection not found for callerId:", callerId);
+                    return;
+                }
+
+                console.log(`Current signaling state for ${callerId}: ${peerConnection.signalingState}`);
                 try {
-                    await peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(answer)));
+                    const answerObj = JSON.parse(answerJson);
+                    if (peerConnection.signalingState === "have-local-offer") {
+                        const answerDescription = new RTCSessionDescription(answerObj);
+                        await peerConnection.setRemoteDescription(answerDescription);
+                    } else {
+                        console.error("Cannot set remote description in current state:", peerConnection.signalingState);
+                    }
                 } catch (error) {
-                    console.error("Error setting remote description:", error);
+                    console.error("Error handling answer:", error);
                 }
             });
 
             connection.on("ReceiveIceCandidate", async (callerId, candidateJson) => {
                 if (!peerConnections[callerId]) {
-                    setupPeerConnection(callerId, ChatId); 
+                    console.log(`Setting up peer connection for ${callerId}`);
+                    setupPeerConnection(callerId);
                 }
 
                 const peerConnection = peerConnections[callerId];
                 try {
-                    const candidateObj = JSON.parse(candidateJson);
-                    if (peerConnection && peerConnection.remoteDescription) {
-                        await peerConnection.addIceCandidate(new RTCIceCandidate(candidateObj));
+                    const parsedJson = JSON.parse(candidateJson);
+                    const candidateObj = parsedJson.candidate;
+                    if (candidateObj && candidateObj.candidate && candidateObj.sdpMid != null && candidateObj.sdpMLineIndex != null) {
+                        const iceCandidate = new RTCIceCandidate({
+                            candidate: candidateObj.candidate,
+                            sdpMid: candidateObj.sdpMid,
+                            sdpMLineIndex: candidateObj.sdpMLineIndex
+                        });
+                        if (peerConnection.remoteDescription) {
+                            await peerConnection.addIceCandidate(iceCandidate);
+                        } else {
+                            console.log("Remote description not set for:", callerId);
+                        }
                     } else {
-                        console.log("Remote description not set or PeerConnection not found for:", callerId);
+                        console.error("Invalid ICE candidate received:", candidateObj);
                     }
                 } catch (error) {
-                    console.error("Error adding ICE candidate:", error);
+                    console.error("Error parsing or adding ICE candidate:", error);
                 }
             });
         }
