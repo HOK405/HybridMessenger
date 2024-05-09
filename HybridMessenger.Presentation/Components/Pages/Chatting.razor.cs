@@ -61,8 +61,8 @@ namespace HybridMessenger.Presentation.Components.Pages
 
             if (_chatId != 0)
             {
-                _requestModel.ChatId = _chatId; 
-                /*await _chatService.JoinChat(ChatId);*/
+                _requestModel.ChatId = _chatId;
+                await _chatService.JoinChat(ChatId);
                 await LoadMessages();
             }
 
@@ -82,7 +82,6 @@ namespace HybridMessenger.Presentation.Components.Pages
         public async Task StartCall()
         {
             await _chatService.StartCall(ChatId);
-            await JSRuntime.InvokeVoidAsync("startWebRtc", ChatId);
         }
 
         public async Task EndCall()
@@ -116,6 +115,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         }
         public async ValueTask DisposeAsync()
         {
+            await EndCall();
             if (!_disposed)
             {
                 _chatService.OnMessageReceived -= HandleNewMessage;

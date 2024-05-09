@@ -43,7 +43,7 @@
         <UserSecretsId>c799e4da-b787-4f9f-b30f-3d62ad59c8dd</UserSecretsId>
         <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
         <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-        <PackageCertificateThumbprint>03FE53DFC031F1A6D03B4F1E4B015AB83CF1DCF7</PackageCertificateThumbprint>
+        <PackageCertificateThumbprint>ABD1FE7C9632C3D12101C1569126DA6E0097C67A</PackageCertificateThumbprint>
         <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
         <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
         <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>

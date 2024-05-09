@@ -15,92 +15,127 @@
     <script>
         let connection;
         let peerConnections = {};
+        let ChatID;
 
         async function startConnection(chatId) {
+            ChatID = chatId;
+
             connection = new signalR.HubConnectionBuilder()
                 .withUrl("https://rz2knbww-44314.euw.devtunnels.ms/chathub")
                 .configureLogging(signalR.LogLevel.Information)
                 .build();
 
-            connection.on("Send", (message) => {
-                console.log(message);
-            });
-
-            connection.on("CallStarted", async (chatId) => {
-                console.log("Call started by another user in chat " + chatId);
-                await startWebRtc(chatId);
-            });
+            registerEventHandlers(chatId);
 
             await connection.start();
             await connection.invoke("JoinChat", chatId);
             console.log("SignalR Connected.");
         }
 
-        async function startWebRtc(chatId) {
-            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-                .then(stream => {
-                    // Display local video
-                    displayVideo(stream, 'local');
-                    stream.getTracks().forEach(track => {
-                        Object.values(peerConnections).forEach(peerConnection => {
-                            if (peerConnection.addTrack) {
-                                peerConnection.addTrack(track, stream);
-                            }
-                        });
-                    });
-                }).catch(error => {
-                    console.error("Failed to get media stream:", error);
-                });
+        function registerEventHandlers(chatId) {
+            connection.on("Send", (message) => {
+                console.log(message);
+            });
 
-            Object.values(peerConnections).forEach(async peerConnection => {
-                const offer = await peerConnection.createOffer();
-                await peerConnection.setLocalDescription(offer);
-                connection.invoke("SendOffer", chatId, JSON.stringify(offer)); 
+            connection.on("UserJoined", (userId) => {
+                if (!peerConnections[userId]) {
+                    setupPeerConnection(userId, chatId);
+                }
+            });
+
+            connection.on("CallStarted", async (chatId) => {
+                console.log("Call started in chat " + chatId);
+                await startWebRtc(chatId);
             });
 
             connection.on("ReceiveOffer", async (chatId, callerId, offer) => {
-                console.log("CallerId - ", callerId);
                 if (!peerConnections[callerId]) {
-                    peerConnections[callerId] = new RTCPeerConnection();
-                    setupPeerConnection(callerId);
+                    console.log("Setting up new peer connection for:", callerId);
+                    setupPeerConnection(callerId, ChatID);
                 }
 
-                let peerConnection = peerConnections[callerId];
-                await peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(offer)));
-                const answer = await peerConnection.createAnswer();
-                await peerConnection.setLocalDescription(answer);
-                connection.invoke("SendAnswer", chatId, callerId, JSON.stringify(answer)); 
+                const peerConnection = peerConnections[callerId];
+                try {
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(offer)));
+                    const answer = await peerConnection.createAnswer();
+                    await peerConnection.setLocalDescription(answer);
+                    connection.invoke("SendAnswer", chatId, callerId, JSON.stringify(answer));
+                } catch (error) {
+                    console.error("Error handling offer:", error);
+                }
             });
 
             connection.on("ReceiveAnswer", async (chatId, callerId, answer) => {
                 const peerConnection = peerConnections[callerId];
-                await peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(answer)));
+                try {
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(answer)));
+                } catch (error) {
+                    console.error("Error setting remote description:", error);
+                }
             });
 
+            connection.on("ReceiveIceCandidate", async (callerId, candidateJson) => {
+                if (!peerConnections[callerId]) {
+                    console.log(`PeerConnection for ${callerId} is not initialized. Initializing now.`);
+                    setupPeerConnection(callerId, ChatId); 
+                }
 
-            connection.on("ReceiveIceCandidate", async (callerId, candidate) => {
                 const peerConnection = peerConnections[callerId];
                 try {
-                    await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                    const candidateObj = JSON.parse(candidateJson);
+                    if (peerConnection && peerConnection.remoteDescription) {
+                        await peerConnection.addIceCandidate(new RTCIceCandidate(candidateObj));
+                    } else {
+                        console.log("Remote description not set or PeerConnection not found for:", callerId);
+                    }
                 } catch (error) {
-                    console.error("Error adding ICE candidate: ", error);
+                    console.error("Error adding ICE candidate:", error);
                 }
             });
         }
 
-        function setupPeerConnection(callerId) {
+        async function startWebRtc(chatId) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                displayVideo(stream, 'local'); 
+                stream.getTracks().forEach(track => {
+                    Object.values(peerConnections).forEach(peerConnection => {
+                        peerConnection.addTrack(track, stream);
+                    });
+                });
+
+                for (const [callerId, peerConnection] of Object.entries(peerConnections)) {
+                    const offer = await peerConnection.createOffer();
+                    await peerConnection.setLocalDescription(offer);
+                    connection.invoke("SendOffer", chatId, JSON.stringify(offer));
+                }
+            } catch (error) {
+                console.error("Failed to get media stream:", error);
+            }
+        }
+
+        function setupPeerConnection(callerId, chatId) {
             console.log("Setting up peer connection for caller: " + callerId);
-            const peerConnection = peerConnections[callerId];
+            const peerConnection = new RTCPeerConnection();
+            peerConnections[callerId] = peerConnection;
+
             peerConnection.ontrack = event => {
                 console.log("Received track from caller: " + callerId);
                 displayVideo(event.streams[0], callerId);
             };
 
             peerConnection.onicecandidate = event => {
-                console.log("ICE gathering state: ", peerConnection.iceGatheringState);
                 if (event.candidate) {
                     console.log("ICE candidate: ", event.candidate);
-                    connection.invoke("SendIceCandidate", chatId, event.candidate);
+                    connection.invoke("SendIceCandidate", chatId, JSON.stringify({ candidate: event.candidate }));
+                }
+            };
+
+            peerConnection.oniceconnectionstatechange = () => {
+                if (peerConnection.iceConnectionState == 'disconnected') {
+                    console.log('Disconnected connection with: ' + callerId);
+                    peerConnection.close();
+                    delete peerConnections[callerId];
                 }
             };
         }
@@ -115,6 +150,7 @@
             videoElement.srcObject = stream;
             videoElement.autoplay = true;
             videoElement.controls = true;
+            videoElement.playsInline = true;
             console.log("Video element added to container for: " + id);
         }
 
@@ -135,7 +171,6 @@
             }
         }
     </script>
-
 </head>
 
 <body>
