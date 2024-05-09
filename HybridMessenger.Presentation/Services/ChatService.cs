@@ -40,37 +40,35 @@ namespace HybridMessenger.Presentation.Services
         }
 
         [JSInvokable]
-        public async Task SendOffer(int chatId, string offer)
+        public async Task SendOffer(string chatId, string offer)
         {
             await _hubConnection.SendAsync("SendOffer", chatId, offer);
         }
 
         [JSInvokable]
-        public async Task SendAnswer(int chatId, string answer)
+        public async Task SendAnswer(string chatId, string answer)
         {
             await _hubConnection.SendAsync("SendAnswer", chatId, answer);
         }
 
         [JSInvokable]
-        public async Task SendIceCandidate(int chatId, string candidate)
+        public async Task SendIceCandidate(string chatId, string candidate)
         {
             await _hubConnection.SendAsync("SendIceCandidate", chatId, candidate);
         }
 
-
-        public async Task SendMessage(int chatId, string message)
-        {
-            await _hubConnection.SendAsync("SendMessage", chatId, message);
-        }
-
-        public async Task JoinChat(int chatId)
+        public async Task JoinChat(string chatId)
         {
             await _hubConnection.SendAsync("JoinChat", chatId);
         }
 
-        public async Task LeaveChat(int chatId)
+        public async Task LeaveChat(string chatId)
         {
             await _hubConnection.SendAsync("LeaveChat", chatId);
+        }
+        public async Task SendMessage(int chatId, string message)
+        {
+            await _hubConnection.SendAsync("SendMessage", chatId, message);
         }
     }
 }

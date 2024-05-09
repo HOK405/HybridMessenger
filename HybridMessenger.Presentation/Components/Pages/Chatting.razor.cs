@@ -62,12 +62,13 @@ namespace HybridMessenger.Presentation.Components.Pages
             if (_chatId != 0)
             {
                 _requestModel.ChatId = _chatId; 
-                await _chatService.JoinChat(_chatId);
+                await _chatService.JoinChat(ChatId);
                 await LoadMessages();
             }
 
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             _userId = int.Parse(authState.User.FindFirst("nameid")?.Value ?? "0");
+            await JSRuntime.InvokeVoidAsync("startConnection", ChatId);
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -80,8 +81,7 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         public async Task StartCall()
         {
-            await JSRuntime.InvokeVoidAsync("startConnection");
-            await JSRuntime.InvokeVoidAsync("startWebRtc");
+            await JSRuntime.InvokeVoidAsync("startWebRtc", ChatId);
         }
 
         public async Task EndCall()
@@ -118,7 +118,7 @@ namespace HybridMessenger.Presentation.Components.Pages
             if (!_disposed)
             {
                 _chatService.OnMessageReceived -= HandleNewMessage;
-                await _chatService.LeaveChat(_requestModel.ChatId);
+                await _chatService.LeaveChat(ChatId);
                 _disposed = true;
             }
 

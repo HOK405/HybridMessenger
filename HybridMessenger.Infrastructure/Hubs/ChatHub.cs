@@ -18,40 +18,40 @@ namespace HybridMessenger.Infrastructure.Hubs
             _userClaimsService = userClaimsService;
         }
 
-        public async Task SendOffer(string groupName, string offer)
+        public async Task SendOffer(string chatId, string offer)
         {
-            await Clients.Group(groupName).SendAsync("ReceiveOffer", Context.ConnectionId, offer);
+            await Clients.Group(chatId).SendAsync("ReceiveOffer", Context.ConnectionId, offer);
         }
 
-        public async Task SendAnswer(string groupName, string answer)
+        public async Task SendAnswer(string chatId, string answer)
         {
-            await Clients.Group(groupName).SendAsync("ReceiveAnswer", Context.ConnectionId, answer);
+            await Clients.Group(chatId).SendAsync("ReceiveAnswer", Context.ConnectionId, answer);
         }
 
-        public async Task SendIceCandidate(string groupName, string candidate)
+        public async Task SendIceCandidate(string chatName, string candidate)
         {
-            await Clients.Group(groupName).SendAsync("ReceiveIceCandidate", Context.ConnectionId, candidate);
+            await Clients.Group(chatName).SendAsync("ReceiveIceCandidate", Context.ConnectionId, candidate);
         }
 
-        public async Task JoinGroup(string groupName)
+        public async Task JoinChat(string chatId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has joined the group {groupName}.");
+            await Groups.AddToGroupAsync(Context.ConnectionId, chatId);
+            await Clients.Group(chatId).SendAsync("Send", $"{Context.ConnectionId} has joined the chat {chatId}.");
         }
 
-        public async Task LeaveGroup(string groupName)
+        public async Task LeaveChat(string chatId)
         {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-            await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has left the group {groupName}.");
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, chatId);
+            await Clients.Group(chatId).SendAsync("Send", $"{Context.ConnectionId} has left the chat {chatId}.");
         }
 
-        public async Task SendMessage(int groupId, string messageText)
+        public async Task SendMessage(int chatId, string messageText)
         {
             var userId = _userClaimsService.GetUserId(Context.User);
 
             var command = new SendMessageCommand
             {
-                ChatId = groupId,
+                ChatId = chatId,
                 MessageText = messageText,
                 UserId = userId
             };
@@ -59,7 +59,7 @@ namespace HybridMessenger.Infrastructure.Hubs
             var messageDto = await _mediator.Send(command);
 
             // Send to all clients in the specified group
-            await Clients.Group(groupId.ToString()).SendAsync("ReceiveMessage", messageDto);
+            await Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", messageDto);
         }
     }
 }

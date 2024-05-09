@@ -5,8 +5,7 @@
 <button @onclick="EndCall">End Call</button>
 
 <video id="localVideo" autoplay muted></video>
-<video id="remoteVideo" autoplay></video>
-
+<div id="videoContainer"></div>
 
 @if (_data != null && _data.Any())
 {
