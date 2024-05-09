@@ -14,7 +14,7 @@
 
     <script>
         let connection;
-        let peerConnections = {}; 
+        let peerConnections = {};
 
         async function startConnection(chatId) {
             connection = new signalR.HubConnectionBuilder()
@@ -26,15 +26,21 @@
                 console.log(message);
             });
 
+            connection.on("CallStarted", async (chatId) => {
+                console.log("Call started by another user in chat " + chatId);
+                await startWebRtc(chatId);
+            });
+
             await connection.start();
-            console.log("SignalR Connected.");
             await connection.invoke("JoinChat", chatId);
+            console.log("SignalR Connected.");
         }
 
         async function startWebRtc(chatId) {
             navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 .then(stream => {
-                    console.log("Stream obtained: ", stream);
+                    // Display local video
+                    displayVideo(stream, 'local');
                     stream.getTracks().forEach(track => {
                         Object.values(peerConnections).forEach(peerConnection => {
                             if (peerConnection.addTrack) {
@@ -46,38 +52,31 @@
                     console.error("Failed to get media stream:", error);
                 });
 
-            connection.on("ReceiveOffer", async (callerId, offer) => {
+            Object.values(peerConnections).forEach(async peerConnection => {
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                connection.invoke("SendOffer", chatId, JSON.stringify(offer)); 
+            });
+
+            connection.on("ReceiveOffer", async (chatId, callerId, offer) => {
+                console.log("CallerId - ", callerId);
                 if (!peerConnections[callerId]) {
                     peerConnections[callerId] = new RTCPeerConnection();
                     setupPeerConnection(callerId);
                 }
 
                 let peerConnection = peerConnections[callerId];
-                try {
-                    if (peerConnection.signalingState !== "stable") {
-                        await Promise.all([
-                            peerConnection.setLocalDescription({ type: "rollback" }),
-                            peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
-                        ]);
-                    } else {
-                        await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-                    }
-                    const answer = await peerConnection.createAnswer();
-                    await peerConnection.setLocalDescription(answer);
-                    connection.invoke("SendAnswer", chatId, answer);
-                } catch (error) {
-                    console.error("Error handling offer: ", error);
-                }
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(offer)));
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                connection.invoke("SendAnswer", chatId, callerId, JSON.stringify(answer)); 
             });
 
-            connection.on("ReceiveAnswer", async (callerId, answer) => {
+            connection.on("ReceiveAnswer", async (chatId, callerId, answer) => {
                 const peerConnection = peerConnections[callerId];
-                try {
-                    await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-                } catch (error) {
-                    console.error("Error setting remote description from answer: ", error);
-                }
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(answer)));
             });
+
 
             connection.on("ReceiveIceCandidate", async (callerId, candidate) => {
                 const peerConnection = peerConnections[callerId];
@@ -94,13 +93,7 @@
             const peerConnection = peerConnections[callerId];
             peerConnection.ontrack = event => {
                 console.log("Received track from caller: " + callerId);
-                let remoteVideo = document.createElement("video");
-                remoteVideo.srcObject = event.streams[0];
-                remoteVideo.autoplay = true;
-                remoteVideo.controls = true;
-                remoteVideo.id = "remoteVideo-" + callerId;
-                document.getElementById('videoContainer').appendChild(remoteVideo);
-                console.log("Video element added to container for caller: " + callerId);
+                displayVideo(event.streams[0], callerId);
             };
 
             peerConnection.onicecandidate = event => {
@@ -110,6 +103,19 @@
                     connection.invoke("SendIceCandidate", chatId, event.candidate);
                 }
             };
+        }
+
+        function displayVideo(stream, id) {
+            let videoElement = document.getElementById('remoteVideo-' + id);
+            if (!videoElement) {
+                videoElement = document.createElement("video");
+                videoElement.id = 'remoteVideo-' + id;
+                document.getElementById('videoContainer').appendChild(videoElement);
+            }
+            videoElement.srcObject = stream;
+            videoElement.autoplay = true;
+            videoElement.controls = true;
+            console.log("Video element added to container for: " + id);
         }
 
         function endCall() {

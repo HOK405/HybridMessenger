@@ -18,6 +18,11 @@ namespace HybridMessenger.Infrastructure.Hubs
             _userClaimsService = userClaimsService;
         }
 
+        public async Task StartCall(string chatId)
+        {
+            await Clients.Group(chatId).SendAsync("CallStarted", chatId);
+        }
+
         public async Task SendOffer(string chatId, string offer)
         {
             await Clients.Group(chatId).SendAsync("ReceiveOffer", Context.ConnectionId, offer);

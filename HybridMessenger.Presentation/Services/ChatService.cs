@@ -39,6 +39,11 @@ namespace HybridMessenger.Presentation.Services
             await _hubConnection.StartAsync();
         }
 
+        public async Task StartCall(string chatId)
+        {
+            await _hubConnection.InvokeAsync("StartCall", chatId);
+        }
+
         [JSInvokable]
         public async Task SendOffer(string chatId, string offer)
         {
