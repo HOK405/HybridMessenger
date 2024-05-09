@@ -51,7 +51,7 @@
             connection.on("ReceiveOffer", async (chatId, callerId, offer) => {
                 if (!offer) {
                     console.error("Offer is undefined or not received properly.");
-                    return;  
+                    return;
                 }
 
                 if (!peerConnections[callerId]) {
@@ -60,12 +60,21 @@
                 }
 
                 const peerConnection = peerConnections[callerId];
+                console.log("Peer connection id is:" + callerId);
                 try {
                     const offerObj = JSON.parse(offer);
-                    await peerConnection.setRemoteDescription(new RTCSessionDescription(offerObj));
-                    const answer = await peerConnection.createAnswer();
-                    await peerConnection.setLocalDescription(answer);
-                    connection.invoke("SendAnswer", chatId, JSON.stringify(answer));
+                    if (peerConnection.signalingState === "stable") {
+                        await peerConnection.setRemoteDescription(new RTCSessionDescription(offerObj));
+                        const answer = await peerConnection.createAnswer();
+                        await peerConnection.setLocalDescription(answer);
+                        connection.invoke("SendAnswer", chatId, JSON.stringify(answer));
+                    } else if (peerConnection.signalingState === "have-local-offer") {
+                        await peerConnection.setRemoteDescription(new RTCSessionDescription(offerObj));
+                        await peerConnection.setLocalDescription(peerConnection.localDescription);
+                        connection.invoke("SendAnswer", chatId, JSON.stringify(peerConnection.localDescription));
+                    } else {
+                        console.error("Cannot set remote description in current state:", peerConnection.signalingState);
+                    }
                 } catch (error) {
                     console.error("Error handling offer:", error);
                 }
@@ -111,7 +120,9 @@
                         if (peerConnection.remoteDescription) {
                             await peerConnection.addIceCandidate(iceCandidate);
                         } else {
-                            console.log("Remote description not set for:", callerId);
+                            console.log("Remote description not set, storing ICE candidate for later.");
+                            peerConnection.pendingCandidates = peerConnection.pendingCandidates || [];
+                            peerConnection.pendingCandidates.push(iceCandidate);
                         }
                     } else {
                         console.error("Invalid ICE candidate received:", candidateObj);
