@@ -82,6 +82,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         public async Task StartCall()
         {
             await JSRuntime.InvokeVoidAsync("startWebRtc", ChatId);
+            StateHasChanged();
         }
 
         public async Task EndCall()
