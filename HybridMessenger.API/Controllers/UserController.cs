@@ -26,7 +26,6 @@ namespace HybridMessenger.API.Controllers
             return Ok(userResult);
         }
 
-        [Authorize]
         [HttpPost("get-paged")]
         public async Task<IActionResult> GetPagedUsers([FromBody] GetPagedUsersQuery query)
         {
