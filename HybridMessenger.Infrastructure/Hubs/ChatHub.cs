@@ -20,22 +20,22 @@ namespace HybridMessenger.Infrastructure.Hubs
 
         public async Task StartCall(string chatId)
         {
-            await Clients.OthersInGroup(chatId).SendAsync("CallStarted", chatId);
+            await Clients.Group(chatId).SendAsync("CallStarted", chatId);
         }
 
         public async Task SendOffer(string chatId, string offer)
         {
-            await Clients.OthersInGroup(chatId).SendAsync("ReceiveOffer",chatId, Context.ConnectionId, offer);
+            await Clients.Group(chatId).SendAsync("ReceiveOffer",chatId, Context.ConnectionId, offer);
         }
 
         public async Task SendAnswer(string chatId, string answer)
         {
-            await Clients.OthersInGroup(chatId).SendAsync("ReceiveAnswer", Context.ConnectionId, answer);
+            await Clients.Group(chatId).SendAsync("ReceiveAnswer", Context.ConnectionId, answer);
         }
 
         public async Task SendIceCandidate(string chatid, string candidate)
         {
-            await Clients.OthersInGroup(chatid).SendAsync("ReceiveIceCandidate", Context.ConnectionId, candidate);
+            await Clients.Group(chatid).SendAsync("ReceiveIceCandidate", Context.ConnectionId, candidate);
         }
 
         public async Task JoinChat(string chatId)
