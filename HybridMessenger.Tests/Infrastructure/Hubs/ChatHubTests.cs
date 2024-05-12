@@ -42,7 +42,7 @@ namespace HybridMessenger.Tests.Infrastructure.Hubs
         public async Task JoinChat_AddsConnectionToGroup()
         {
             // Arrange
-            int groupId = 1;
+            string groupId = "1";
             var groupName = groupId.ToString();
 
             // Act
@@ -57,7 +57,7 @@ namespace HybridMessenger.Tests.Infrastructure.Hubs
         public async Task LeaveChat_RemovesConnectionFromGroup()
         {
             // Arrange
-            int groupId = 1;
+            string groupId = "1";
             var groupName = groupId.ToString();
 
             // Act

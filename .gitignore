@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /HybridMessenger.Presentation/secrets.json
 /HybridMessenger.Presentation/ApiConfiguration.cs
+/HybridMessenger.API/Properties/ServiceDependencies/HybridMessengerAPI20240510195116 - Web Deploy/profile.arm.json
+/HybridMessenger.API/.config/dotnet-tools.json
+/HybridMessenger.API/libman.json
