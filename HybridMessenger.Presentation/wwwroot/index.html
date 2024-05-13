@@ -21,7 +21,7 @@
             ChatID = chatId;
 
             connection = new signalR.HubConnectionBuilder()
-                .withUrl("https://61jtrq2t-44314.euw.devtunnels.ms/chathub")
+                .withUrl("https://localhost:44314/chathub")
                 .configureLogging(signalR.LogLevel.Information)
                 .build();
 
