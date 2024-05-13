@@ -21,6 +21,10 @@ namespace HybridMessenger.Presentation.Components.Pages
         [Inject]
         AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
+        private List<MessageResponse> _data;
+
+        private ChatMessagesPaginationRequest _requestModel;
+
         [Parameter]
         public string ChatId
         {
@@ -43,10 +47,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         private string _messageText;
 
         private int _userId;
-
-        private List<MessageResponse> _data;
-
-        private ChatMessagesPaginationRequest _requestModel;
+        private string _userName;
 
         private bool _disposed = false;
 
@@ -68,6 +69,8 @@ namespace HybridMessenger.Presentation.Components.Pages
 
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             _userId = int.Parse(authState.User.FindFirst("nameid")?.Value ?? "0");
+            _userName = authState.User.FindFirst("unique_name")?.Value;
+
             await JSRuntime.InvokeVoidAsync("startConnection", ChatId);
         }
 

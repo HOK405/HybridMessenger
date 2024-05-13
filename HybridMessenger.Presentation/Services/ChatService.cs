@@ -17,7 +17,7 @@ namespace HybridMessenger.Presentation.Services
         {
             string baseAddress = configuration.GetValue<string>("ApiBaseAddress");
             string endpoint = configuration.GetValue<string>("HubEndpoint");
-            _url = "https://localhost:44314/chathub";
+            _url = "https://hybridmessenger-2024.azurewebsites.net/chathub";
             _httpService = httpService;
         }
 

@@ -17,9 +17,9 @@ namespace HybridMessenger.API.Extensions
             // Configure JWT Authentication
             ValidateJwtSettings(configuration);
 
-            var key = Encoding.ASCII.GetBytes(configuration["JwtSettings:Key"]);
-            var audience = configuration["JwtSettings:Audience"];
-            var issuer = configuration["JwtSettings:Issuer"];
+            var key = Encoding.ASCII.GetBytes(configuration["JwtKey"]);
+            var audience = configuration["JwtAudience"];
+            var issuer = configuration["JwtIssuer"];
 
             services.AddAuthentication(x =>
             {
@@ -49,23 +49,23 @@ namespace HybridMessenger.API.Extensions
 
         private static void ValidateJwtSettings(IConfiguration configuration)
         {
-            var key = Encoding.ASCII.GetBytes(configuration["JwtSettings:Key"]);
-            var audience = configuration["JwtSettings:Audience"];
-            var issuer = configuration["JwtSettings:Issuer"];
+            var key = Encoding.ASCII.GetBytes(configuration["JwtKey"]);
+            var audience = configuration["JwtAudience"];
+            var issuer = configuration["JwtIssuer"];
 
             if (key is null || key.Length == 0)
             {
-                throw new ArgumentNullException("JwtSettings:Key", "JWT Key must not be null or empty.");
+                throw new ArgumentNullException("JwtKey", "JWT Key must not be null or empty.");
             }
 
             if (string.IsNullOrWhiteSpace(audience))
             {
-                throw new ArgumentNullException("JwtSettings:Audience", "Audience must not be null or empty.");
+                throw new ArgumentNullException("JwtAudience", "Audience must not be null or empty.");
             }
 
             if (string.IsNullOrWhiteSpace(issuer))
             {
-                throw new ArgumentNullException("JwtSettings:Issuer", "Issuer must not be null or empty.");
+                throw new ArgumentNullException("JwtIssuer", "Issuer must not be null or empty.");
             }
         }
     }

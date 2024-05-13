@@ -17,11 +17,11 @@
         let peerConnections = {};
         let ChatID;
 
-        async function startConnection(chatId) {
+        async function startConnection(chatId, userName) {
             ChatID = chatId;
 
             connection = new signalR.HubConnectionBuilder()
-                .withUrl("https://localhost:44314/chathub")
+                .withUrl("https://hybridmessenger-2024.azurewebsites.net/chathub")
                 .configureLogging(signalR.LogLevel.Information)
                 .build();
 
@@ -29,7 +29,6 @@
 
             await connection.start();
             await connection.invoke("JoinChat", chatId);
-            console.log("SignalR Connected.");
         }
 
         function registerEventHandlers(chatId) {
@@ -44,42 +43,24 @@
             });
 
             connection.on("CallStarted", async (chatId) => {
-                console.log("Call started in chat " + chatId);
                 await startWebRtc(chatId);
             });
 
             connection.on("ReceiveOffer", async (chatId, callerId, offer) => {
-                if (!offer) {
-                    console.error("Offer is undefined or not received properly.");
-                    return;
-                }
-
                 if (!peerConnections[callerId]) {
-                    console.log("Setting up new peer connection for:", callerId);
                     setupPeerConnection(callerId, chatId);
                 }
 
                 const peerConnection = peerConnections[callerId];
-                console.log("Peer connection id is:", callerId);
-                try {
-                    const offerObj = new RTCSessionDescription(JSON.parse(offer));
-                    await peerConnection.setRemoteDescription(offerObj);
-                    const answer = await peerConnection.createAnswer();
-                    await peerConnection.setLocalDescription(answer);
-                    connection.invoke("SendAnswer", chatId, JSON.stringify(answer));
-                } catch (error) {
-                    console.error("Error handling offer:", error);
-                }
+                const offerObj = new RTCSessionDescription(JSON.parse(offer));
+                await peerConnection.setRemoteDescription(offerObj);
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                connection.invoke("SendAnswer", chatId, callerId, JSON.stringify(answer));
             });
 
             connection.on("ReceiveAnswer", async (callerId, answerJson) => {
                 const peerConnection = peerConnections[callerId];
-                if (!peerConnection) {
-                    console.error("PeerConnection not found for callerId:", callerId);
-                    return;
-                }
-
-                console.log(`Current signaling state for ${callerId}: ${peerConnection.signalingState}`);
                 try {
                     const answerObj = new RTCSessionDescription(JSON.parse(answerJson));
                     if (peerConnection.signalingState === "have-local-offer") {
@@ -95,7 +76,6 @@
 
             connection.on("ReceiveIceCandidate", async (callerId, candidateJson) => {
                 if (!peerConnections[callerId]) {
-                    console.log(`Setting up peer connection for ${callerId}`);
                     setupPeerConnection(callerId);
                 }
 
@@ -109,13 +89,7 @@
                             sdpMid: candidateObj.sdpMid,
                             sdpMLineIndex: candidateObj.sdpMLineIndex
                         });
-                        if (peerConnection.remoteDescription) {
-                            await peerConnection.addIceCandidate(iceCandidate);
-                        } else {
-                            console.log("Remote description not set, storing ICE candidate for later.");
-                            peerConnection.pendingCandidates = peerConnection.pendingCandidates || [];
-                            peerConnection.pendingCandidates.push(iceCandidate);
-                        }
+                        await peerConnection.addIceCandidate(iceCandidate);
                     } else {
                         console.error("Invalid ICE candidate received:", candidateObj);
                     }
@@ -126,31 +100,25 @@
         }
 
         async function startWebRtc(chatId) {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            displayVideo(stream, 'local');
 
-                displayVideo(stream, 'local');  
-
+            Object.entries(peerConnections).forEach(async ([callerId, peerConnection]) => {
                 stream.getTracks().forEach(track => {
-                    Object.values(peerConnections).forEach(peerConnection => {
-                        peerConnection.addTrack(track, stream);
-                    });
+                    peerConnection.addTrack(track, stream);
                 });
 
-                for (const [callerId, peerConnection] of Object.entries(peerConnections)) {
-                    const offer = await peerConnection.createOffer();
-                    await peerConnection.setLocalDescription(offer);
-                    connection.invoke("SendOffer", chatId, JSON.stringify(offer));
-                }
-            } catch (error) {
-                console.error("Failed to get media stream:", error);
-            }
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                connection.invoke("SendOffer", chatId, callerId, JSON.stringify(offer));
+            });
         }
-
 
         function setupPeerConnection(callerId, chatId) {
             console.log("Setting up peer connection for caller: " + callerId);
-            const peerConnection = new RTCPeerConnection();
+            const peerConnection = new RTCPeerConnection({
+                iceServers: [{ urls: "stun:stun.l.google.com:19302" }] 
+            });
             peerConnections[callerId] = peerConnection;
 
             peerConnection.ontrack = event => {
@@ -165,8 +133,8 @@
             };
 
             peerConnection.oniceconnectionstatechange = () => {
-                if (peerConnection.iceConnectionState == 'disconnected') {
-                    console.log('Disconnected connection with: ' + callerId);
+                if (peerConnection.iceConnectionState === 'disconnected') {
+                    console.log("Peer connection disconnected for caller: " + callerId);
                     peerConnection.close();
                     delete peerConnections[callerId];
                 }
@@ -185,9 +153,7 @@
             videoElement.controls = true;
             videoElement.playsInline = true;
             videoElement.muted = (id === 'local'); 
-            console.log("Video element added to container for: " + id);
         }
-
 
         function endCall() {
             Object.values(peerConnections).forEach(pc => {
