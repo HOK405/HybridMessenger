@@ -22,7 +22,7 @@ namespace HybridMessenger.Infrastructure.Services
         public async Task<string> GenerateAccessToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var keyString = _configuration["JwtSettings:Key"];
+            var keyString = _configuration["JwtKey"];
             var key = Encoding.ASCII.GetBytes(keyString);
 
             var roles = await _identityService.GetRolesAsync(user);
@@ -39,8 +39,8 @@ namespace HybridMessenger.Infrastructure.Services
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            var audience = _configuration["JwtSettings:Audience"];
-            var issuer = _configuration["JwtSettings:Issuer"];
+            var audience = _configuration["JwtAudience"];
+            var issuer = _configuration["JwtIssuer"];
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -58,7 +58,7 @@ namespace HybridMessenger.Infrastructure.Services
         public Task<string> GenerateRefreshToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var keyString = _configuration["JwtSettings:Key"];
+            var keyString = _configuration["JwtKey"];
             var key = Encoding.ASCII.GetBytes(keyString);
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -76,7 +76,7 @@ namespace HybridMessenger.Infrastructure.Services
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
-            var keyString = _configuration["JwtSettings:Key"];
+            var keyString = _configuration["JwtKey"];
             var key = Encoding.ASCII.GetBytes(keyString);
 
             var tokenValidationParameters = new TokenValidationParameters

@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /HybridMessenger.Presentation/secrets.json
 /HybridMessenger.Presentation/ApiConfiguration.cs
+/HybridMessenger.API/appsettings.json

@@ -17,8 +17,10 @@ namespace HybridMessenger.API
 
             builder.Services.AddEndpointsApiExplorer();
 
+            string connectionString = builder.Configuration["DefaultConnection"];
+
             builder.Services.AddDbContext<ApiDbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(connectionString));
 
             // Custom extensions
             builder.Services.AddSwaggerSecuritySetup();
