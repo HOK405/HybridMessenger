@@ -59,7 +59,6 @@
                 await peerConnection.setLocalDescription(answer);
                 connection.invoke("SendAnswer", chatId, callerId, JSON.stringify(answer));
 
-                // Process any queued ICE candidates
                 processIceCandidateQueue(callerId);
             });
 
@@ -69,7 +68,6 @@
                     const answerObj = new RTCSessionDescription(JSON.parse(answerJson));
                     if (peerConnection.signalingState === "have-local-offer") {
                         await peerConnection.setRemoteDescription(answerObj);
-                        // Process any queued ICE candidates
                         processIceCandidateQueue(callerId);
                     } else {
                         console.error("Received an answer when not expecting one:", peerConnection.signalingState);
@@ -117,7 +115,7 @@
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             displayVideo(stream, 'local');
 
-            Object.entries(peerConnections).forEach(async ([callerId, peerConnection]) => {
+            for (const [callerId, peerConnection] of Object.entries(peerConnections)) {
                 if (callerId !== myConnectionId) {
                     stream.getTracks().forEach(track => {
                         peerConnection.addTrack(track, stream);
@@ -127,7 +125,7 @@
                     await peerConnection.setLocalDescription(offer);
                     connection.invoke("SendOffer", chatId, callerId, JSON.stringify(offer));
                 }
-            });
+            }
         }
 
         function setupPeerConnection(callerId, chatId) {
@@ -136,6 +134,12 @@
                 iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
             });
             peerConnections[callerId] = peerConnection;
+
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+                stream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, stream);
+                });
+            });
 
             peerConnection.ontrack = event => {
                 console.log("Received track from caller: " + callerId);
