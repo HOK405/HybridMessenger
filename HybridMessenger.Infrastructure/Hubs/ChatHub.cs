@@ -11,6 +11,7 @@ namespace HybridMessenger.Infrastructure.Hubs
     {
         private readonly IMediator _mediator;
         private readonly IUserClaimsService _userClaimsService;
+        private static readonly Dictionary<string, HashSet<string>> ChatConnections = new();
 
         public ChatHub(IMediator mediator, IUserClaimsService userClaimsService)
         {
@@ -20,7 +21,7 @@ namespace HybridMessenger.Infrastructure.Hubs
 
         public async Task StartCall(string chatId)
         {
-            await Clients.Group(chatId).SendAsync("CallStarted", chatId);
+            await Clients.OthersInGroup(chatId).SendAsync("CallStarted", chatId);
         }
 
         public async Task SendOffer(string chatId, string callerId, string offer)
@@ -33,17 +34,56 @@ namespace HybridMessenger.Infrastructure.Hubs
             await Clients.Client(callerId).SendAsync("ReceiveAnswer", Context.ConnectionId, answer);
         }
 
-        public async Task SendIceCandidate(string chatid, string candidate)
+        public async Task SendIceCandidate(string chatId, string candidate)
         {
-            await Clients.OthersInGroup(chatid).SendAsync("ReceiveIceCandidate", Context.ConnectionId, candidate);
+            await Clients.OthersInGroup(chatId).SendAsync("ReceiveIceCandidate", Context.ConnectionId, candidate);
         }
 
         public async Task<string> JoinChat(string chatId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, chatId);
+
+            if (!ChatConnections.ContainsKey(chatId))
+            {
+                ChatConnections[chatId] = new HashSet<string>();
+            }
+
+            ChatConnections[chatId].Add(Context.ConnectionId);
+
             await Clients.OthersInGroup(chatId).SendAsync("UserJoined", Context.ConnectionId);
             await Clients.OthersInGroup(chatId).SendAsync("Send", $"{Context.ConnectionId} has joined the chat {chatId}.");
             return Context.ConnectionId;
+        }
+
+        public async Task ConnectAllParticipants(string chatId)
+        {
+            if (ChatConnections.ContainsKey(chatId))
+            {
+                var connections = ChatConnections[chatId];
+                foreach (var connectionId in connections)
+                {
+                    foreach (var otherConnectionId in connections)
+                    {
+                        if (connectionId != otherConnectionId)
+                        {
+                            await Clients.Client(connectionId).SendAsync("UserJoined", otherConnectionId);
+                        }
+                    }
+                }
+            }
+        }
+
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            foreach (var chat in ChatConnections)
+            {
+                if (chat.Value.Remove(Context.ConnectionId))
+                {
+                    await Clients.Group(chat.Key).SendAsync("Send", $"{Context.ConnectionId} has left the chat {chat.Key}.");
+                }
+            }
+
+            await base.OnDisconnectedAsync(exception);
         }
 
 

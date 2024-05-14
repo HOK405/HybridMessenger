@@ -216,7 +216,12 @@
                 element.scrollTop = element.scrollHeight;
             }
         }
+
+        async function connectAll() {
+            await connection.invoke("ConnectAllParticipants", ChatID);
+        }
     </script>
+
 
     <style>
         #videoContainer {
