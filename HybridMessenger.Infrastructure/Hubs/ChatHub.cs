@@ -38,13 +38,14 @@ namespace HybridMessenger.Infrastructure.Hubs
             await Clients.Group(chatid).SendAsync("ReceiveIceCandidate", Context.ConnectionId, candidate);
         }
 
-        public async Task JoinChat(string chatId)
+        public async Task<string> JoinChat(string chatId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, chatId);
-
             await Clients.Group(chatId).SendAsync("UserJoined", Context.ConnectionId);
             await Clients.Group(chatId).SendAsync("Send", $"{Context.ConnectionId} has joined the chat {chatId}.");
+            return Context.ConnectionId;
         }
+
 
         public async Task LeaveChat(string chatId)
         {

@@ -16,19 +16,20 @@
         let connection;
         let peerConnections = {};
         let ChatID;
+        let myConnectionId;
 
-        async function startConnection(chatId, userName) {
+        async function startConnection(chatId) {
             ChatID = chatId;
 
             connection = new signalR.HubConnectionBuilder()
-                .withUrl("https://hybridmessenger-2024.azurewebsites.net/chathub")
+                .withUrl("https://localhost:44314/chathub")
                 .configureLogging(signalR.LogLevel.Information)
                 .build();
 
             registerEventHandlers(chatId);
 
             await connection.start();
-            await connection.invoke("JoinChat", chatId);
+            myConnectionId = await connection.invoke("JoinChat", chatId);
         }
 
         function registerEventHandlers(chatId) {
@@ -37,8 +38,8 @@
             });
 
             connection.on("UserJoined", (userId) => {
-                if (!peerConnections[userId]) {
-                    setupPeerConnection(userId, chatId);
+                if (userId !== myConnectionId && !peerConnections[userId]) {
+                    setupPeerConnection(userId, ChatID);
                 }
             });
 
@@ -57,6 +58,9 @@
                 const answer = await peerConnection.createAnswer();
                 await peerConnection.setLocalDescription(answer);
                 connection.invoke("SendAnswer", chatId, callerId, JSON.stringify(answer));
+
+                // Process any queued ICE candidates
+                processIceCandidateQueue(callerId);
             });
 
             connection.on("ReceiveAnswer", async (callerId, answerJson) => {
@@ -65,6 +69,8 @@
                     const answerObj = new RTCSessionDescription(JSON.parse(answerJson));
                     if (peerConnection.signalingState === "have-local-offer") {
                         await peerConnection.setRemoteDescription(answerObj);
+                        // Process any queued ICE candidates
+                        processIceCandidateQueue(callerId);
                     } else {
                         console.error("Received an answer when not expecting one:", peerConnection.signalingState);
                     }
@@ -72,7 +78,6 @@
                     console.error("Error handling answer:", error);
                 }
             });
-
 
             connection.on("ReceiveIceCandidate", async (callerId, candidateJson) => {
                 if (!peerConnections[callerId]) {
@@ -89,7 +94,16 @@
                             sdpMid: candidateObj.sdpMid,
                             sdpMLineIndex: candidateObj.sdpMLineIndex
                         });
-                        await peerConnection.addIceCandidate(iceCandidate);
+
+                        // Queue ICE candidate if remote description is not set
+                        if (peerConnection.remoteDescription) {
+                            await peerConnection.addIceCandidate(iceCandidate);
+                        } else {
+                            if (!peerConnection.iceCandidateQueue) {
+                                peerConnection.iceCandidateQueue = [];
+                            }
+                            peerConnection.iceCandidateQueue.push(iceCandidate);
+                        }
                     } else {
                         console.error("Invalid ICE candidate received:", candidateObj);
                     }
@@ -104,20 +118,22 @@
             displayVideo(stream, 'local');
 
             Object.entries(peerConnections).forEach(async ([callerId, peerConnection]) => {
-                stream.getTracks().forEach(track => {
-                    peerConnection.addTrack(track, stream);
-                });
+                if (callerId !== myConnectionId) {
+                    stream.getTracks().forEach(track => {
+                        peerConnection.addTrack(track, stream);
+                    });
 
-                const offer = await peerConnection.createOffer();
-                await peerConnection.setLocalDescription(offer);
-                connection.invoke("SendOffer", chatId, callerId, JSON.stringify(offer));
+                    const offer = await peerConnection.createOffer();
+                    await peerConnection.setLocalDescription(offer);
+                    connection.invoke("SendOffer", chatId, callerId, JSON.stringify(offer));
+                }
             });
         }
 
         function setupPeerConnection(callerId, chatId) {
             console.log("Setting up peer connection for caller: " + callerId);
             const peerConnection = new RTCPeerConnection({
-                iceServers: [{ urls: "stun:stun.l.google.com:19302" }] 
+                iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
             });
             peerConnections[callerId] = peerConnection;
 
@@ -141,6 +157,18 @@
             };
         }
 
+        function processIceCandidateQueue(callerId) {
+            const peerConnection = peerConnections[callerId];
+            if (peerConnection && peerConnection.iceCandidateQueue) {
+                while (peerConnection.iceCandidateQueue.length > 0) {
+                    const candidate = peerConnection.iceCandidateQueue.shift();
+                    peerConnection.addIceCandidate(candidate).catch(error => {
+                        console.error("Error adding ICE candidate from queue:", error);
+                    });
+                }
+            }
+        }
+
         function displayVideo(stream, id) {
             let videoElement = document.getElementById(id === 'local' ? 'localVideo' : 'remoteVideo-' + id);
             if (!videoElement) {
@@ -152,16 +180,29 @@
             videoElement.autoplay = true;
             videoElement.controls = true;
             videoElement.playsInline = true;
-            videoElement.muted = (id === 'local'); 
+            videoElement.muted = id === 'local' ? true : false;
         }
 
-        function endCall() {
-            Object.values(peerConnections).forEach(pc => {
-                pc.close();
-            });
+        async function endCall() {
+            Object.values(peerConnections).forEach(pc => pc.close());
             peerConnections = {};
+
+            const localVideo = document.getElementById('localVideo');
+            if (localVideo && localVideo.srcObject) {
+                const tracks = localVideo.srcObject.getTracks();
+                tracks.forEach(track => {
+                    console.log("Stopping track: ", track.kind);
+                    track.stop();
+                });
+            }
+
+            const videoContainer = document.getElementById('videoContainer');
+            while (videoContainer.firstChild) {
+                videoContainer.removeChild(videoContainer.firstChild);
+            }
+
             if (connection) {
-                connection.stop();
+                await connection.stop();
             }
         }
 
@@ -172,6 +213,29 @@
             }
         }
     </script>
+
+    <style>
+        #videoContainer {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            padding: 10px;
+            width: 100%;
+            height: 100%;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media (max-width: 600px) {
+            #videoContainer {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
 </head>
 
 <body>

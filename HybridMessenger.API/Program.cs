@@ -16,13 +16,7 @@ namespace HybridMessenger.API
             {
                 options.AddPolicy("DevCorsPolicy", builder =>
                 {
-                    builder.WithOrigins("http://localhost:3000",
-                                       "http://10.0.2.2",
-                                       "http://127.0.0.1:3000", 
-                                       "http://localhost:5000",  
-                                       "http://127.0.0.1:5000",
-                                       "http://91.207.245.157",
-                                       "https://0.0.0.0")  
+                    builder.WithOrigins("https://0.0.0.0")  
                            .AllowAnyHeader()
                            .AllowAnyMethod()
                            .AllowCredentials();
