@@ -21,6 +21,20 @@ namespace HybridMessenger.Infrastructure.Hubs
 
         public async Task StartCall(string chatId)
         {
+            if (ChatConnections.ContainsKey(chatId))
+            {
+                var connections = ChatConnections[chatId];
+                foreach (var connectionId in connections)
+                {
+                    foreach (var otherConnectionId in connections)
+                    {
+                        if (connectionId != otherConnectionId)
+                        {
+                            await Clients.Client(connectionId).SendAsync("UserJoined", otherConnectionId);
+                        }
+                    }
+                }
+            }
             await Clients.OthersInGroup(chatId).SendAsync("CallStarted", chatId);
         }
 
