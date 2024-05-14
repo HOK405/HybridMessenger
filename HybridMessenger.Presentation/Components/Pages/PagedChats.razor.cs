@@ -6,7 +6,7 @@ using Microsoft.JSInterop;
 
 namespace HybridMessenger.Presentation.Components.Pages
 {
-    public partial class PagedChats
+    public partial class PagedChats : ComponentBase
     {
         [Inject]
         private IHttpService HttpService { get; set; }
@@ -36,30 +36,11 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private ResponeChatObject _selectedChat;
 
-        public async Task<bool> CheckAndRequestCameraAndMicrophonePermissions()
-        {
-            var cameraStatus = await Permissions.CheckStatusAsync<Permissions.Camera>();
-            if (cameraStatus != PermissionStatus.Granted)
-            {
-                cameraStatus = await Permissions.RequestAsync<Permissions.Camera>();
-            }
-
-            var microphoneStatus = await Permissions.CheckStatusAsync<Permissions.Microphone>();
-            if (microphoneStatus != PermissionStatus.Granted)
-            {
-                microphoneStatus = await Permissions.RequestAsync<Permissions.Microphone>();
-            }
-
-            return cameraStatus == PermissionStatus.Granted && microphoneStatus == PermissionStatus.Granted;
-        }
-
         protected override async Task OnInitializedAsync()
         {
             _data = new List<ResponeChatObject>();
 
             _requestModel = new PaginationRequest { SortBy = "CreatedAt", PageSize = 5 };
-
-            await CheckAndRequestCameraAndMicrophonePermissions();
 
             await LoadChats();
         }
