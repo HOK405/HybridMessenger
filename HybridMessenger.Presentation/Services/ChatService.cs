@@ -11,14 +11,11 @@ namespace HybridMessenger.Presentation.Services
 
         private IHttpService _httpService;
         private HubConnection _hubConnection;
-        private string _url;
+        public string HubAddress;
 
         public ChatService(IConfiguration configuration, IHttpService httpService)
         {
-            string baseAddress = configuration.GetValue<string>("ApiBaseAddress");
-            string endpoint = configuration.GetValue<string>("HubEndpoint");
-            /*_url = "https://hybridmessenger-2024.azurewebsites.net/chathub";*/
-            _url = "https://localhost:44314/chathub";
+            HubAddress = configuration.GetValue<string>("HubFullAddress");
             _httpService = httpService;
         }
 
@@ -27,7 +24,7 @@ namespace HybridMessenger.Presentation.Services
             string token = await _httpService.GetToken();
 
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl(_url, options =>
+                .WithUrl(HubAddress, options =>
                 {
                     options.AccessTokenProvider = () => Task.FromResult(token);
                 })

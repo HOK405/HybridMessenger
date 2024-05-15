@@ -21,8 +21,7 @@ namespace HybridMessenger.Presentation
 
             builder.Configuration.AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
 
-            /*string apiBaseAddress = "https://hybridmessenger-2024.azurewebsites.net";*/
-            string apiBaseAddress = "https://localhost:44314";
+            string apiBaseAddress = builder.Configuration["ApiBaseAddress"];
             if (string.IsNullOrEmpty(apiBaseAddress))
             {
                 throw new InvalidOperationException("API base address is not configured properly.");
