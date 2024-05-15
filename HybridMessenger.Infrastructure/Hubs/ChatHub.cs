@@ -43,7 +43,7 @@ namespace HybridMessenger.Infrastructure.Hubs
             await Clients.Client(callerId).SendAsync("ReceiveOffer", chatId, Context.ConnectionId, offer);
         }
 
-        public async Task SendAnswer(string chatId, string callerId, string answer)
+        public async Task SendAnswer(string callerId, string answer)
         {
             await Clients.Client(callerId).SendAsync("ReceiveAnswer", Context.ConnectionId, answer);
         }
@@ -82,7 +82,7 @@ namespace HybridMessenger.Infrastructure.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-
+        #region Chatting
         public async Task LeaveChat(string chatId)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, chatId);
@@ -105,5 +105,6 @@ namespace HybridMessenger.Infrastructure.Hubs
             // Send to all clients in the specified group
             await Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", messageDto);
         }
+        #endregion
     }
 }
