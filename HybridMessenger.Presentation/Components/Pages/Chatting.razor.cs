@@ -68,7 +68,7 @@ namespace HybridMessenger.Presentation.Components.Pages
 
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             _userId = int.Parse(authState.User.FindFirst("nameid")?.Value ?? "0");
-            await JSRuntime.InvokeVoidAsync("startConnection", ChatId);
+            await JSRuntime.InvokeVoidAsync("startConnection", ChatId, _chatService.HubAddress, await HttpService.GetToken());
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
