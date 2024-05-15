@@ -23,7 +23,7 @@
 
             connection = new signalR.HubConnectionBuilder()
                 .withUrl(hubUrl, {
-                    accessTokenFactory: () => chatId
+                    accessTokenFactory: () => accessToken
                 })
                 .configureLogging(signalR.LogLevel.Information)
                 .build();
