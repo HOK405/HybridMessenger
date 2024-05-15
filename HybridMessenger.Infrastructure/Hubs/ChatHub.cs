@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace HybridMessenger.Infrastructure.Hubs
 {
-    /*[Authorize]*/
+    [Authorize]
     public class ChatHub : Hub
     {
         private readonly IMediator _mediator;
