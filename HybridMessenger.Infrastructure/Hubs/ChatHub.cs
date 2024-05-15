@@ -30,7 +30,7 @@ namespace HybridMessenger.Infrastructure.Hubs
                     {
                         if (connectionId != otherConnectionId)
                         {
-                            await Clients.Client(connectionId).SendAsync("UserJoined", otherConnectionId);
+                            await Clients.Client(connectionId).SendAsync("ConnectPeer", otherConnectionId);
                         }
                     }
                 }
@@ -64,27 +64,9 @@ namespace HybridMessenger.Infrastructure.Hubs
 
             ChatConnections[chatId].Add(Context.ConnectionId);
 
-            await Clients.OthersInGroup(chatId).SendAsync("UserJoined", Context.ConnectionId);
+            await Clients.OthersInGroup(chatId).SendAsync("ConnectPeer", Context.ConnectionId);
             await Clients.OthersInGroup(chatId).SendAsync("Send", $"{Context.ConnectionId} has joined the chat {chatId}.");
             return Context.ConnectionId;
-        }
-
-        public async Task ConnectAllParticipants(string chatId)
-        {
-            if (ChatConnections.ContainsKey(chatId))
-            {
-                var connections = ChatConnections[chatId];
-                foreach (var connectionId in connections)
-                {
-                    foreach (var otherConnectionId in connections)
-                    {
-                        if (connectionId != otherConnectionId)
-                        {
-                            await Clients.Client(connectionId).SendAsync("UserJoined", otherConnectionId);
-                        }
-                    }
-                }
-            }
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)

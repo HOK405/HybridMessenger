@@ -18,11 +18,13 @@
         let ChatID;
         let myConnectionId;
 
-        async function startConnection(chatId) {
+        async function startConnection(chatId, hubUrl, accessToken) {
             ChatID = chatId;
 
             connection = new signalR.HubConnectionBuilder()
-                .withUrl("https://localhost:44314/chathub")
+                .withUrl(hubUrl, {
+                    accessTokenFactory: () => chatId
+                })
                 .configureLogging(signalR.LogLevel.Information)
                 .build();
 
@@ -37,7 +39,7 @@
                 console.log(message);
             });
 
-            connection.on("UserJoined", (userId) => {
+            connection.on("ConnectPeer", (userId) => {
                 if (userId !== myConnectionId && !peerConnections[userId]) {
                     setupPeerConnection(userId, ChatID);
                 }
@@ -93,7 +95,6 @@
                             sdpMLineIndex: candidateObj.sdpMLineIndex
                         });
 
-                        // Queue ICE candidate if remote description is not set
                         if (peerConnection.remoteDescription) {
                             await peerConnection.addIceCandidate(iceCandidate);
                         } else {
@@ -215,10 +216,6 @@
             if (element) {
                 element.scrollTop = element.scrollHeight;
             }
-        }
-
-        async function connectAll() {
-            await connection.invoke("ConnectAllParticipants", ChatID);
         }
     </script>
 
