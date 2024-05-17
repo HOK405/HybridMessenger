@@ -1,9 +1,9 @@
 .message-container {
     display: flex;
     flex-direction: column;
-    max-height: calc(100vh - 90px);
+    max-height: calc(100vh - 500px);
     overflow-y: auto;
-    padding: 10px 10px 0px;
+    padding: 10px 10px 70px;
     scrollbar-width: none; 
 }
 
@@ -96,10 +96,6 @@
         width: 100%;
     }
 
-    .message-container {
-        padding-bottom: 60px; 
-    }
-
     .send-button {
         width: 80px;
     }
@@ -117,4 +113,3 @@
     .form-group label {
         font-size: 1.2rem;
     }
-

@@ -21,6 +21,10 @@ namespace HybridMessenger.Presentation.Components.Pages
         [Inject]
         AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
+        private List<MessageResponse> _data;
+
+        private ChatMessagesPaginationRequest _requestModel;
+
         [Parameter]
         public string ChatId
         {
@@ -44,10 +48,6 @@ namespace HybridMessenger.Presentation.Components.Pages
 
         private int _userId;
 
-        private List<MessageResponse> _data;
-
-        private ChatMessagesPaginationRequest _requestModel;
-
         private bool _disposed = false;
 
         protected override async Task OnInitializedAsync()
@@ -57,17 +57,18 @@ namespace HybridMessenger.Presentation.Components.Pages
 
             _data = new List<MessageResponse>();
 
-            _requestModel = new ChatMessagesPaginationRequest{ SortBy = "SentAt" };
+            _requestModel = new ChatMessagesPaginationRequest { SortBy = "SentAt" };
 
             if (_chatId != 0)
             {
-                _requestModel.ChatId = _chatId; 
-                await _chatService.JoinChat(_chatId);
+                _requestModel.ChatId = _chatId;
                 await LoadMessages();
+                await _chatService.JoinGroupAsync(ChatId); // Only join the group
             }
 
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             _userId = int.Parse(authState.User.FindFirst("nameid")?.Value ?? "0");
+            await JSRuntime.InvokeVoidAsync("startConnection", ChatId, _chatService.HubAddress, await HttpService.GetToken());
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -76,6 +77,17 @@ namespace HybridMessenger.Presentation.Components.Pages
             {
                 await JSRuntime.InvokeVoidAsync("scrollToBottom", "messageContainer");
             }
+        }
+
+        public async Task StartCall()
+        {
+            await _chatService.StartCall(ChatId);
+        }
+
+
+        public async Task EndCall()
+        {
+            await JSRuntime.InvokeVoidAsync("endCall");
         }
 
         private void HandleNewMessage(MessageResponse message)
@@ -102,13 +114,13 @@ namespace HybridMessenger.Presentation.Components.Pages
                 _messageText = default; 
             }
         }
-
         public async ValueTask DisposeAsync()
         {
+            await EndCall();
             if (!_disposed)
             {
                 _chatService.OnMessageReceived -= HandleNewMessage;
-                await _chatService.LeaveChat(_requestModel.ChatId);
+                await _chatService.LeaveChat(ChatId);
                 _disposed = true;
             }
 

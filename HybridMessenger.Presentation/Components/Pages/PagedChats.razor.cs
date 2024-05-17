@@ -6,7 +6,7 @@ using Microsoft.JSInterop;
 
 namespace HybridMessenger.Presentation.Components.Pages
 {
-    public partial class PagedChats
+    public partial class PagedChats : ComponentBase
     {
         [Inject]
         private IHttpService HttpService { get; set; }
@@ -158,7 +158,6 @@ namespace HybridMessenger.Presentation.Components.Pages
 
             StateHasChanged();
         }
-
 
         private async Task NextPage()
         {

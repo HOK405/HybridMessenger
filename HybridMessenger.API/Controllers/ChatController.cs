@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HybridMessenger.API.Controllers
 {
-    [Authorize]
+    /*[Authorize]*/
     [ApiController]
     [Route("api/[controller]")]
     public class ChatController : Controller
