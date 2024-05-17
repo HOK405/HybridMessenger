@@ -62,10 +62,16 @@ namespace HybridMessenger.Presentation.Services
             await _hubConnection.SendAsync("SendIceCandidate", chatId, candidate);
         }
 
-        public async Task JoinChat(string chatId)
+        public async Task JoinGroupAsync(string chatId)
         {
-            await _hubConnection.SendAsync("JoinChat", chatId);
+            await _hubConnection.SendAsync("JoinGroupAsync", chatId);
         }
+
+        public async Task CreatePeerConnection(string chatId)
+        {
+            await _hubConnection.InvokeAsync<string>("CreatePeerConnection", chatId);
+        }
+
 
         public async Task LeaveChat(string chatId)
         {

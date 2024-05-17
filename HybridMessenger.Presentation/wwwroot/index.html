@@ -19,20 +19,21 @@
         let myConnectionId;
 
         async function startConnection(chatId, hubUrl, accessToken) {
-            ChatID = chatId;
+        ChatID = chatId;
 
-            connection = new signalR.HubConnectionBuilder()
-                .withUrl(hubUrl, {
-                    accessTokenFactory: () => accessToken
-                })
-                .configureLogging(signalR.LogLevel.Information)
-                .build();
+        connection = new signalR.HubConnectionBuilder()
+            .withUrl(hubUrl, {
+                accessTokenFactory: () => accessToken
+            })
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
 
-            registerEventHandlers(chatId);
+        registerEventHandlers(chatId);
 
-            await connection.start();
-            myConnectionId = await connection.invoke("JoinChat", chatId);
-        }
+        await connection.start();
+        await connection.invoke("JoinGroupAsync", chatId);
+        myConnectionId = await connection.invoke("CreatePeerConnection", chatId);
+    }
 
         function registerEventHandlers(chatId) {
             connection.on("Send", (message) => {
@@ -59,7 +60,7 @@
                 await peerConnection.setRemoteDescription(offerObj);
                 const answer = await peerConnection.createAnswer();
                 await peerConnection.setLocalDescription(answer);
-                connection.invoke("SendAnswer", chatId, callerId, JSON.stringify(answer));
+                connection.invoke("SendAnswer", callerId, JSON.stringify(answer));
 
                 processIceCandidateQueue(callerId);
             });
@@ -163,6 +164,7 @@
         }
 
         function processIceCandidateQueue(callerId) {
+            console.log("Adding the candidate to the queue...");
             const peerConnection = peerConnections[callerId];
             if (peerConnection && peerConnection.iceCandidateQueue) {
                 while (peerConnection.iceCandidateQueue.length > 0) {

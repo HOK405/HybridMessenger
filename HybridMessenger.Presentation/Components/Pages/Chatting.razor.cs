@@ -57,13 +57,13 @@ namespace HybridMessenger.Presentation.Components.Pages
 
             _data = new List<MessageResponse>();
 
-            _requestModel = new ChatMessagesPaginationRequest{ SortBy = "SentAt" };
+            _requestModel = new ChatMessagesPaginationRequest { SortBy = "SentAt" };
 
             if (_chatId != 0)
             {
                 _requestModel.ChatId = _chatId;
-                await _chatService.JoinChat(ChatId);
                 await LoadMessages();
+                await _chatService.JoinGroupAsync(ChatId); // Only join the group
             }
 
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -83,6 +83,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         {
             await _chatService.StartCall(ChatId);
         }
+
 
         public async Task EndCall()
         {

@@ -53,10 +53,8 @@ namespace HybridMessenger.Infrastructure.Hubs
             await Clients.OthersInGroup(chatId).SendAsync("ReceiveIceCandidate", Context.ConnectionId, candidate);
         }
 
-        public async Task<string> JoinChat(string chatId)
+        public async Task<string> CreatePeerConnection(string chatId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, chatId);
-
             if (!ChatConnections.ContainsKey(chatId))
             {
                 ChatConnections[chatId] = new HashSet<string>();
@@ -83,9 +81,25 @@ namespace HybridMessenger.Infrastructure.Hubs
         }
 
         #region Chatting
+        public async Task JoinGroupAsync(string chatId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, chatId);
+        }
+
         public async Task LeaveChat(string chatId)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, chatId);
+
+            if (ChatConnections.ContainsKey(chatId))
+            {
+                ChatConnections[chatId].Remove(Context.ConnectionId);
+
+                if (ChatConnections[chatId].Count == 0)
+                {
+                    ChatConnections.Remove(chatId);
+                }
+            }
+
             await Clients.Group(chatId).SendAsync("Send", $"{Context.ConnectionId} has left the chat {chatId}.");
         }
 
@@ -102,7 +116,6 @@ namespace HybridMessenger.Infrastructure.Hubs
 
             var messageDto = await _mediator.Send(command);
 
-            // Send to all clients in the specified group
             await Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", messageDto);
         }
         #endregion
