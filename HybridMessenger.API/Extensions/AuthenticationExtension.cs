@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using HybridMessenger.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -14,12 +15,9 @@ namespace HybridMessenger.API.Extensions
         /// <returns></returns>
         public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            // Configure JWT Authentication
-            ValidateJwtSettings(configuration);
-
-            var key = Encoding.ASCII.GetBytes(configuration["JwtKey"]);
-            var audience = configuration["JwtAudience"];
-            var issuer = configuration["JwtIssuer"];
+            // Retrieve and validate JWT settings
+            var jwtSettings = GetJwtSettings(configuration);
+            ValidateJwtSettings(jwtSettings);
 
             services.AddAuthentication(x =>
             {
@@ -31,9 +29,9 @@ namespace HybridMessenger.API.Extensions
             {
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidIssuer = issuer,
-                    ValidAudience = audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(jwtSettings.Key),
                     ValidateAudience = true,
                     ValidateIssuer = true,
                     ValidateLifetime = true,
@@ -47,23 +45,28 @@ namespace HybridMessenger.API.Extensions
             return services;
         }
 
-        private static void ValidateJwtSettings(IConfiguration configuration)
+        private static (byte[] Key, string Audience, string Issuer) GetJwtSettings(IConfiguration configuration)
         {
-            var key = Encoding.ASCII.GetBytes(configuration["JwtKey"]);
+            var key = Encoding.ASCII.GetBytes(new KeyVaultService().GetJwtKey());
             var audience = configuration["JwtAudience"];
             var issuer = configuration["JwtIssuer"];
 
-            if (key is null || key.Length == 0)
+            return (key, audience, issuer);
+        }
+
+        private static void ValidateJwtSettings((byte[] Key, string Audience, string Issuer) jwtSettings)
+        {
+            if (jwtSettings.Key is null || jwtSettings.Key.Length == 0)
             {
                 throw new ArgumentNullException("JwtKey", "JWT Key must not be null or empty.");
             }
 
-            if (string.IsNullOrWhiteSpace(audience))
+            if (string.IsNullOrWhiteSpace(jwtSettings.Audience))
             {
                 throw new ArgumentNullException("JwtAudience", "Audience must not be null or empty.");
             }
 
-            if (string.IsNullOrWhiteSpace(issuer))
+            if (string.IsNullOrWhiteSpace(jwtSettings.Issuer))
             {
                 throw new ArgumentNullException("JwtIssuer", "Issuer must not be null or empty.");
             }

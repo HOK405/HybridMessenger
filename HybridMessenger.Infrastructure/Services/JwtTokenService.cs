@@ -12,18 +12,18 @@ namespace HybridMessenger.Infrastructure.Services
     {
         private readonly IConfiguration _configuration;
         private readonly IUserIdentityService _identityService;
+        private readonly byte[] _key;
 
         public JwtTokenService(IConfiguration configuration, IUserIdentityService identityService)
         {
             _configuration = configuration;
             _identityService = identityService;
+            _key = Encoding.ASCII.GetBytes(new KeyVaultService().GetJwtKey());
         }
 
         public async Task<string> GenerateAccessToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var keyString = _configuration["JwtKey"];
-            var key = Encoding.ASCII.GetBytes(keyString);
 
             var roles = await _identityService.GetRolesAsync(user);
             var claims = new List<Claim>
@@ -48,7 +48,7 @@ namespace HybridMessenger.Infrastructure.Services
                 Expires = DateTime.UtcNow.AddDays(7),
                 Issuer = issuer,
                 Audience = audience,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_key), SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -58,8 +58,6 @@ namespace HybridMessenger.Infrastructure.Services
         public Task<string> GenerateRefreshToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var keyString = _configuration["JwtKey"];
-            var key = Encoding.ASCII.GetBytes(keyString);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -67,7 +65,7 @@ namespace HybridMessenger.Infrastructure.Services
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                 ]),
                 Expires = DateTime.UtcNow.AddDays(30), 
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_key), SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -76,15 +74,12 @@ namespace HybridMessenger.Infrastructure.Services
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
-            var keyString = _configuration["JwtKey"];
-            var key = Encoding.ASCII.GetBytes(keyString);
-
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateAudience = false, 
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
+                IssuerSigningKey = new SymmetricSecurityKey(_key),
                 ValidateLifetime = true
             };
 

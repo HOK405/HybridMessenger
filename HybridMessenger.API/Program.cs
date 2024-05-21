@@ -2,6 +2,7 @@ using HybridMessenger.API.Extensions;
 using HybridMessenger.Application;
 using HybridMessenger.Infrastructure;
 using HybridMessenger.Infrastructure.Hubs;
+using HybridMessenger.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace HybridMessenger.API
@@ -29,7 +30,8 @@ namespace HybridMessenger.API
 
             builder.Services.AddEndpointsApiExplorer();
 
-            string connectionString = builder.Configuration["DefaultConnection"];
+            var connectionString = new KeyVaultService().GetDbConnectionString();
+            var connectionString2 = new KeyVaultService().GetJwtKey();
 
             builder.Services.AddDbContext<ApiDbContext>(options =>
             options.UseSqlServer(connectionString));
