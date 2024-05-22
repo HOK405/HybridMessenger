@@ -30,8 +30,7 @@ namespace HybridMessenger.API
 
             builder.Services.AddEndpointsApiExplorer();
 
-            var connectionString = new KeyVaultService().GetDbConnectionString();
-            var connectionString2 = new KeyVaultService().GetJwtKey();
+            var connectionString = new KeyVaultService(builder.Configuration).GetDbConnectionString();
 
             builder.Services.AddDbContext<ApiDbContext>(options =>
             options.UseSqlServer(connectionString));

@@ -71,6 +71,13 @@ namespace HybridMessenger.Infrastructure.Services
             return await _userManager.GetRolesAsync(user);
         }
 
+        public async Task<bool> UpdateUser(User updatedUser)
+        {
+            var result = await _userManager.UpdateAsync(updatedUser);
+
+            return result.Succeeded;
+        }
+
         public async Task<IdentityResult> DeleteUserByIdAsync(int id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());

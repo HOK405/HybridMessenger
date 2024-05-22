@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace HybridMessenger.Presentation.Components.Pages
 {
-    public partial class PagedMessages
+    public partial class PagedMessages : ComponentBase
     {
         [Inject]
         private IHttpService HttpService { get; set; }

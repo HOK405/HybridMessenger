@@ -47,7 +47,7 @@ namespace HybridMessenger.API.Extensions
 
         private static (byte[] Key, string Audience, string Issuer) GetJwtSettings(IConfiguration configuration)
         {
-            var key = Encoding.ASCII.GetBytes(new KeyVaultService().GetJwtKey());
+            var key = Encoding.ASCII.GetBytes(new KeyVaultService(configuration).GetJwtKey());
             var audience = configuration["JwtAudience"];
             var issuer = configuration["JwtIssuer"];
 

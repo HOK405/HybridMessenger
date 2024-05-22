@@ -63,7 +63,7 @@ namespace HybridMessenger.Presentation.Components.Pages
             {
                 _requestModel.ChatId = _chatId;
                 await LoadMessages();
-                await _chatService.JoinGroupAsync(ChatId); // Only join the group
+                await _chatService.JoinGroupAsync(ChatId); 
             }
 
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();

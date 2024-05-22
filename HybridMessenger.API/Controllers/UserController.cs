@@ -1,5 +1,6 @@
 ﻿using HybridMessenger.Application.User.Commands;
 using HybridMessenger.Application.User.Queries;
+using HybridMessenger.Domain.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,12 @@ namespace HybridMessenger.API.Controllers
     public class UserController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly IUserClaimsService _userClaimsService;
 
-        public UserController(IMediator mediator)
+        public UserController(IMediator mediator, IUserClaimsService userClaimsService)
         {
             _mediator = mediator;
+            _userClaimsService = userClaimsService;
         }
 
         [Authorize]
@@ -44,6 +47,18 @@ namespace HybridMessenger.API.Controllers
                 RefreshToken = result.Item2 
             }); 
         }
+
+        [Authorize]
+        [HttpPut("update-profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] ChangeUsernameCommand command)
+        {
+            command.UserId = _userClaimsService.GetUserId(User);
+
+            var result = await _mediator.Send(command);
+
+            return Ok(result);
+        }
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] VerifyByEmailPasswordCommand command)

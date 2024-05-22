@@ -18,7 +18,7 @@ namespace HybridMessenger.Infrastructure.Services
         {
             _configuration = configuration;
             _identityService = identityService;
-            _key = Encoding.ASCII.GetBytes(new KeyVaultService().GetJwtKey());
+            _key = Encoding.ASCII.GetBytes(new KeyVaultService(configuration).GetJwtKey());
         }
 
         public async Task<string> GenerateAccessToken(User user)

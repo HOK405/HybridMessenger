@@ -1,15 +1,18 @@
 ﻿using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using Microsoft.Extensions.Configuration;
 
 namespace HybridMessenger.Infrastructure.Services
 {
     public class KeyVaultService
     {
         private SecretClient _secretClient;
+        private IConfiguration _configuration;
 
-        public KeyVaultService()
+        public KeyVaultService(IConfiguration configuration)
         {
-            var kvUri = "https://hybridmessengerkeyvault2.vault.azure.net/";
+            _configuration = configuration;
+            var kvUri = _configuration["KeyVaultUrl"];
             _secretClient = new SecretClient(new Uri(kvUri), new DefaultAzureCredential());
         }
 
