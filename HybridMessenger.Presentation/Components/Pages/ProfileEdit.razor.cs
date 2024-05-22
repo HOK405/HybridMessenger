@@ -13,7 +13,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         [Inject]
         AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
-        private UserResponse user;
+        private UserResponse user = new UserResponse();
         private UpdateProfileRequest profile = new UpdateProfileRequest();
         private int _userId;
         private bool isReadOnly = true;
@@ -37,7 +37,7 @@ namespace HybridMessenger.Presentation.Components.Pages
         private async Task HandleValidSubmit()
         {
             var result = await HttpService.PutAsync<UserResponse>("api/user/update-profile", profile);
-            isReadOnly = true; 
+            isReadOnly = true;
         }
     }
 }
