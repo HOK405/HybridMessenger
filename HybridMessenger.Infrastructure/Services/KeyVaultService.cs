@@ -27,5 +27,17 @@ namespace HybridMessenger.Infrastructure.Services
             KeyVaultSecret secret = _secretClient.GetSecret("JwtKey");
             return secret.Value;
         }
+
+        public string GetBlobConnection()
+        {
+            KeyVaultSecret secret = _secretClient.GetSecret("BlobStorageConnection");
+            return secret.Value;
+        }
+
+        public string GetBlobContainerName()
+        {
+            KeyVaultSecret secret = _secretClient.GetSecret("BlobContainerName");
+            return secret.Value;
+        }
     }
 }
