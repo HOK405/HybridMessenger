@@ -8,6 +8,7 @@ namespace HybridMessenger.Domain.Entities
         [Required]
         public DateTime CreatedAt { get; set; }
 
+        public string AvatarUrl { get; set; }
 
         public ICollection<Contact> Contacts { get; set; }
         public ICollection<ChatMember> ChatMembers { get; set; }
