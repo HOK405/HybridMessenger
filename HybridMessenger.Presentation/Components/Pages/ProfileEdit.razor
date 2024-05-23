@@ -5,6 +5,26 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-4">
+
+            @if (!string.IsNullOrEmpty(uploadedAvatarUrl))
+            {
+                <div class="text-center mb-4">
+                    <img src="@uploadedAvatarUrl" alt="Avatar" class="img-fluid rounded-circle" style="max-width: 200px;" />
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(user.AvatarUrl))
+            {
+                <div class="text-center mb-4">
+                    <img src="@user.AvatarUrl" alt="Avatar" class="img-fluid rounded-circle" style="max-width: 200px;" />
+                </div>
+            }
+            else
+            {
+                <div class="text-center mb-4">
+                    <img src="https://avatarstorage1231.blob.core.windows.net/hybridmessengeravatarstoragecontainer/default_avatar.jpg" alt="Default Avatar" class="img-fluid rounded-circle" style="max-width: 200px;" />
+                </div>
+            }
+
             <EditForm Model="@profile" OnValidSubmit="HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
@@ -34,6 +54,16 @@
                     <button type="button" class="btn btn-secondary" @onclick="EnableEditing">Edit</button>
                 </div>
             </EditForm>
+
+            <div class="form-group mt-3">
+                <label for="avatar">Upload Avatar</label>
+                <InputFile id="avatar" class="form-control" OnChange="HandleAvatarUpload" />
+                @if (!string.IsNullOrEmpty(validationError))
+                {
+                    <div class="alert alert-danger mt-2">@validationError</div>
+                }
+                <button type="button" class="btn btn-primary mt-2" @onclick="UploadAvatar">Upload Avatar</button>
+            </div>
         </div>
     </div>
 </div>

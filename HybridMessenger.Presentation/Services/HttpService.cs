@@ -34,6 +34,13 @@ namespace HybridMessenger.Presentation.Services
             return await response.Content.ReadFromJsonAsync<T>();
         }
 
+        public async Task<T> PostFileAsync<T>(string uri, MultipartFormDataContent content)
+        {
+            var response = await _httpClient.PostAsync(uri, content);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<T>();
+        }
+
         public async Task<T> PutAsync<T>(string uri, object value)
         {
             var response = await _httpClient.PutAsJsonAsync(uri, value);

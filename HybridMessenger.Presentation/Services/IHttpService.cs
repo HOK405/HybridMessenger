@@ -10,6 +10,8 @@
 
         Task<T> PostAsync<T>(string uri, object value);
 
+        Task<T> PostFileAsync<T>(string uri, MultipartFormDataContent content);
+
         Task<T> PutAsync<T>(string uri, object value);
 
         Task DeleteAsync(string uri);
