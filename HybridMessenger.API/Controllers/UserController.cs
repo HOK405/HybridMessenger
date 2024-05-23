@@ -50,7 +50,7 @@ namespace HybridMessenger.API.Controllers
 
         [Authorize]
         [HttpPut("update-profile")]
-        public async Task<IActionResult> UpdateProfile([FromBody] ChangeUsernameCommand command)
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserCommand command)
         {
             command.UserId = _userClaimsService.GetUserId(User);
 
@@ -59,6 +59,15 @@ namespace HybridMessenger.API.Controllers
             return Ok(result);
         }
 
+        [Authorize]
+        [HttpPost("upload-avatar")]
+        public async Task<IActionResult> UploadAvatar([FromForm] IFormFile file)
+        {
+            var userId = _userClaimsService.GetUserId(User);
+            var command = new UploadAvatarCommand { UserId = userId, File = file };
+            var result = await _mediator.Send(command);
+            return Ok(new { Message = result });
+        }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] VerifyByEmailPasswordCommand command)

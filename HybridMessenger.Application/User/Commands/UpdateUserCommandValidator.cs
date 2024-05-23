@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HybridMessenger.Application.User.Commands
 {
-    public class ChangeUserNameCommandValidator : AbstractValidator<ChangeUsernameCommand>
+    public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
     {
-        public ChangeUserNameCommandValidator()
+        public UpdateUserCommandValidator()
         {
             RuleFor(x => x.NewUsername)
                 .NotEmpty()
