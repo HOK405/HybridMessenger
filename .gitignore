@@ -369,3 +369,5 @@ FodyWeavers.xsd
 /HybridMessenger.API/.config/dotnet-tools.json
 /HybridMessenger.API/libman.json
 /HybridMessenger.API/appsettings.json
+/HybridMessenger.API/Properties/ServiceDependencies/HybridMessengerAPI20240524013739 - Web Deploy/profile.arm.json
+/HybridMessenger.API/Properties/ServiceDependencies/HybridMessenger-2024 - Web Deploy/profile.arm.json
