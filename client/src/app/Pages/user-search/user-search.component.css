@@ -1,0 +1,17 @@
+.user-search-form {
+  width: 100%;
+  max-width: 800px;
+}
+
+.table-responsive {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.pagination {
+  margin-top: 20px;
+}
+
+.page-link {
+  cursor: pointer;
+}
