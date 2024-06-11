@@ -17,13 +17,14 @@ namespace HybridMessenger.API
             {
                 options.AddPolicy("DevCorsPolicy", builder =>
                 {
-                    builder.WithOrigins("https://0.0.0.0")  
-                           .AllowAnyHeader()
-                           .AllowAnyMethod()
-                           .AllowCredentials();
+                    builder.WithOrigins(
+                    "http://localhost:4200",
+                    "https://ashy-pebble-08325c503-preview.westeurope.5.azurestaticapps.net")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
                 });
             });
-
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -33,7 +34,7 @@ namespace HybridMessenger.API
             var connectionString = new KeyVaultService(builder.Configuration).GetDbConnectionString();
 
             builder.Services.AddDbContext<ApiDbContext>(options =>
-            options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString));
 
             // Custom extensions
             builder.Services.AddSwaggerSecuritySetup();
