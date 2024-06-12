@@ -6,24 +6,18 @@
     </ul>
     <ul class="navbar-nav mx-auto">
       <li class="nav-item" *ngIf="isAuthenticated">
-        <a class="nav-link btn btn-primary mx-2" routerLink="/user-search"
-          >Search Users</a
-        >
+        <a class="nav-link btn mx-2" routerLink="/user-search">Search Users</a>
       </li>
     </ul>
     <ul class="navbar-nav ml-auto">
       <li class="nav-item" *ngIf="!isAuthenticated">
-        <a class="nav-link btn btn-primary mx-2" routerLink="/login">Login</a>
+        <a class="nav-link btn mx-2 login-btn" routerLink="/login">Login</a>
       </li>
       <li class="nav-item" *ngIf="!isAuthenticated">
-        <a class="nav-link btn btn-success mx-2" routerLink="/register"
-          >Sign Up</a
-        >
+        <a class="nav-link btn mx-2" routerLink="/register">Sign Up</a>
       </li>
       <li class="nav-item" *ngIf="isAuthenticated">
-        <button class="nav-link btn btn-danger mx-2" (click)="logout()">
-          Log Out
-        </button>
+        <button class="nav-link btn mx-2" (click)="logout()">Log Out</button>
       </li>
     </ul>
   </div>
