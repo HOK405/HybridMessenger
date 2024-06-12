@@ -5,7 +5,6 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './Pages/login/login.component';
-import { HttpService } from './services/http.service';
 import { AppRoutingModule } from './app-routing.module';
 import { LoggedInComponent } from './Pages/logged-in/logged-in.component';
 import { UserSearchComponent } from './Pages/user-search/user-search.component';
@@ -25,7 +24,6 @@ import { RegisterComponent } from './Pages/register/register.component';
     HttpClientModule,
     AppRoutingModule,
   ],
-  providers: [HttpService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

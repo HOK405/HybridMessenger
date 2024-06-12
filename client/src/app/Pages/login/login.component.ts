@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpService } from '../../services/http.service';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 interface TokenResponse {
   accessToken: string;
@@ -17,10 +18,11 @@ interface TokenResponse {
 export class LoginComponent {
   loginForm: FormGroup;
   loginResult: string | null = null;
+  private baseUrl = environment.baseUrl;
 
   constructor(
     private fb: FormBuilder,
-    private httpService: HttpService,
+    private http: HttpClient,
     private authService: AuthService,
     private router: Router
   ) {
@@ -42,35 +44,37 @@ export class LoginComponent {
     }
 
     const loginModel = this.loginForm.value;
-    this.httpService.post<TokenResponse>('User/login', loginModel).subscribe(
-      (tokenResponse) => {
-        if (
-          tokenResponse &&
-          tokenResponse.accessToken &&
-          tokenResponse.refreshToken
-        ) {
-          this.authService.login(tokenResponse.accessToken);
-          this.authService.setTokens(
-            tokenResponse.accessToken,
+    this.http
+      .post<TokenResponse>(`${this.baseUrl}User/login`, loginModel)
+      .subscribe(
+        (tokenResponse) => {
+          if (
+            tokenResponse &&
+            tokenResponse.accessToken &&
             tokenResponse.refreshToken
-          );
-          this.loginResult = 'Logged in successfully!';
-          this.router.navigate(['/logged-in']);
-        } else {
-          this.loginResult =
-            "You aren't logged in. Incorrect email or password.";
+          ) {
+            this.authService.login(tokenResponse.accessToken);
+            this.authService.setTokens(
+              tokenResponse.accessToken,
+              tokenResponse.refreshToken
+            );
+            this.loginResult = 'Logged in successfully!';
+            this.router.navigate(['/logged-in']);
+          } else {
+            this.loginResult =
+              "You aren't logged in. Incorrect email or password.";
+          }
+        },
+        (error) => {
+          if (error.status === 400 && error.error.errors) {
+            const validationErrors = error.error.errors;
+            this.loginResult = Object.keys(validationErrors)
+              .map((key) => validationErrors[key].join(' '))
+              .join(' ');
+          } else {
+            this.loginResult = `Login failed: ${error.message}`;
+          }
         }
-      },
-      (error) => {
-        if (error.status === 400 && error.error.errors) {
-          const validationErrors = error.error.errors;
-          this.loginResult = Object.keys(validationErrors)
-            .map((key) => validationErrors[key].join(' '))
-            .join(' ');
-        } else {
-          this.loginResult = `Login failed: ${error.message}`;
-        }
-      }
-    );
+      );
   }
 }
