@@ -50,7 +50,7 @@ export class LoginComponent {
           tokenResponse.refreshToken
         ) {
           this.authService.login(tokenResponse.accessToken);
-          this.httpService.setTokens(
+          this.authService.setTokens(
             tokenResponse.accessToken,
             tokenResponse.refreshToken
           );

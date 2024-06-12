@@ -14,9 +14,4 @@ export class HttpService {
   post<T>(endpoint: string, body: any): Observable<T> {
     return this.http.post<T>(this.baseUrl + endpoint, body);
   }
-
-  setTokens(accessToken: string, refreshToken: string): void {
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-  }
 }

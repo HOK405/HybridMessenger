@@ -14,6 +14,11 @@ export class AuthService {
     return !!localStorage.getItem('accessToken');
   }
 
+  setTokens(accessToken: string, refreshToken: string): void {
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+  }
+
   login(token: string): void {
     localStorage.setItem('accessToken', token);
     this.authStatusSubject.next(true);
