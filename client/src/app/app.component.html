@@ -8,6 +8,9 @@
       <li class="nav-item" *ngIf="isAuthenticated">
         <a class="nav-link btn mx-2" routerLink="/user-search">Search Users</a>
       </li>
+      <li class="nav-item" *ngIf="isAuthenticated">
+        <a class="nav-link btn mx-2" routerLink="/user-messages">My messages</a>
+      </li>
     </ul>
     <ul class="navbar-nav ml-auto">
       <li class="nav-item" *ngIf="!isAuthenticated">

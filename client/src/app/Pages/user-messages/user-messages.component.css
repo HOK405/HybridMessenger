@@ -1,0 +1,21 @@
+.container {
+  margin-top: 20px;
+}
+
+.card {
+  width: 100%;
+  max-width: 800px;
+}
+
+.table-responsive {
+  margin-top: 20px;
+}
+
+.pagination {
+  margin-top: 20px;
+  justify-content: center;
+}
+
+button {
+  cursor: pointer;
+}

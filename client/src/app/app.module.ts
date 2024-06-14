@@ -9,6 +9,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { LoggedInComponent } from './Pages/logged-in/logged-in.component';
 import { UserSearchComponent } from './Pages/user-search/user-search.component';
 import { RegisterComponent } from './Pages/register/register.component';
+import { UserMessagesComponent } from './Pages/user-messages/user-messages.component';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 @NgModule({
   declarations: [
@@ -17,12 +19,14 @@ import { RegisterComponent } from './Pages/register/register.component';
     LoggedInComponent,
     UserSearchComponent,
     RegisterComponent,
+    UserMessagesComponent,
   ],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,
+    NgMultiSelectDropDownModule,
   ],
   bootstrap: [AppComponent],
 })
