@@ -1,16 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { environment } from '../../../environments/environment';
-
-interface PaginationRequest {
-  pageNumber: number;
-  pageSize: number;
-  sortBy: string;
-  searchValue: string;
-  ascending: boolean;
-  fields: string[];
-}
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-user-messages',
@@ -22,7 +12,6 @@ export class UserMessagesComponent implements OnInit {
   currentPage: number = 1;
   pageSize: number = 10;
   hasMoreData: boolean = true;
-  private baseUrl = environment.baseUrl;
   messageResult: string | null = null;
 
   messageForm: FormGroup;
@@ -41,7 +30,7 @@ export class UserMessagesComponent implements OnInit {
   selectedItems: string[] = this.allMessageFields;
   dropdownSettings = {};
 
-  constructor(private http: HttpClient, private fb: FormBuilder) {
+  constructor(private userService: UserService, private fb: FormBuilder) {
     this.messageForm = this.fb.group({
       sortBy: ['SentAt', Validators.required],
       searchValue: [''],
@@ -67,7 +56,7 @@ export class UserMessagesComponent implements OnInit {
       return;
     }
 
-    const query: PaginationRequest = {
+    const query = {
       pageNumber: page,
       pageSize: this.pageSize,
       sortBy: this.messageForm.value.sortBy,
@@ -80,26 +69,17 @@ export class UserMessagesComponent implements OnInit {
       ? query.fields
       : this.allMessageFields;
 
-    const token = localStorage.getItem('accessToken');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    this.http
-      .post<any[]>(`${this.baseUrl}Message/get-user-messages`, query, {
-        headers,
-      })
-      .subscribe(
-        (response) => {
-          this.messages = response;
-          this.hasMoreData = response.length === this.pageSize;
-          this.currentPage = page;
-        },
-        (error) => {
-          this.messageResult = `Failed to retrieve messages: ${error.message}`;
-          console.error('Error:', error);
-        }
-      );
+    this.userService.getUserMessages(query).subscribe(
+      (response) => {
+        this.messages = response;
+        this.hasMoreData = response.length === this.pageSize;
+        this.currentPage = page;
+      },
+      (error) => {
+        this.messageResult = `Failed to retrieve messages: ${error.message}`;
+        console.error('Error:', error);
+      }
+    );
   }
 
   nextPage(): void {

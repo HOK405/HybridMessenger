@@ -1,16 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
-
-interface PaginationRequest {
-  pageNumber: number;
-  pageSize: number;
-  sortBy: string;
-  searchValue: string;
-  ascending: boolean;
-  fields: string[];
-}
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-user-search',
@@ -32,13 +22,12 @@ export class UserSearchComponent implements OnInit {
   currentPage: number = 1;
   pageSize: number = 10;
   hasMoreData: boolean = true;
-  private baseUrl = environment.baseUrl;
 
   dropdownList: string[] = this.allUserDtoFields;
   selectedItems: string[] = this.allUserDtoFields;
   dropdownSettings = {};
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {
+  constructor(private fb: FormBuilder, private userService: UserService) {
     this.searchForm = this.fb.group({
       sortBy: ['CreatedAt', [Validators.required]],
       searchValue: [''],
@@ -64,30 +53,28 @@ export class UserSearchComponent implements OnInit {
       return;
     }
 
-    const searchModel: PaginationRequest = {
+    const searchModel = {
       ...this.searchForm.value,
       pageNumber: page,
       pageSize: this.pageSize,
       fields: this.selectedItems,
     };
 
-    this.http
-      .post<any[]>(`${this.baseUrl}User/get-paged`, searchModel)
-      .subscribe(
-        (response) => {
-          this.users = response;
-          this.hasMoreData = response.length === this.pageSize;
-          this.currentPage = page;
-          this.userRequestedFields = searchModel.fields.length
-            ? searchModel.fields
-            : this.allUserDtoFields;
-          this.searchResult = null;
-        },
-        (error) => {
-          this.searchResult = `Search failed: ${error.message}`;
-          console.error('Error:', error);
-        }
-      );
+    this.userService.searchUsers(searchModel).subscribe(
+      (response) => {
+        this.users = response;
+        this.hasMoreData = response.length === this.pageSize;
+        this.currentPage = page;
+        this.userRequestedFields = searchModel.fields.length
+          ? searchModel.fields
+          : this.allUserDtoFields;
+        this.searchResult = null;
+      },
+      (error) => {
+        this.searchResult = `Search failed: ${error.message}`;
+        console.error('Error:', error);
+      }
+    );
   }
 
   nextPage(): void {
