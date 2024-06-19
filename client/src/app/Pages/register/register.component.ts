@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { UserService } from '../../services/user.service';
+import { UserService } from '../../Services/user.service';
+import { passwordValidator } from '../../Validators/register-password.validator';
 
 @Component({
   selector: 'app-register',
@@ -16,21 +16,14 @@ export class RegisterComponent {
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
-    private authService: AuthService,
     private router: Router
   ) {
     this.registerForm = this.fb.group({
       userName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
+      password: ['', [Validators.required, passwordValidator()]],
       phoneNumber: [''],
     });
-  }
-
-  get alertClass(): string {
-    return this.registerResult === 'Registered successfully!'
-      ? 'alert-success'
-      : 'alert-danger';
   }
 
   handleRegister(): void {
@@ -39,28 +32,13 @@ export class RegisterComponent {
     }
 
     const registerModel = this.registerForm.value;
-    this.userService.register(registerModel).subscribe(
-      (tokenResponse) => {
-        if (
-          tokenResponse &&
-          tokenResponse.accessToken &&
-          tokenResponse.refreshToken
-        ) {
-          this.authService.login(tokenResponse.accessToken);
-          this.authService.setTokens(
-            tokenResponse.accessToken,
-            tokenResponse.refreshToken
-          );
-          this.registerResult = 'Registered successfully!';
-          this.router.navigate(['/logged-in']);
-        } else {
-          this.registerResult =
-            'Registration failed: Missing tokens in response.';
-        }
+    this.userService.register(registerModel).subscribe({
+      next: () => {
+        this.router.navigate(['/logged-in']);
       },
-      (error) => {
-        this.registerResult = `Registration failed: ${error.message}`;
+      error: (error) => {
+        this.registerResult = error;
       }
-    );
+    });
   }
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { TokenResponse} from '../Models/Responses/TokenResponse';
 
 @Injectable({
   providedIn: 'root',
@@ -19,8 +20,8 @@ export class AuthService {
     localStorage.setItem('refreshToken', refreshToken);
   }
 
-  login(token: string): void {
-    localStorage.setItem('accessToken', token);
+  login(tokenResponse: TokenResponse): void {
+    this.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
     this.authStatusSubject.next(true);
   }
 
