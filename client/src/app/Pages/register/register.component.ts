@@ -1,8 +1,8 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService } from '../../Services/user.service';
-import { passwordValidator } from '../../validators/register-password.validator';
+import { UserService } from '../../services/user.service';
+import { passwordValidator } from '../../shared/constants/validators/register-password.validator';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 

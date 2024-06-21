@@ -4,11 +4,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
-import { LoginComponent } from './Pages/login/login.component';
+import { LoginComponent } from './pages/login/login.component';
 import { AppRoutingModule } from './app-routing.module';
-import { UserSearchComponent } from './Pages/user-search/user-search.component';
-import { RegisterComponent } from './Pages/register/register.component';
-import { UserMessagesComponent } from './Pages/user-messages/user-messages.component';
+import { UserSearchComponent } from './pages/user-search/user-search.component';
+import { RegisterComponent } from './pages/register/register.component';
+import { UserMessagesComponent } from './pages/user-messages/user-messages.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 @NgModule({

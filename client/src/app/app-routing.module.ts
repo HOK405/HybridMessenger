@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './Pages/login/login.component';
-import { UserSearchComponent } from './Pages/user-search/user-search.component';
-import { RegisterComponent } from './Pages/register/register.component';
-import { UserMessagesComponent } from './Pages/user-messages/user-messages.component';
+import { LoginComponent } from './pages/login/login.component';
+import { UserSearchComponent } from './pages/user-search/user-search.component';
+import { RegisterComponent } from './pages/register/register.component';
+import { UserMessagesComponent } from './pages/user-messages/user-messages.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },

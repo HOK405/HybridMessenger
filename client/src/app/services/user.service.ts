@@ -4,8 +4,8 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
-import { PaginationRequest } from '../Models/Requests/PaginationRequest';
-import { TokenResponse } from '../Models/Responses/TokenResponse';
+import { Pagination } from '../shared/interfaces/pagination.interface';
+import { Tokens } from '../shared/interfaces/tokens.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -15,23 +15,23 @@ export class UserService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  login(loginModel: any): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>(`${this.baseUrl}User/login`, loginModel)
+  login(loginModel: any): Observable<Tokens> {
+    return this.http.post<Tokens>(`${this.baseUrl}User/login`, loginModel)
       .pipe(
         tap(tokenResponse => this.authService.login(tokenResponse)),
         catchError(this.handleError)
       );
   }
 
-  register(registerModel: any): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>(`${this.baseUrl}User/register`, registerModel)
+  register(registerModel: any): Observable<Tokens> {
+    return this.http.post<Tokens>(`${this.baseUrl}User/register`, registerModel)
       .pipe(
         tap(tokenResponse => this.authService.login(tokenResponse)),
         catchError(this.handleError)
       );
   }
 
-  getUserMessages(query: PaginationRequest): Observable<any[]> {
+  getUserMessages(query: Pagination): Observable<any[]> {
     const token = localStorage.getItem('accessToken');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
@@ -40,7 +40,7 @@ export class UserService {
       .pipe(catchError(this.handleError));
   }
 
-  searchUsers(searchModel: PaginationRequest): Observable<any[]> {
+  searchUsers(searchModel: Pagination): Observable<any[]> {
     return this.http.post<any[]>(`${this.baseUrl}User/get-paged`, searchModel)
       .pipe(catchError(this.handleError));
   }
