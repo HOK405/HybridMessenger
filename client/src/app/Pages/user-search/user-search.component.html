@@ -10,7 +10,7 @@
       <div class="form-group">
         <label for="sortBy">Sort by:</label>
         <select id="sortBy" class="form-control" formControlName="sortBy">
-          <option *ngFor="let field of allUserDtoFields" [value]="field">
+          <option *ngFor="let field of allUserFields" [value]="field">
             {{ field }}
           </option>
         </select>
