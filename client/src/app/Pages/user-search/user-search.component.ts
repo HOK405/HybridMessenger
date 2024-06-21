@@ -12,7 +12,7 @@ export class UserSearchComponent implements OnInit {
   users: any[] = [];
   userRequestedFields: string[] = [];
   searchResult: string | null = null;
-  allUserDtoFields: string[] = [
+  allUserFields: string[] = [
     'Id',
     'UserName',
     'Email',
@@ -23,8 +23,8 @@ export class UserSearchComponent implements OnInit {
   pageSize: number = 10;
   hasMoreData: boolean = true;
 
-  dropdownList: string[] = this.allUserDtoFields;
-  selectedItems: string[] = this.allUserDtoFields;
+  dropdownList: string[] = this.allUserFields;
+  selectedItems: string[] = this.allUserFields;
   dropdownSettings = {};
 
   constructor(private fb: FormBuilder, private userService: UserService) {
@@ -48,32 +48,38 @@ export class UserSearchComponent implements OnInit {
     this.handleSearch();
   }
 
-  handleSearch(page: number = 1): void {
-    if (this.searchForm.invalid) {
-      return;
-    }
-
-    const searchModel = {
+  private constructSearchModel(page: number): any {
+    return {
       ...this.searchForm.value,
       pageNumber: page,
       pageSize: this.pageSize,
       fields: this.selectedItems,
     };
+  }
+
+  private handleSearchResponse(response: any[], page: number): void {
+    this.users = response;
+    this.hasMoreData = response.length === this.pageSize;
+    this.currentPage = page;
+    this.userRequestedFields = this.selectedItems.length ? this.selectedItems : this.allUserFields;
+    this.searchResult = null;
+  }
+
+  private handleSearchError(error: any): void {
+    this.searchResult = `Search failed: ${error.message}`;
+    console.error('Error:', error);
+  }
+
+  handleSearch(page: number = 1): void {
+    if (this.searchForm.invalid) {
+      return;
+    }
+
+    const searchModel = this.constructSearchModel(page);
 
     this.userService.searchUsers(searchModel).subscribe(
-      (response) => {
-        this.users = response;
-        this.hasMoreData = response.length === this.pageSize;
-        this.currentPage = page;
-        this.userRequestedFields = searchModel.fields.length
-          ? searchModel.fields
-          : this.allUserDtoFields;
-        this.searchResult = null;
-      },
-      (error) => {
-        this.searchResult = `Search failed: ${error.message}`;
-        console.error('Error:', error);
-      }
+      (response) => this.handleSearchResponse(response, page),
+      (error) => this.handleSearchError(error)
     );
   }
 

@@ -51,12 +51,8 @@ export class UserMessagesComponent implements OnInit {
     this.loadMessages();
   }
 
-  loadMessages(page: number = 1): void {
-    if (this.messageForm.invalid) {
-      return;
-    }
-
-    const query = {
+  private constructQuery(page: number): any {
+    return {
       pageNumber: page,
       pageSize: this.pageSize,
       sortBy: this.messageForm.value.sortBy,
@@ -64,21 +60,30 @@ export class UserMessagesComponent implements OnInit {
       ascending: this.messageForm.value.ascending,
       fields: this.selectedItems,
     };
+  }
 
-    this.displayedFields = query.fields.length
-      ? query.fields
-      : this.allMessageFields;
+  private handleResponse(response: any[], page: number): void {
+    this.messages = response;
+    this.hasMoreData = response.length === this.pageSize;
+    this.currentPage = page;
+  }
+
+  private handleError(error: any): void {
+    this.messageResult = `Failed to retrieve messages: ${error.message}`;
+    console.error('Error:', error);
+  }
+
+  loadMessages(page: number = 1): void {
+    if (this.messageForm.invalid) {
+      return;
+    }
+
+    const query = this.constructQuery(page);
+    this.displayedFields = query.fields.length ? query.fields : this.allMessageFields;
 
     this.userService.getUserMessages(query).subscribe(
-      (response) => {
-        this.messages = response;
-        this.hasMoreData = response.length === this.pageSize;
-        this.currentPage = page;
-      },
-      (error) => {
-        this.messageResult = `Failed to retrieve messages: ${error.message}`;
-        console.error('Error:', error);
-      }
+      (response) => this.handleResponse(response, page),
+      (error) => this.handleError(error)
     );
   }
 
