@@ -36,7 +36,7 @@ export class LoginComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.router.navigate(['/logged-in']);
+          this.router.navigate(['/user-search']);
         },
         error: (error) => {
           this.loginResult = error;

@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../Services/user.service';
-import { passwordValidator } from '../../Validators/register-password.validator';
+import { passwordValidator } from '../../validators/register-password.validator';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -39,7 +39,7 @@ export class RegisterComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.router.navigate(['/logged-in']);
+          this.router.navigate(['/user-search']);
         },
         error: (error) => {
           this.registerResult = error;
