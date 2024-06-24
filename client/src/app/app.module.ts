@@ -10,6 +10,7 @@ import { UserSearchComponent } from './pages/user-search/user-search.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { UserMessagesComponent } from './pages/user-messages/user-messages.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
     UserSearchComponent,
     RegisterComponent,
     UserMessagesComponent,
+    SidebarComponent,
   ],
   imports: [
     BrowserModule,

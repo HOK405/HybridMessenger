@@ -1,11 +1,10 @@
 <div
-  class="container vh-100 d-flex flex-column justify-content-center align-items-center"
->
+  class="container d-flex flex-column justify-content-center align-items-center">
   <div
     class="card p-4 shadow-sm user-search-form"
     style="width: 100%; max-width: 800px"
   >
-    <h3 class="card-title text-center mb-4">Search Users</h3>
+    <h3 class="card-title text-center mb-4">Search users</h3>
     <form [formGroup]="searchForm" (ngSubmit)="handleSearch()">
       <div class="form-group">
         <label for="sortBy">Sort by:</label>
@@ -29,7 +28,7 @@
         <label class="form-check-label" for="ascending">Ascending</label>
       </div>
       <button type="submit" class="btn btn-primary btn-block mt-3">
-        Get Users
+        Get users
       </button>
     </form>
     <div
@@ -44,7 +43,7 @@
       {{ searchResult }}
     </div>
     <div *ngIf="users.length">
-      <h4 class="mt-4">Search Results</h4>
+      <h4 class="mt-4">Search results</h4>
       <div class="table-responsive">
         <table class="table table-striped mt-2">
           <thead>
