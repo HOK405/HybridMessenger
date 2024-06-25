@@ -1,28 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent implements OnInit, OnDestroy {
-  isAuthenticated = false;
+export class SidebarComponent {
   isCollapsed = false;
-  private destroy$ = new Subject<void>();
 
-  constructor(private authService: AuthService, private router: Router) {}
-
-  ngOnInit(): void {
-    this.authService.authStatus$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((status) => {
-        this.isAuthenticated = status;
-      });
-  }
+  constructor(public authService: AuthService, private router: Router) {}
 
   logout(): void {
     this.authService.logout();
@@ -31,10 +19,5 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   toggleSidebar(): void {
     this.isCollapsed = !this.isCollapsed;
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }
