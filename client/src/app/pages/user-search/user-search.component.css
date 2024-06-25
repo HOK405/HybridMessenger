@@ -8,6 +8,15 @@
   overflow-y: auto;
 }
 
+.table th, .table td {
+  min-width: 100px; 
+  word-wrap: break-word;
+}
+
+.table th:last-child, .table td:last-child {
+  min-width: 150px; 
+}
+
 .pagination {
   margin-top: 20px;
 }
