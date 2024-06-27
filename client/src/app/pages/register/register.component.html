@@ -63,8 +63,13 @@
         </button>
       </div>
     </form>
+    
     <div *ngIf="registerResult" class="mt-3 alert alert-danger" role="alert">
       {{ registerResult }}
+    </div>
+
+    <div class="mt-3 text-center">
+      <a routerLink="/login">Already have an account? Login</a>
     </div>
   </div>
 </div>

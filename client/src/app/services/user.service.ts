@@ -42,7 +42,15 @@ export class UserService {
 
   searchUsers(searchModel: Pagination): Observable<any[]> {
     return this.http.post<any[]>(`${this.baseUrl}User/get-paged`, searchModel)
-      .pipe(catchError(this.handleError));
+      .pipe(
+        tap(users => {
+          users.forEach(user => {
+            user.currentUserBalance = Math.random() * 10000;
+            user.birthDate = new Date(new Date().setFullYear(new Date().getFullYear() - (Math.random() * 30 + 20))).toISOString(); 
+          });
+        }),
+        catchError(this.handleError)
+      );
   }
 
   private handleError(error: HttpErrorResponse) {

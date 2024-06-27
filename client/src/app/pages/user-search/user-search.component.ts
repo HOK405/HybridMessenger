@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../../services/user.service';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-search',
@@ -45,7 +46,19 @@ export class UserSearchComponent implements OnInit {
       unSelectAllText: 'Unselect all',
       allowSearchFilter: true,
     };
+
     this.handleSearch();
+
+    this.searchForm.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        switchMap(() => this.userService.searchUsers(this.constructSearchModel(this.currentPage)))
+      )
+      .subscribe({
+        next: (response) => this.handleSearchResponse(response, this.currentPage),
+        error: (error) => this.handleSearchError(error)
+      });
   }
 
   private constructSearchModel(page: number): any {
