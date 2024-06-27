@@ -11,6 +11,10 @@ import { RegisterComponent } from './pages/register/register.component';
 import { UserMessagesComponent } from './pages/user-messages/user-messages.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
+import { GrowDirective } from './shared/directives/grow.directive';
+import { HasPermissionDirective } from './shared/directives/has-permission.directive';
+import { CountryNumberFormatPipe } from './shared/pipes/country-number-format.directive';
+import { InternationalDatePipe } from './shared/pipes/international-date.directive';
 
 @NgModule({
   declarations: [
@@ -20,6 +24,10 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
     RegisterComponent,
     UserMessagesComponent,
     SidebarComponent,
+    GrowDirective,
+    HasPermissionDirective,
+    CountryNumberFormatPipe,
+    InternationalDatePipe,
   ],
   imports: [
     BrowserModule,
